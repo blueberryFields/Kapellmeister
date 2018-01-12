@@ -89,6 +89,12 @@ public class Sequencer implements ActionListener {
     
     public void stopSequence() {
 	clock.stop();
+	try {
+		noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep-1], 100);
+	    } catch (InvalidMidiDataException e1) {
+		e1.printStackTrace();
+	    }
+	    rcvr.send(noteOff, timeStamp);
     }
     
     public void closeDevice() {

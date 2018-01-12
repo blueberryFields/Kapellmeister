@@ -1,4 +1,3 @@
 src/DS_STORE
-.*
 bin
 !.gitignore

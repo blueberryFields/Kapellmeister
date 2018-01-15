@@ -1,4 +1,4 @@
-package mainStuff;
+package sequncerMotor;
 
 import java.util.Scanner;
 

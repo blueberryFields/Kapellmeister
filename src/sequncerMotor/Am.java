@@ -1,6 +1,6 @@
-package mainStuff;
+package sequncerMotor;
 
-public class Am extends Key {
+public class Am extends NoteGenerator {
 
     public Am() {
 	notes[0] = 57;

@@ -1,4 +1,4 @@
-package mainStuff;
+package sequncerMotor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,7 +75,7 @@ public class Sequencer implements ActionListener {
 	rcvr.send(testNoteOff, timeStamp);
     }
 
-    public void generateSequence(int nrOfSteps, Key key) {
+    public void generateSequence(int nrOfSteps, NoteGenerator key) {
 	sequence = new int[nrOfSteps];
 	for (int i = 0; i < sequence.length; i++) {
 	    sequence[i] = key.getRandomNote();

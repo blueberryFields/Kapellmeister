@@ -1,8 +1,8 @@
-package mainStuff;
+package sequncerMotor;
 
 import java.util.Random;
 
-public class Key {
+public class NoteGenerator {
 
     int[] notes = new int[8];
 

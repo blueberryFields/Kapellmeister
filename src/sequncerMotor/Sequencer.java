@@ -25,9 +25,7 @@ public class Sequencer implements ActionListener {
     ShortMessage noteOff = new ShortMessage();
 
     public Sequencer() {
-	for (int i = 0; i < infos.length; i++) {
-	    System.out.println(i + " " + infos[i]);
-	}
+	
     }
 
     public void chooseMidiDevice(int index) {
@@ -48,6 +46,10 @@ public class Sequencer implements ActionListener {
 	} catch (MidiUnavailableException e) {
 	    e.printStackTrace();
 	}
+    }
+    
+    public MidiDevice.Info[] getAvailibleMidiDevices() {
+	return infos;
     }
 
     public void playTestNote() {
@@ -80,6 +82,10 @@ public class Sequencer implements ActionListener {
 	for (int i = 0; i < sequence.length; i++) {
 	    sequence[i] = key.getRandomNote();
 	}
+    }
+    
+    public int[] getSequence() {
+	return sequence;
     }
 
     public void playSequence() {

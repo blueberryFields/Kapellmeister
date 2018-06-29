@@ -12,10 +12,8 @@ public class SeqMain {
 
 	    @Override
 	    public void run() {
-		PrototypeGui gui = new PrototypeGui();
+		Controller ctrl = new Controller();
 	    }
-	});
-	
+	});	
     }
-
 }

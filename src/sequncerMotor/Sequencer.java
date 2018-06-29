@@ -13,126 +13,131 @@ import javax.swing.Timer;
 
 public class Sequencer implements ActionListener {
 
-    //boolean running = false;
-    Timer clock = new Timer(200, this);
-    MidiDevice device;
-    MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-    Receiver rcvr;
-    long timeStamp = -1;
-    int[] sequence;
-    int currentStep = 0;
-    ShortMessage noteOn = new ShortMessage();
-    ShortMessage noteOff = new ShortMessage();
+	// boolean running = false;
+	Timer clock = new Timer(200, this);
+	MidiDevice device;
+	MidiDevice.Info[] infos; 
+	Receiver rcvr;
+	long timeStamp = -1;
+	int[] sequence;
+	int currentStep = 0;
+	ShortMessage noteOn = new ShortMessage();
+	ShortMessage noteOff = new ShortMessage();
 
-    public Sequencer() {
-	
-    }
-
-    public void chooseMidiDevice(int index) {
-	try {
-	    device = MidiSystem.getMidiDevice(infos[index]);
-	} catch (MidiUnavailableException e) {
-	    e.printStackTrace();
-	}
-	if (!(device.isOpen())) {
-	    try {
-		device.open();
-	    } catch (MidiUnavailableException e) {
-		e.printStackTrace();
-	    }
-	}
-	try {
-	    rcvr = MidiSystem.getReceiver();
-	} catch (MidiUnavailableException e) {
-	    e.printStackTrace();
-	}
-    }
-    
-    public MidiDevice.Info[] getAvailibleMidiDevices() {
-	return infos;
-    }
-
-    public void playTestNote() {
-	ShortMessage testNoteOn = new ShortMessage();
-	try {
-	    testNoteOn.setMessage(ShortMessage.NOTE_ON, 0, 60, 100);
-	} catch (InvalidMidiDataException e) {
-	    e.printStackTrace();
-	}
-	ShortMessage testNoteOff = new ShortMessage();
-	try {
-	    testNoteOff.setMessage(ShortMessage.NOTE_OFF, 0, 60, 100);
-	} catch (InvalidMidiDataException e1) {
-	    e1.printStackTrace();
+	// Constructor
+	public Sequencer() {
+		infos = MidiSystem.getMidiDeviceInfo();
 	}
 
-	rcvr.send(testNoteOn, timeStamp);
-
-	try {
-	    Thread.sleep(1000);
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
+	public void chooseMidiDevice(int index) {
+		try {
+			device = MidiSystem.getMidiDevice(infos[index]);
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
+		}
+		if (!(device.isOpen())) {
+			try {
+				device.open();
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			rcvr = MidiSystem.getReceiver();
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
+		}
 	}
 
-	rcvr.send(testNoteOff, timeStamp);
-    }
+	public MidiDevice.Info[] getAvailibleMidiDevices() {
+		return infos;
+	}
 
-    public void generateSequence(int nrOfSteps, NoteGenerator key) {
-	sequence = new int[nrOfSteps];
-	for (int i = 0; i < sequence.length; i++) {
-	    sequence[i] = key.getRandomNote();
-	}
-    }
-    
-    public int[] getSequence() {
-	return sequence;
-    }
+	public void playTestNote() {
+		ShortMessage testNoteOn = new ShortMessage();
+		try {
+			testNoteOn.setMessage(ShortMessage.NOTE_ON, 0, 60, 100);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+		ShortMessage testNoteOff = new ShortMessage();
+		try {
+			testNoteOff.setMessage(ShortMessage.NOTE_OFF, 0, 60, 100);
+		} catch (InvalidMidiDataException e1) {
+			e1.printStackTrace();
+		}
 
-    public void playSequence() {
-	currentStep = 0;
-	clock.start();
-    }
-    
-    public void stopSequence() {
-	clock.stop();
-	try {
-		noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep-1], 100);
-	    } catch (InvalidMidiDataException e1) {
-		e1.printStackTrace();
-	    }
-	    rcvr.send(noteOff, timeStamp);
-    }
-    
-    public void closeDevice() {
-	if (device.isOpen()) {
-	    device.close();
-	}
-    }
+		rcvr.send(testNoteOn, timeStamp);
 
-    public void closeRcvr() {
-	rcvr.close();
-    }
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-	try {
-	    noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep], 100);
-	} catch (InvalidMidiDataException e1) {
-	    e1.printStackTrace();
+		rcvr.send(testNoteOff, timeStamp);
 	}
-	rcvr.send(noteOn, timeStamp);
-	if(currentStep > 0) {
-	    try {
-		noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep-1], 100);
-	    } catch (InvalidMidiDataException e1) {
-		e1.printStackTrace();
-	    }
-	    rcvr.send(noteOff, timeStamp);
+
+	public void generateSequence(int nrOfSteps, NoteGenerator key) {
+		sequence = new int[nrOfSteps];
+		for (int i = 0; i < sequence.length; i++) {
+			sequence[i] = key.getRandomNote();
+		}
 	}
-	currentStep++;
-	if(currentStep == sequence.length) {
-	    currentStep = 0;
+
+	public int[] getSequence() {
+		return sequence;
 	}
-    }
+
+	public void playSequence() {
+		currentStep = 0;
+		clock.start();
+	}
+
+	public void stopSequence() {
+		clock.stop();
+		try {
+			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1], 100);
+		} catch (InvalidMidiDataException e1) {
+			e1.printStackTrace();
+		}
+		rcvr.send(noteOff, timeStamp);
+	}
+
+	public void closeDevice() {
+		if (device.isOpen()) {
+			device.close();
+		}
+	}
+
+	public void closeRcvr() {
+		rcvr.close();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		try {
+			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep], 100);
+		} catch (InvalidMidiDataException e1) {
+			e1.printStackTrace();
+		}
+		rcvr.send(noteOn, timeStamp);
+		if (currentStep > 0) {
+			try {
+				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1], 100);
+			} catch (InvalidMidiDataException e1) {
+				e1.printStackTrace();
+			}
+			rcvr.send(noteOff, timeStamp);
+		}
+		currentStep++;
+		if (currentStep == sequence.length) {
+			currentStep = 0;
+		}
+	}
+
+	public void setCurrentStep(int step) {
+		currentStep = step;
+	}
 
 }

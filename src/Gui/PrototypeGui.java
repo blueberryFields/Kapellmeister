@@ -5,25 +5,23 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
-import controller.Controller;
 import sequncerMotor.Am;
 import sequncerMotor.NoteGenerator;
-import sequncerMotor.Sequencer;
 
 public class PrototypeGui extends JFrame {
 
@@ -46,6 +44,15 @@ public class PrototypeGui extends JFrame {
 	private JButton[] playStopButtons = new JButton[] { new JButton("Play"), new JButton("Stop") };
 	private String[] availibleDevices;
 	private JComboBox deviceChooser;
+	
+	//Create components for tempopanel	
+	private JPanel tempoPanel = new JPanel();
+	private String[] partNotes = new String[] {"1 bar", "1/2", "1/4", "1/8", "1/16"};
+	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
+	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
+	
+	private JLabel bpm = new JLabel("Bpm:");
+	private JTextField bpmChooser = new JTextField("120", 2);
 
 	// Create components for generatorpanel
 	private JPanel generatorPanel = new JPanel();
@@ -64,24 +71,28 @@ public class PrototypeGui extends JFrame {
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
 		}
-		// MidiDevice.Info[] infos = seq.getAvailibleMidiDevices();
 		availibleDevices = new String[infos.length + 1];
 		availibleDevices[0] = "Choose a device...";
 		for (int i = 1; i < availibleDevices.length; i++) {
 			availibleDevices[i] = infos[i - 1].toString();
 		}
-
 		masterPanel.add(deviceChooser = new JComboBox(availibleDevices));
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
+		
+		
+		//Add stuff to tempoPanel
+		tempoPanel.add(bpm);
+		tempoPanel.add(bpmChooser);
+		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
+		partNotesChooser.setValue("1/16");
+		partNotesChooser.setPreferredSize(new Dimension(60, 25));
+		tempoPanel.add(partNotesChooser);
 
 		// Add stuff to generatorpanel
 		nrOfSteps.setEditor(new JSpinner.DefaultEditor(nrOfSteps));
 		nrOfSteps.setPreferredSize(new Dimension(43, 25));
 		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
 		keyChooser.setPreferredSize(new Dimension(48, 25));
-
-		// generateButton.addActionListener(this);
-
 		generatorPanel.add(generateButton);
 		generatorPanel.add(nrOfStepsText);
 		generatorPanel.add(nrOfSteps);
@@ -158,9 +169,12 @@ public class PrototypeGui extends JFrame {
 		add(masterPanel, frameGbc);
 		frameGbc.gridx = 0;
 		frameGbc.gridy = 1;
-		add(generatorPanel, frameGbc);
+		add(tempoPanel, frameGbc);
 		frameGbc.gridx = 0;
 		frameGbc.gridy = 2;
+		add(generatorPanel, frameGbc);
+		frameGbc.gridx = 0;
+		frameGbc.gridy = 3;
 		add(stepPanel, frameGbc);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -198,5 +212,19 @@ public class PrototypeGui extends JFrame {
 
 	public int getNrOfSteps() {
 		return (int) nrOfSteps.getValue();
+	}
+	
+	public int getBpm() {
+		int bpm = 120;
+		try {
+			bpm = Integer.parseInt(bpmChooser.getText());
+		} catch (Exception e){
+			JOptionPane.showMessageDialog(this, bpmChooser.getText() + " is not an accepteble Bpm-value! /n Initializing Bpm to 120");
+		}	
+		return bpm;
+	}
+	
+	public String getPartnotes() {
+		return (String) partNotesChooser.getValue();
 	}
 }

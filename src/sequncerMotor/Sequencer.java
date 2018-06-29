@@ -14,9 +14,9 @@ import javax.swing.Timer;
 public class Sequencer implements ActionListener {
 
 	// boolean running = false;
-	Timer clock = new Timer(200, this);
+	Timer clock = new Timer(500, this);
 	MidiDevice device;
-	MidiDevice.Info[] infos; 
+	MidiDevice.Info[] infos;
 	Receiver rcvr;
 	long timeStamp = -1;
 	int[] sequence;
@@ -51,6 +51,27 @@ public class Sequencer implements ActionListener {
 
 	public MidiDevice.Info[] getAvailibleMidiDevices() {
 		return infos;
+	}
+
+	public void setTempo(int bpm, String partNotes) {
+		int tempo = 60000 / bpm;
+		switch (partNotes) {
+		case "1 bar":
+			tempo *= 4;
+			break;
+		case "1/2":
+			tempo *= 2;
+			break;
+		case "1/4":
+			break;
+		case "1/8":
+			tempo /= 2;
+			break;
+		case "1/16":
+			tempo /= 4;
+			break;
+		}
+		clock.setDelay(tempo);
 	}
 
 	public void playTestNote() {
@@ -134,6 +155,10 @@ public class Sequencer implements ActionListener {
 		if (currentStep == sequence.length) {
 			currentStep = 0;
 		}
+	}
+
+	public void setBpm(int bpm) {
+
 	}
 
 	public void setCurrentStep(int step) {

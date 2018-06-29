@@ -1,9 +1,6 @@
 package controller;
 
-import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiDevice.Info;
-import javax.swing.SwingUtilities;
-
 import Gui.PrototypeGui;
 import sequncerMotor.Sequencer;
 
@@ -32,6 +29,7 @@ public class Controller {
 	}
 
 	private void playSequence() {
+		seq.setTempo(gui.getBpm(), gui.getPartnotes()); 
 		seq.playSequence();
 	}
 

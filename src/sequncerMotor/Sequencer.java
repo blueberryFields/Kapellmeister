@@ -14,19 +14,28 @@ import javax.swing.Timer;
 public class Sequencer implements ActionListener {
 
 	// boolean running = false;
-	Timer clock = new Timer(500, this);
-	MidiDevice device;
-	MidiDevice.Info[] infos;
-	Receiver rcvr;
-	long timeStamp = -1;
-	int[] sequence;
-	int currentStep = 0;
-	ShortMessage noteOn = new ShortMessage();
-	ShortMessage noteOff = new ShortMessage();
+	private Timer clock = new Timer(500, this);
+	private MidiDevice device;
+	private MidiDevice.Info[] infos;
+	private Receiver rcvr;
+	private long timeStamp = -1;
+	private MidiNote[] sequence;
+	private int currentStep = 0;
+	private ShortMessage noteOn = new ShortMessage();
+	private ShortMessage noteOff = new ShortMessage();
+	private NoteGenerator key;
 
 	// Constructor
 	public Sequencer() {
 		infos = MidiSystem.getMidiDeviceInfo();
+		initSeq();
+	}
+
+	public void initSeq() {
+		sequence = new MidiNote[8];
+		for (int i = 0; i < sequence.length; i++) {
+			sequence[i] = new MidiNote();
+		}
 	}
 
 	public void chooseMidiDevice(int index) {
@@ -100,13 +109,13 @@ public class Sequencer implements ActionListener {
 	}
 
 	public void generateSequence(int nrOfSteps, NoteGenerator key) {
-		sequence = new int[nrOfSteps];
+		sequence = new MidiNote[nrOfSteps];
 		for (int i = 0; i < sequence.length; i++) {
 			sequence[i] = key.getRandomNote();
 		}
 	}
 
-	public int[] getSequence() {
+	public MidiNote[] getSequence() {
 		return sequence;
 	}
 
@@ -118,7 +127,7 @@ public class Sequencer implements ActionListener {
 	public void stopSequence() {
 		clock.stop();
 		try {
-			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1], 100);
+			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getNote(), 100);
 		} catch (InvalidMidiDataException e1) {
 			e1.printStackTrace();
 		}
@@ -138,14 +147,15 @@ public class Sequencer implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep], 100);
+			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getNote(), 100);
 		} catch (InvalidMidiDataException e1) {
 			e1.printStackTrace();
 		}
 		rcvr.send(noteOn, timeStamp);
+
 		if (currentStep > 0) {
 			try {
-				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1], 100);
+				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getNote(), 100);
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
 			}

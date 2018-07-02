@@ -44,13 +44,13 @@ public class PrototypeGui extends JFrame {
 	private JButton[] playStopButtons = new JButton[] { new JButton("Play"), new JButton("Stop") };
 	private String[] availibleDevices;
 	private JComboBox deviceChooser;
-	
-	//Create components for tempopanel	
+
+	// Create components for tempopanel
 	private JPanel tempoPanel = new JPanel();
-	private String[] partNotes = new String[] {"1 bar", "1/2", "1/4", "1/8", "1/16"};
+	private String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
 	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
-	
+
 	private JLabel bpm = new JLabel("Bpm:");
 	private JTextField bpmChooser = new JTextField("120", 2);
 
@@ -78,9 +78,8 @@ public class PrototypeGui extends JFrame {
 		}
 		masterPanel.add(deviceChooser = new JComboBox(availibleDevices));
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
-		
-		
-		//Add stuff to tempoPanel
+
+		// Add stuff to tempoPanel
 		tempoPanel.add(bpm);
 		tempoPanel.add(bpmChooser);
 		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
@@ -177,16 +176,20 @@ public class PrototypeGui extends JFrame {
 		frameGbc.gridy = 3;
 		add(stepPanel, frameGbc);
 
+		// Set BackgroundColor for frame
+		// getContentPane().setBackground(Color.DARK_GRAY);
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
 
 	public NoteGenerator getKey() {
-		if (keyChooser.equals("Am")) {
+		switch ((String) keyChooser.getValue()) {
+		case "Am":
 			return key = new Am();
-		} else
-			return key = new Am();
+		}
+		return key = new Am();
 	}
 
 	public int getChoosenDevice() {
@@ -213,17 +216,18 @@ public class PrototypeGui extends JFrame {
 	public int getNrOfSteps() {
 		return (int) nrOfSteps.getValue();
 	}
-	
+
 	public int getBpm() {
 		int bpm = 120;
 		try {
 			bpm = Integer.parseInt(bpmChooser.getText());
-		} catch (Exception e){
-			JOptionPane.showMessageDialog(this, bpmChooser.getText() + " is not an accepteble Bpm-value! /n Initializing Bpm to 120");
-		}	
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this,
+					bpmChooser.getText() + " is not an accepteble Bpm-value! /n Initializing Bpm to 120");
+		}
 		return bpm;
 	}
-	
+
 	public String getPartnotes() {
 		return (String) partNotesChooser.getValue();
 	}

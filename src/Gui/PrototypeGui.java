@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.HashMap;
 
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
@@ -14,30 +15,37 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
+import sequncerMotor.A;
 import sequncerMotor.Am;
+import sequncerMotor.Bbm;
+import sequncerMotor.C;
+import sequncerMotor.MidiNote;
 import sequncerMotor.NoteGenerator;
 
 public class PrototypeGui extends JFrame {
 
 	private NoteGenerator key;
+	//private MidiToNoteConverter midiToNote = new MidiToNoteConverter();
+	private HashMap<Integer, String> noteMap = new HashMap<Integer, String>();
 
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
 	private JPanel singleSteps[] = new JPanel[16];
 	private SpinnerModel octaveModel[] = new SpinnerNumberModel[16];
 	private JSpinner octaveChooser[] = new JSpinner[16];
-	private String[] notes = new String[] { "C ", "C#", "D ", "D#", "E ", "F ", "F#", "G ", "G#", "A ", "Bb", "B " };
+	private String[] notes = new String[] { "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3 ", "A#3",
+			"B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4" };
 	private SpinnerListModel[] noteModel = new SpinnerListModel[16];
 	private JSpinner noteChooser[] = new JSpinner[16];
 	private SpinnerModel[] velocityModel = new SpinnerNumberModel[16];
 	private JSpinner velocityChooser[] = new JSpinner[16];
 	private JButton[] noteOnButton = new JButton[16];
+	private Color disabled = Color.GRAY;
 
 	// Create components for masterpanel
 	private JPanel masterPanel = new JPanel();
@@ -61,12 +69,40 @@ public class PrototypeGui extends JFrame {
 	private SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
 	private JSpinner nrOfSteps = new JSpinner(nrOfStepsModel);
 	private JLabel keyText = new JLabel("Key:");
-	private String[] keyArr = new String[] { "Am" };
+	private String[] keyArr = new String[] { "Am", "A", "Bbm", "C" };
 	private SpinnerModel keyChooserModel = new SpinnerListModel(keyArr);
 	private JSpinner keyChooser = new JSpinner(keyChooserModel);
 
+	// Konstruktor
 	public PrototypeGui(Info[] infos) {
 		super("KapellMeister");
+		
+		//fill hashmap with midimessage to notes
+		noteMap.put(48, "C3");
+		noteMap.put(49, "C#3");
+		noteMap.put(50, "D3");
+		noteMap.put(51, "D#3");
+		noteMap.put(52, "E3");
+		noteMap.put(53, "F3");
+		noteMap.put(54, "F#3");
+		noteMap.put(55, "G3");
+		noteMap.put(56, "G#3");
+		noteMap.put(57, "A3");
+		noteMap.put(58, "A#3");
+		noteMap.put(59, "B3");
+		noteMap.put(60, "C4");
+		noteMap.put(61, "C#4");
+		noteMap.put(62, "D4");
+		noteMap.put(63, "D#4");
+		noteMap.put(64, "E4");
+		noteMap.put(65, "F4");
+		noteMap.put(66, "F#4");
+		noteMap.put(67, "G4");
+		noteMap.put(68, "G#4");
+		noteMap.put(69, "A4");
+		noteMap.put(70, "A#4");
+		noteMap.put(71, "C4");
+
 		// Add stuff to masterPanel
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
@@ -91,7 +127,7 @@ public class PrototypeGui extends JFrame {
 		nrOfSteps.setEditor(new JSpinner.DefaultEditor(nrOfSteps));
 		nrOfSteps.setPreferredSize(new Dimension(43, 25));
 		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
-		keyChooser.setPreferredSize(new Dimension(48, 25));
+		keyChooser.setPreferredSize(new Dimension(55, 25));
 		generatorPanel.add(generateButton);
 		generatorPanel.add(nrOfStepsText);
 		generatorPanel.add(nrOfSteps);
@@ -184,12 +220,32 @@ public class PrototypeGui extends JFrame {
 		setVisible(true);
 	}
 
+	public void repaintSequencer(MidiNote[] sequence) {
+		for (int i = 0; i < sequence.length; i++) {
+			velocityChooser[i].setValue(sequence[i].getVelo());
+			noteChooser[i].setValue(noteMap.get(sequence[i].getNote()));
+		}
+		for (int i = sequence.length; i < 16; i++) {
+			noteChooser[i].setEnabled(false);
+			octaveChooser[i].setEnabled(false);
+			velocityChooser[i].setEnabled(false);
+			// noteOnButton[i].setEnabled(false);
+			singleSteps[i].setBackground(disabled);
+		}
+	}
+
 	public NoteGenerator getKey() {
 		switch ((String) keyChooser.getValue()) {
 		case "Am":
 			return key = new Am();
+		case "A":
+			return key = new A();
+		case "Bbm":
+			return key = new Bbm();
+		case "C":
+			return key = new C();
 		}
-		return key = new Am();
+		return key = null;
 	}
 
 	public int getChoosenDevice() {
@@ -231,4 +287,5 @@ public class PrototypeGui extends JFrame {
 	public String getPartnotes() {
 		return (String) partNotesChooser.getValue();
 	}
+
 }

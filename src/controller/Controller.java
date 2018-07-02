@@ -22,6 +22,7 @@ public class Controller {
 
 	private void generateSequence() {
 		seq.generateSequence(gui.getNrOfSteps(), gui.getKey());
+		gui.repaintSequencer(seq.getSequence());
 	}
 
 	private void chooseMidiDevice() {

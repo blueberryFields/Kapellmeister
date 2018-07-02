@@ -24,6 +24,7 @@ public class Sequencer implements ActionListener {
 	private ShortMessage noteOn = new ShortMessage();
 	private ShortMessage noteOff = new ShortMessage();
 	private NoteGenerator key;
+	private boolean firstNote;
 
 	// Constructor
 	public Sequencer() {
@@ -112,7 +113,7 @@ public class Sequencer implements ActionListener {
 		sequence = new MidiNote[nrOfSteps];
 		for (int i = 0; i < sequence.length; i++) {
 			sequence[i] = key.getRandomNote();
-		}
+		}		
 	}
 
 	public MidiNote[] getSequence() {
@@ -121,13 +122,14 @@ public class Sequencer implements ActionListener {
 
 	public void playSequence() {
 		currentStep = 0;
+		firstNote = true;
 		clock.start();
 	}
 
 	public void stopSequence() {
 		clock.stop();
 		try {
-			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getNote(), 100);
+			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep].getNote(), 100);
 		} catch (InvalidMidiDataException e1) {
 			e1.printStackTrace();
 		}
@@ -147,20 +149,32 @@ public class Sequencer implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getNote(), 100);
+			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getNote(),
+					sequence[currentStep].getVelo());
 		} catch (InvalidMidiDataException e1) {
 			e1.printStackTrace();
 		}
 		rcvr.send(noteOn, timeStamp);
 
-		if (currentStep > 0) {
+		if (currentStep == 0 && !firstNote) {
 			try {
-				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getNote(), 100);
+				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getNote(),
+						sequence[currentStep].getVelo());
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
 			}
 			rcvr.send(noteOff, timeStamp);
-		}
+		} else if (!firstNote) {
+			try {
+				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getNote(),
+						sequence[currentStep].getVelo());
+			} catch (InvalidMidiDataException e1) {
+				e1.printStackTrace();
+			}
+			rcvr.send(noteOff, timeStamp);
+		} else
+			firstNote = false;
+
 		currentStep++;
 		if (currentStep == sequence.length) {
 			currentStep = 0;

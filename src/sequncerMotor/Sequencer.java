@@ -11,10 +11,10 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.swing.Timer;
 
-public class Sequencer implements ActionListener {
+public class Sequencer {
 
 	// boolean running = false;
-	private Timer clock = new Timer(500, this);
+	//private Timer clock = new Timer(500, this);
 	private MidiDevice device;
 	private MidiDevice.Info[] infos;
 	private Receiver rcvr;
@@ -26,7 +26,7 @@ public class Sequencer implements ActionListener {
 	private NoteGenerator key;
 	private boolean firstNote;
 
-	// Constructor
+	// Konstruktor
 	public Sequencer() {
 		infos = MidiSystem.getMidiDeviceInfo();
 		initSeq();
@@ -61,27 +61,6 @@ public class Sequencer implements ActionListener {
 
 	public MidiDevice.Info[] getAvailibleMidiDevices() {
 		return infos;
-	}
-
-	public void setTempo(int bpm, String partNotes) {
-		int tempo = 60000 / bpm;
-		switch (partNotes) {
-		case "1 bar":
-			tempo *= 4;
-			break;
-		case "1/2":
-			tempo *= 2;
-			break;
-		case "1/4":
-			break;
-		case "1/8":
-			tempo /= 2;
-			break;
-		case "1/16":
-			tempo /= 4;
-			break;
-		}
-		clock.setDelay(tempo);
 	}
 
 	public void playTestNote() {
@@ -123,11 +102,9 @@ public class Sequencer implements ActionListener {
 	public void playSequence() {
 		currentStep = 0;
 		firstNote = true;
-		clock.start();
 	}
 
 	public void stopSequence() {
-		clock.stop();
 		try {
 			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep].getMidiNote(), 100);
 		} catch (InvalidMidiDataException e1) {
@@ -146,8 +123,7 @@ public class Sequencer implements ActionListener {
 		rcvr.close();
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void playStep() {
 		try {
 			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
 					sequence[currentStep].getVelo());
@@ -180,9 +156,18 @@ public class Sequencer implements ActionListener {
 			currentStep = 0;
 		}
 	}
+	
 
 	public void setCurrentStep(int step) {
 		currentStep = step;
+	}
+	
+	public int getCurrentStep() {
+		return currentStep;
+	}
+	
+	public boolean isFirstNote() {
+		return firstNote;
 	}
 
 }

@@ -129,7 +129,7 @@ public class Sequencer implements ActionListener {
 	public void stopSequence() {
 		clock.stop();
 		try {
-			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep].getNote(), 100);
+			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep].getMidiNote(), 100);
 		} catch (InvalidMidiDataException e1) {
 			e1.printStackTrace();
 		}
@@ -149,7 +149,7 @@ public class Sequencer implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getNote(),
+			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
 					sequence[currentStep].getVelo());
 		} catch (InvalidMidiDataException e1) {
 			e1.printStackTrace();
@@ -158,7 +158,7 @@ public class Sequencer implements ActionListener {
 
 		if (currentStep == 0 && !firstNote) {
 			try {
-				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getNote(),
+				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
 						sequence[currentStep].getVelo());
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
@@ -166,7 +166,7 @@ public class Sequencer implements ActionListener {
 			rcvr.send(noteOff, timeStamp);
 		} else if (!firstNote) {
 			try {
-				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getNote(),
+				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
 						sequence[currentStep].getVelo());
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
@@ -179,10 +179,6 @@ public class Sequencer implements ActionListener {
 		if (currentStep == sequence.length) {
 			currentStep = 0;
 		}
-	}
-
-	public void setBpm(int bpm) {
-
 	}
 
 	public void setCurrentStep(int step) {

@@ -30,22 +30,24 @@ import sequncerMotor.NoteGenerator;
 public class PrototypeGui extends JFrame {
 
 	private NoteGenerator key;
-	//private MidiToNoteConverter midiToNote = new MidiToNoteConverter();
+	private MidiToNoteConverter midiToNote = new MidiToNoteConverter();
 	private HashMap<Integer, String> noteMap = new HashMap<Integer, String>();
+
+	// Create colorscheme
+	private Color disabledStep = Color.GRAY;
+	private Color enabledStep = Color.WHITE;
 
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
 	private JPanel singleSteps[] = new JPanel[16];
 	private SpinnerModel octaveModel[] = new SpinnerNumberModel[16];
 	private JSpinner octaveChooser[] = new JSpinner[16];
-	private String[] notes = new String[] { "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3 ", "A#3",
-			"B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4" };
+	private String[] notes = new String[] { "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4" };
 	private SpinnerListModel[] noteModel = new SpinnerListModel[16];
 	private JSpinner noteChooser[] = new JSpinner[16];
 	private SpinnerModel[] velocityModel = new SpinnerNumberModel[16];
 	private JSpinner velocityChooser[] = new JSpinner[16];
 	private JButton[] noteOnButton = new JButton[16];
-	private Color disabled = Color.GRAY;
 
 	// Create components for masterpanel
 	private JPanel masterPanel = new JPanel();
@@ -76,8 +78,8 @@ public class PrototypeGui extends JFrame {
 	// Konstruktor
 	public PrototypeGui(Info[] infos) {
 		super("KapellMeister");
-		
-		//fill hashmap with midimessage to notes
+
+		// fill hashmap with midimessage to notes
 		noteMap.put(48, "C3");
 		noteMap.put(49, "C#3");
 		noteMap.put(50, "D3");
@@ -101,7 +103,8 @@ public class PrototypeGui extends JFrame {
 		noteMap.put(68, "G#4");
 		noteMap.put(69, "A4");
 		noteMap.put(70, "A#4");
-		noteMap.put(71, "C4");
+		noteMap.put(71, "B4");
+		noteMap.put(72, "C5");
 
 		// Add stuff to masterPanel
 		for (int i = 0; i < playStopButtons.length; i++) {
@@ -161,7 +164,7 @@ public class PrototypeGui extends JFrame {
 		for (int i = 0; i < singleSteps.length; i++) {
 			singleSteps[i] = new JPanel();
 			singleSteps[i].setLayout(new GridBagLayout());
-			singleSteps[i].setBackground(Color.WHITE);
+			singleSteps[i].setBackground(enabledStep);
 			GridBagConstraints singleStepsGbc = new GridBagConstraints();
 			singleStepsGbc.insets = new Insets(1, 1, 1, 1);
 			singleStepsGbc.gridx = 0;
@@ -221,16 +224,30 @@ public class PrototypeGui extends JFrame {
 	}
 
 	public void repaintSequencer(MidiNote[] sequence) {
+
+		// Enable steps wich is included in sequence
 		for (int i = 0; i < sequence.length; i++) {
-			velocityChooser[i].setValue(sequence[i].getVelo());
-			noteChooser[i].setValue(noteMap.get(sequence[i].getNote()));
+			noteChooser[i].setEnabled(true);
+			octaveChooser[i].setEnabled(true);
+			velocityChooser[i].setEnabled(true);
+			// noteOnButton[i].setEnabled(false);
+			singleSteps[i].setBackground(enabledStep);
 		}
+
+		// Disable steps wich is not included in sequence
 		for (int i = sequence.length; i < 16; i++) {
 			noteChooser[i].setEnabled(false);
 			octaveChooser[i].setEnabled(false);
 			velocityChooser[i].setEnabled(false);
 			// noteOnButton[i].setEnabled(false);
-			singleSteps[i].setBackground(disabled);
+			singleSteps[i].setBackground(disabledStep);
+		}
+
+		// set note and velocity on steps
+		for (int i = 0; i < sequence.length; i++) {
+			velocityChooser[i].setValue(sequence[i].getVelo());
+			noteChooser[i].setValue(sequence[i].getNote());
+			
 		}
 	}
 

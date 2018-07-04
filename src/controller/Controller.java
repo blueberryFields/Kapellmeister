@@ -16,6 +16,7 @@ public class Controller implements ActionListener {
 	private Sequencer seq;
 	private PrototypeGui gui;
 	private Timer clock;
+	private int currentStep;
 
 	public Controller() {
 		seq = new Sequencer();
@@ -27,6 +28,14 @@ public class Controller implements ActionListener {
 		gui.getStopButton().addActionListener(e -> stopSequence());
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
+		for(int i = 0; i < gui.getNoteChooserArray().length; i++) {
+			gui.getNoteChooser(i).addChangeListener(e -> changeNote());
+		}
+	}
+
+	private Object changeNote() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private void generateSequence() {
@@ -40,17 +49,17 @@ public class Controller implements ActionListener {
 
 	private void playSequence() {
 		setTempo(gui.getBpm(), gui.getPartnotes());
-		gui.disableGui();
 		seq.playSequence();
 		clock.start();
+		gui.disableGui();
 	}
 
 	private void stopSequence() {
+		gui.enableGui();
 		seq.stopSequence();
 		clock.stop();
-		gui.enableGui();
+		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
 	}
-	
 
 	public void setTempo(int bpm, String partNotes) {
 		int tempo = 60000 / bpm;
@@ -81,6 +90,11 @@ public class Controller implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		seq.playStep();
 		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
+		currentStep = seq.getCurrentStep();
+		currentStep++;
+		if (currentStep == seq.getSequence().length) {
+			currentStep = 0;
+		}
+		seq.setCurrentStep(currentStep++);
 	}
-
 }

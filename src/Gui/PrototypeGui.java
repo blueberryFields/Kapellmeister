@@ -24,14 +24,12 @@ import sequncerMotor.A;
 import sequncerMotor.Am;
 import sequncerMotor.Bbm;
 import sequncerMotor.C;
-import sequncerMotor.MidiNote;
+import sequncerMotor.Note;
 import sequncerMotor.NoteGenerator;
 
 public class PrototypeGui extends JFrame {
 
 	private NoteGenerator key;
-	// private MidiToNoteConverter midiToNote = new MidiToNoteConverter();
-	private HashMap<Integer, String> noteMap = new HashMap<Integer, String>();
 
 	// Create colorscheme
 	private Color disabledStep = Color.GRAY;
@@ -62,7 +60,6 @@ public class PrototypeGui extends JFrame {
 	private String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
 	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
-
 	private JLabel bpm = new JLabel("Bpm:");
 	private JTextField bpmChooser = new JTextField("120", 2);
 
@@ -71,7 +68,7 @@ public class PrototypeGui extends JFrame {
 	private JButton generateButton = new JButton("Generate");
 	private JLabel nrOfStepsText = new JLabel("Nr of Steps:");
 	private SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
-	private JSpinner nrOfSteps = new JSpinner(nrOfStepsModel);
+	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
 	private JLabel keyText = new JLabel("Key:");
 	private String[] keyArr = new String[] { "Am", "C" };
 	private SpinnerModel keyChooserModel = new SpinnerListModel(keyArr);
@@ -80,33 +77,6 @@ public class PrototypeGui extends JFrame {
 	// Konstruktor
 	public PrototypeGui(Info[] infos) {
 		super("KapellMeister");
-
-		// fill hashmap with midimessage to notes
-		// noteMap.put(48, "C3");
-		// noteMap.put(49, "C#3");
-		// noteMap.put(50, "D3");
-		// noteMap.put(51, "D#3");
-		// noteMap.put(52, "E3");
-		// noteMap.put(53, "F3");
-		// noteMap.put(54, "F#3");
-		// noteMap.put(55, "G3");
-		// noteMap.put(56, "G#3");
-		// noteMap.put(57, "A3");
-		// noteMap.put(58, "A#3");
-		// noteMap.put(59, "B3");
-		// noteMap.put(60, "C4");
-		// noteMap.put(61, "C#4");
-		// noteMap.put(62, "D4");
-		// noteMap.put(63, "D#4");
-		// noteMap.put(64, "E4");
-		// noteMap.put(65, "F4");
-		// noteMap.put(66, "F#4");
-		// noteMap.put(67, "G4");
-		// noteMap.put(68, "G#4");
-		// noteMap.put(69, "A4");
-		// noteMap.put(70, "A#4");
-		// noteMap.put(71, "B4");
-		// noteMap.put(72, "C5");
 
 		// Add stuff to masterPanel
 		for (int i = 0; i < playStopButtons.length; i++) {
@@ -129,13 +99,13 @@ public class PrototypeGui extends JFrame {
 		tempoPanel.add(partNotesChooser);
 
 		// Add stuff to generatorpanel
-		nrOfSteps.setEditor(new JSpinner.DefaultEditor(nrOfSteps));
-		nrOfSteps.setPreferredSize(new Dimension(43, 25));
+		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
+		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
 		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
 		keyChooser.setPreferredSize(new Dimension(55, 25));
 		generatorPanel.add(generateButton);
 		generatorPanel.add(nrOfStepsText);
-		generatorPanel.add(nrOfSteps);
+		generatorPanel.add(nrOfStepsChooser);
 		generatorPanel.add(keyText);
 		generatorPanel.add(keyChooser);
 
@@ -225,7 +195,7 @@ public class PrototypeGui extends JFrame {
 		setVisible(true);
 	}
 
-	public void repaintSequencer(MidiNote[] sequence) {
+	public void repaintSequencer(Note[] sequence) {
 
 		// Enable steps wich is included in sequence
 		for (int i = 0; i < sequence.length; i++) {
@@ -280,6 +250,14 @@ public class PrototypeGui extends JFrame {
 		return playStopButtons[1];
 	}
 
+	public JSpinner[] getNoteChooserArray() {
+		return noteChooser;
+	}
+	
+	public JSpinner getNoteChooser(int index) {
+		return noteChooser[index];
+	}
+	
 	public JComboBox getDeviceChooser() {
 		return deviceChooser;
 	}
@@ -289,7 +267,7 @@ public class PrototypeGui extends JFrame {
 	}
 
 	public int getNrOfSteps() {
-		return (int) nrOfSteps.getValue();
+		return (int) nrOfStepsChooser.getValue();
 	}
 
 	public int getBpm() {
@@ -308,26 +286,48 @@ public class PrototypeGui extends JFrame {
 	}
 
 	public void disableGui() {
-		// TODO Auto-generated method stub
-
+		playStopButtons[0].setEnabled(false);
+		deviceChooser.setEnabled(false);
+		bpmChooser.setEnabled(false);
+		partNotesChooser.setEnabled(false);
+		generateButton.setEnabled(false);
+		nrOfStepsText.setEnabled(false);
+		nrOfStepsChooser.setEnabled(false);
+		keyText.setEnabled(false);
+		keyChooser.setEnabled(false);
 	}
 
 	public void enableGui() {
-		// TODO Auto-generated method stub
-
+		playStopButtons[0].setEnabled(true);
+		deviceChooser.setEnabled(true);
+		bpmChooser.setEnabled(true);
+		partNotesChooser.setEnabled(true);
+		generateButton.setEnabled(true);
+		nrOfStepsText.setEnabled(true);
+		nrOfStepsChooser.setEnabled(true);
+		keyText.setEnabled(true);
+		keyChooser.setEnabled(true);
 	}
 
-	public void markActiveStep(int currentStep, boolean isFirstNote, MidiNote[] sequence) {
+	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
 		if (isFirstNote) {
-			singleSteps[currentStep].setBackground(activeStep);
+			singleSteps[currentStep - 1].setBackground(activeStep);
 		} else if (currentStep == 0 && !isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStep);
 			singleSteps[sequence.length - 1].setBackground(enabledStep);
 		} else {
 			singleSteps[currentStep].setBackground(activeStep);
 			singleSteps[currentStep - 1].setBackground(enabledStep);
-
 		}
 	}
 
+	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
+		if (isFirstNote) {
+			singleSteps[currentStep - 1].setBackground(enabledStep);
+		} else if (currentStep == 0 && !isFirstNote) {
+			singleSteps[sequence.length - 1].setBackground(enabledStep);
+		} else {
+			singleSteps[currentStep - 1].setBackground(enabledStep);
+		}
+	}
 }

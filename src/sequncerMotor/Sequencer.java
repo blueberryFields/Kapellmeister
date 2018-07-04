@@ -19,7 +19,7 @@ public class Sequencer {
 	private MidiDevice.Info[] infos;
 	private Receiver rcvr;
 	private long timeStamp = -1;
-	private MidiNote[] sequence;
+	private Note[] sequence;
 	private int currentStep = 0;
 	private ShortMessage noteOn = new ShortMessage();
 	private ShortMessage noteOff = new ShortMessage();
@@ -33,9 +33,9 @@ public class Sequencer {
 	}
 
 	public void initSeq() {
-		sequence = new MidiNote[8];
+		sequence = new Note[8];
 		for (int i = 0; i < sequence.length; i++) {
-			sequence[i] = new MidiNote();
+			sequence[i] = new Note();
 		}
 	}
 
@@ -89,13 +89,17 @@ public class Sequencer {
 	}
 
 	public void generateSequence(int nrOfSteps, NoteGenerator key) {
-		sequence = new MidiNote[nrOfSteps];
+		sequence = new Note[nrOfSteps];
 		for (int i = 0; i < sequence.length; i++) {
 			sequence[i] = key.getRandomNote();
 		}		
 	}
+	
+	public void setStep(int index) {
+		sequence[index] = new Note();
+	}
 
-	public MidiNote[] getSequence() {
+	public Note[] getSequence() {
 		return sequence;
 	}
 
@@ -150,13 +154,7 @@ public class Sequencer {
 			rcvr.send(noteOff, timeStamp);
 		} else
 			firstNote = false;
-
-		currentStep++;
-		if (currentStep == sequence.length) {
-			currentStep = 0;
-		}
 	}
-	
 
 	public void setCurrentStep(int step) {
 		currentStep = step;

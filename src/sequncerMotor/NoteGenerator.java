@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class NoteGenerator {
 
-	MidiNote[] notes = new MidiNote[8];
+	Note[] notes = new Note[8];
 
-	public MidiNote getRandomNote() {
+	public Note getRandomNote() {
 		Random rn = new Random();
 		int randomNr = rn.nextInt(8);
 		return notes[randomNr];

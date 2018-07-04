@@ -239,7 +239,6 @@ public class PrototypeGui extends JFrame {
 
 	public int getChoosenDevice() {
 		return deviceChooser.getSelectedIndex();
-
 	}
 
 	public JButton getPlayButton() {
@@ -256,6 +255,18 @@ public class PrototypeGui extends JFrame {
 	
 	public JSpinner getNoteChooser(int index) {
 		return noteChooser[index];
+	}
+	
+	public JSpinner[] getVelocityChooserArray() {
+		return velocityChooser;
+	}
+	
+	public JSpinner getVelocityChooser(int index) {
+		return velocityChooser[index];
+	}
+	
+	public JSpinner getNrOfStepsChooser() {
+		return nrOfStepsChooser;
 	}
 	
 	public JComboBox getDeviceChooser() {

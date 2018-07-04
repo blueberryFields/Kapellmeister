@@ -99,8 +99,16 @@ public class Sequencer {
 		sequence[index] = new Note();
 	}
 
+	public void setSequence(Note[] sequence) {
+		this.sequence = sequence;
+	}
+	
 	public Note[] getSequence() {
 		return sequence;
+	}
+	
+	public Note getSequenceStep(int index) {
+		return sequence[index];
 	}
 
 	public void playSequence() {

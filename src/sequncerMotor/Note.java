@@ -8,21 +8,27 @@ public class Note {
 	
 	//konstruktor
 	public Note() {
-		midiNote = 48;
-		velo = 100;
+		setMidiNote(48);
+		setVelo(100);
 		setNote("C3");
 	}
 	
 	public Note(int midiNote, int velo, String note) {
-		this.midiNote = midiNote;
-		this.velo = velo;
-		this.setNote(note);
+		setMidiNote(midiNote);
+		setVelo(velo);
+		setNote(note);
+	}
+	
+	public Note(int velo, String note) {
+		setVelo(velo);
+		setNote(note);
+		setMidiNote(noteToMidiConverter(note));
 	}
 	
 	public int getMidiNote() {
 		return midiNote;
 	}
-	public void setMiniNote(int note) {
+	public void setMidiNote(int note) {
 		this.midiNote = note;
 	}
 	public int getVelo() {
@@ -38,5 +44,67 @@ public class Note {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+	
+	public void changeNote(String note, int velo) {
+		setNote(note);
+		setVelo(velo);
+		setMidiNote(noteToMidiConverter(note));
+	}
+	
+	public int noteToMidiConverter(String note) {
+		switch(note) {
+		case "C3":
+			return 48;
+		case "C#3":
+			return 49;
+		case "D3":
+			return 50;
+		case "D#3":
+			return 51;
+		case "E3":
+			return 52;
+		case "F3":
+			return 53;
+		case "F#3":
+			return 54;
+		case "G3":
+			return 55;
+		case "G#":
+			return 56;
+		case "A3":
+			return 57;
+		case "A#3":
+			return 58;
+		case "B3":
+			return 59;
+		case "C4":
+			return 60;
+		case "C#4":
+			return 61;
+		case "D4":
+			return 62;
+		case "D#4":
+			return 63;
+		case "E4":
+			return 64;
+		case "F4":
+			return 65;
+		case "F#4":
+			return 66;
+		case "G4":
+			return 67;
+		case "G#4":
+			return 68;
+		case "A4":
+			return 69;
+		case "A#4": 
+			return 70;
+		case "B4":
+			return 71;
+		case "C5":
+			return 72;
+		}
+		return 48;
 	}
 }

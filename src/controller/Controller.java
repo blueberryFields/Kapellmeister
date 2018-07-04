@@ -3,12 +3,13 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.ShortMessage;
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import Gui.PrototypeGui;
+import sequncerMotor.Note;
 import sequncerMotor.Sequencer;
 
 public class Controller implements ActionListener {
@@ -28,14 +29,38 @@ public class Controller implements ActionListener {
 		gui.getStopButton().addActionListener(e -> stopSequence());
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
-		for(int i = 0; i < gui.getNoteChooserArray().length; i++) {
-			gui.getNoteChooser(i).addChangeListener(e -> changeNote());
+		
+		//Add ActionListeners to Jspinners
+		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence()));
+
+		for (int i = 0; i < gui.getNoteChooserArray().length; i++) {
+			int index = i;
+			gui.getNoteChooser(i).addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					seq.getSequenceStep(index).changeNote((String) gui.getNoteChooser(index).getValue(),
+							(int) gui.getVelocityChooser(index).getValue());
+				}
+			});
+		}
+		for (int i = 0; i < gui.getVelocityChooserArray().length; i++) {
+			int index = i;
+			gui.getVelocityChooser(i).addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					seq.getSequenceStep(index).setVelo((int) gui.getVelocityChooser(index).getValue());
+				}
+			});
 		}
 	}
 
-	private Object changeNote() {
-		// TODO Auto-generated method stub
-		return null;
+	private void changeNrOfSteps(int nrOfSteps, Note[] sequence) {
+		Note[] tempArray = new Note[nrOfSteps];
+		for(int i = 0; i < tempArray.length; i++) {
+			tempArray[i] = sequence[i];
+		}
+		seq.setSequence(tempArray);
+		gui.repaintSequencer(seq.getSequence());
 	}
 
 	private void generateSequence() {

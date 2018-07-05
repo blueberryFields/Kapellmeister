@@ -60,7 +60,7 @@ public class PrototypeGui extends JFrame {
 	private String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
 	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
-	private JLabel bpm = new JLabel("Bpm:");
+	private JLabel bpmText = new JLabel("Bpm:");
 	private JTextField bpmChooser = new JTextField("120", 2);
 
 	// Create components for generatorpanel
@@ -82,6 +82,7 @@ public class PrototypeGui extends JFrame {
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
 		}
+		playStopButtons[0].setEnabled(false);
 		availibleDevices = new String[infos.length + 1];
 		availibleDevices[0] = "Choose a device...";
 		for (int i = 1; i < availibleDevices.length; i++) {
@@ -91,7 +92,7 @@ public class PrototypeGui extends JFrame {
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
 
 		// Add stuff to tempoPanel
-		tempoPanel.add(bpm);
+		tempoPanel.add(bpmText);
 		tempoPanel.add(bpmChooser);
 		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
 		partNotesChooser.setValue("1/16");
@@ -299,6 +300,7 @@ public class PrototypeGui extends JFrame {
 	public void disableGui() {
 		playStopButtons[0].setEnabled(false);
 		deviceChooser.setEnabled(false);
+		bpmText.setEnabled(false);
 		bpmChooser.setEnabled(false);
 		partNotesChooser.setEnabled(false);
 		generateButton.setEnabled(false);
@@ -311,6 +313,7 @@ public class PrototypeGui extends JFrame {
 	public void enableGui() {
 		playStopButtons[0].setEnabled(true);
 		deviceChooser.setEnabled(true);
+		bpmText.setEnabled(true);
 		bpmChooser.setEnabled(true);
 		partNotesChooser.setEnabled(true);
 		generateButton.setEnabled(true);
@@ -318,6 +321,14 @@ public class PrototypeGui extends JFrame {
 		nrOfStepsChooser.setEnabled(true);
 		keyText.setEnabled(true);
 		keyChooser.setEnabled(true);
+	}
+
+	public String[] getAvailibleDevices() {
+		return availibleDevices;
+	}
+
+	public void setAvailibleDevices(String[] availibleDevices) {
+		this.availibleDevices = availibleDevices;
 	}
 
 	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {

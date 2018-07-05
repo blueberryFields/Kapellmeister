@@ -18,6 +18,7 @@ public class Controller implements ActionListener {
 	private PrototypeGui gui;
 	private Timer clock;
 
+	//Konstruktor
 	public Controller() {
 		seq = new Sequencer();
 		gui = new PrototypeGui(seq.getAvailibleMidiDevices());
@@ -45,7 +46,6 @@ public class Controller implements ActionListener {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					seq.getSingleStep(index).changeNote((String) gui.getNoteChooser(index).getValue());
-					printSequence();
 				}
 			});
 		}
@@ -75,8 +75,11 @@ public class Controller implements ActionListener {
 
 	private void changeNrOfSteps(int nrOfSteps, Note[] sequence) {
 		Note[] tempArray = new Note[nrOfSteps];
-		for (int i = 0; i < tempArray.length; i++) {
+		for (int i = 0; i < sequence.length; i++) {
 			tempArray[i] = sequence[i];
+		}
+		if (tempArray[tempArray.length-1] == null) {
+			tempArray[tempArray.length-1] = new Note();
 		}
 		seq.setSequence(tempArray);
 		gui.repaintSequencer(seq.getSequence());
@@ -85,11 +88,15 @@ public class Controller implements ActionListener {
 	private void generateSequence() {
 		seq.generateSequence(gui.getNrOfSteps(), gui.getKey());
 		gui.repaintSequencer(seq.getSequence());
-		printSequence();
 	}
 
 	private void chooseMidiDevice() {
 		seq.chooseMidiDevice(gui.getChoosenDevice());
+		if(gui.getChoosenDevice() != 0) {
+			gui.getPlayButton().setEnabled(true);
+		} else {
+			gui.getPlayButton().setEnabled(false);
+		}
 	}
 
 	private void playSequence() {

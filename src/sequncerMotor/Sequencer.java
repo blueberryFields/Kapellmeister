@@ -91,7 +91,7 @@ public class Sequencer {
 	public void generateSequence(int nrOfSteps, NoteGenerator key) {
 		sequence = new Note[nrOfSteps];
 		for (int i = 0; i < sequence.length; i++) {
-			sequence[i] = key.getRandomNote();
+			sequence[i] = new Note(100, key.getRandomNote());
 		}		
 	}
 	
@@ -107,7 +107,7 @@ public class Sequencer {
 		return sequence;
 	}
 	
-	public Note getSequenceStep(int index) {
+	public Note getSingleStep(int index) {
 		return sequence[index];
 	}
 
@@ -135,7 +135,7 @@ public class Sequencer {
 		rcvr.close();
 	}
 
-	public void playStep() {
+	public boolean playStep() {
 		try {
 			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
 					sequence[currentStep].getVelo());
@@ -162,6 +162,7 @@ public class Sequencer {
 			rcvr.send(noteOff, timeStamp);
 		} else
 			firstNote = false;
+		return true;
 	}
 
 	public void setCurrentStep(int step) {

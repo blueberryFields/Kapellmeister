@@ -46,9 +46,9 @@ public class Note {
 		this.note = note;
 	}
 	
-	public void changeNote(String note, int velo) {
+	public void changeNote(String note) {
 		setNote(note);
-		setVelo(velo);
+		//setVelo(velo);
 		setMidiNote(noteToMidiConverter(note));
 	}
 	
@@ -106,5 +106,12 @@ public class Note {
 			return 72;
 		}
 		return 48;
+	}
+	
+	@Override
+	public String toString() {
+		String s = note + ", " + midiNote + ", " + velo + "; ";
+		return s;
+		
 	}
 }

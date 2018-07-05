@@ -17,7 +17,6 @@ public class Controller implements ActionListener {
 	private Sequencer seq;
 	private PrototypeGui gui;
 	private Timer clock;
-	private int currentStep;
 
 	public Controller() {
 		seq = new Sequencer();
@@ -29,26 +28,46 @@ public class Controller implements ActionListener {
 		gui.getStopButton().addActionListener(e -> stopSequence());
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
-		
-		//Add ActionListeners to Jspinners
+
+		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence()));
 
+		addActionListenersToNoteChooser();
+		addActionListenersToVelocityChooser();
+
+		gui.repaintSequencer(seq.getSequence());
+	}
+
+	private void addActionListenersToNoteChooser() {
 		for (int i = 0; i < gui.getNoteChooserArray().length; i++) {
 			int index = i;
 			gui.getNoteChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSequenceStep(index).changeNote((String) gui.getNoteChooser(index).getValue(),
-							(int) gui.getVelocityChooser(index).getValue());
+					seq.getSingleStep(index).changeNote((String) gui.getNoteChooser(index).getValue());
+					printSequence();
 				}
 			});
 		}
+	}
+
+	// private void removeActionListenersFromNoteChooser() {
+	// ChangeListener[] cl;
+	// for (int i = 0; i < gui.getNoteChooserArray().length; i++) {
+	// cl = gui.getNoteChooser(i).getChangeListeners();
+	// for (int j = 0; i < cl.length; i++) {
+	// gui.getNoteChooser(i).removeChangeListener(cl[j]);
+	// }
+	// }
+	// }
+
+	private void addActionListenersToVelocityChooser() {
 		for (int i = 0; i < gui.getVelocityChooserArray().length; i++) {
 			int index = i;
 			gui.getVelocityChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSequenceStep(index).setVelo((int) gui.getVelocityChooser(index).getValue());
+					seq.getSingleStep(index).setVelo((int) gui.getVelocityChooser(index).getValue());
 				}
 			});
 		}
@@ -56,7 +75,7 @@ public class Controller implements ActionListener {
 
 	private void changeNrOfSteps(int nrOfSteps, Note[] sequence) {
 		Note[] tempArray = new Note[nrOfSteps];
-		for(int i = 0; i < tempArray.length; i++) {
+		for (int i = 0; i < tempArray.length; i++) {
 			tempArray[i] = sequence[i];
 		}
 		seq.setSequence(tempArray);
@@ -66,6 +85,7 @@ public class Controller implements ActionListener {
 	private void generateSequence() {
 		seq.generateSequence(gui.getNrOfSteps(), gui.getKey());
 		gui.repaintSequencer(seq.getSequence());
+		printSequence();
 	}
 
 	private void chooseMidiDevice() {
@@ -114,12 +134,25 @@ public class Controller implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		seq.playStep();
-		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
-		currentStep = seq.getCurrentStep();
-		currentStep++;
-		if (currentStep == seq.getSequence().length) {
-			currentStep = 0;
+		try {
+			Thread.sleep(85);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
 		}
-		seq.setCurrentStep(currentStep++);
+		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
+		int tempStep = seq.getCurrentStep();
+		tempStep++;
+		if (tempStep == seq.getSequence().length) {
+			tempStep = 0;
+		}
+		seq.setCurrentStep(tempStep++);
+	}
+
+	public void printSequence() {
+		String s = "";
+		for (int i = 0; i < seq.getSequence().length; i++) {
+			s += seq.getSingleStep(i).toString();
+		}
+		System.out.println(s);
 	}
 }

@@ -304,8 +304,6 @@ public class PrototypeGui extends JFrame {
 		bpmChooser.setEnabled(false);
 		partNotesChooser.setEnabled(false);
 		generateButton.setEnabled(false);
-		nrOfStepsText.setEnabled(false);
-		nrOfStepsChooser.setEnabled(false);
 		keyText.setEnabled(false);
 		keyChooser.setEnabled(false);
 	}
@@ -317,8 +315,6 @@ public class PrototypeGui extends JFrame {
 		bpmChooser.setEnabled(true);
 		partNotesChooser.setEnabled(true);
 		generateButton.setEnabled(true);
-		nrOfStepsText.setEnabled(true);
-		nrOfStepsChooser.setEnabled(true);
 		keyText.setEnabled(true);
 		keyChooser.setEnabled(true);
 	}

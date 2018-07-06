@@ -18,7 +18,7 @@ public class Controller implements ActionListener {
 	private PrototypeGui gui;
 	private Timer clock;
 
-	//Konstruktor
+	// Konstruktor
 	public Controller() {
 		seq = new Sequencer();
 		gui = new PrototypeGui(seq.getAvailibleMidiDevices());
@@ -51,16 +51,6 @@ public class Controller implements ActionListener {
 		}
 	}
 
-	// private void removeActionListenersFromNoteChooser() {
-	// ChangeListener[] cl;
-	// for (int i = 0; i < gui.getNoteChooserArray().length; i++) {
-	// cl = gui.getNoteChooser(i).getChangeListeners();
-	// for (int j = 0; i < cl.length; i++) {
-	// gui.getNoteChooser(i).removeChangeListener(cl[j]);
-	// }
-	// }
-	// }
-
 	private void addActionListenersToVelocityChooser() {
 		for (int i = 0; i < gui.getVelocityChooserArray().length; i++) {
 			int index = i;
@@ -75,11 +65,17 @@ public class Controller implements ActionListener {
 
 	private void changeNrOfSteps(int nrOfSteps, Note[] sequence) {
 		Note[] tempArray = new Note[nrOfSteps];
-		for (int i = 0; i < sequence.length; i++) {
-			tempArray[i] = sequence[i];
-		}
-		if (tempArray[tempArray.length-1] == null) {
-			tempArray[tempArray.length-1] = new Note();
+		if (nrOfSteps > sequence.length) {
+			for (int i = 0; i < sequence.length; i++) {
+				tempArray[i] = sequence[i];
+			}
+			if (tempArray[tempArray.length - 1] == null) {
+				tempArray[tempArray.length - 1] = new Note();
+			} 		
+		} else {
+			for (int i = 0; i < nrOfSteps; i++) {
+				tempArray[i] = sequence[i];
+			}
 		}
 		seq.setSequence(tempArray);
 		gui.repaintSequencer(seq.getSequence());
@@ -92,7 +88,7 @@ public class Controller implements ActionListener {
 
 	private void chooseMidiDevice() {
 		seq.chooseMidiDevice(gui.getChoosenDevice());
-		if(gui.getChoosenDevice() != 0) {
+		if (gui.getChoosenDevice() != 0) {
 			gui.getPlayButton().setEnabled(true);
 		} else {
 			gui.getPlayButton().setEnabled(false);

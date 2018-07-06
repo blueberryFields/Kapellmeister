@@ -176,12 +176,7 @@ public class PrototypeGui extends JFrame {
 			noteChooser[i].setEditor(new JSpinner.DefaultEditor(noteChooser[i]));
 			noteChooser[i].setPreferredSize(new Dimension(50, 25));
 		}
-		for (int i = 0; i < octaveChooser.length; i++) {
-			octaveModel[i] = new SpinnerNumberModel(3, -1, 9, 1);
-			octaveChooser[i] = new JSpinner(octaveModel[i]);
-			octaveChooser[i].setEditor(new JSpinner.DefaultEditor(octaveChooser[i]));
-			octaveChooser[i].setPreferredSize(new Dimension(40, 25));
-		}
+
 		for (int i = 0; i < velocityChooser.length; i++) {
 			velocityModel[i] = new SpinnerNumberModel(100, 0, 127, 1);
 			velocityChooser[i] = new JSpinner(velocityModel[i]);
@@ -204,11 +199,8 @@ public class PrototypeGui extends JFrame {
 			singleSteps[i].add(noteChooser[i], singleStepsGbc);
 			singleStepsGbc.gridx = 1;
 			singleStepsGbc.gridy = 0;
-			singleSteps[i].add(octaveChooser[i], singleStepsGbc);
-			singleStepsGbc.gridx = 0;
-			singleStepsGbc.gridy = 1;
 			singleSteps[i].add(velocityChooser[i], singleStepsGbc);
-			singleStepsGbc.gridx = 1;
+			singleStepsGbc.gridx = 0;
 			singleStepsGbc.gridy = 1;
 			singleSteps[i].add(noteOnButton[i], singleStepsGbc);
 		}
@@ -260,9 +252,9 @@ public class PrototypeGui extends JFrame {
 		// Enable steps wich is included in sequence
 		for (int i = 0; i < sequence.length; i++) {
 			noteChooser[i].setEnabled(true);
-			octaveChooser[i].setEnabled(true);
+			//octaveChooser[i].setEnabled(true);
 			velocityChooser[i].setEnabled(true);
-			noteOnButton[i].setEnabled(false);
+			noteOnButton[i].setEnabled(true);
 			singleSteps[i].setBackground(enabledStep);
 		}
 
@@ -275,7 +267,7 @@ public class PrototypeGui extends JFrame {
 		// Disable steps wich is not included in sequence
 		for (int i = sequence.length; i < 16; i++) {
 			noteChooser[i].setEnabled(false);
-			octaveChooser[i].setEnabled(false);
+			//octaveChooser[i].setEnabled(false);
 			velocityChooser[i].setEnabled(false);
 			noteOnButton[i].setEnabled(false);
 			singleSteps[i].setBackground(disabledStep);
@@ -323,6 +315,10 @@ public class PrototypeGui extends JFrame {
 
 	public JSpinner getVelocityChooser(int index) {
 		return velocityChooser[index];
+	}
+	
+	public JButton[] getNoteOnButtonArray() {
+		return noteOnButton;
 	}
 
 	public JSpinner getNrOfStepsChooser() {

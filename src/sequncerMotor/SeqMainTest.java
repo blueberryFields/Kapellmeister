@@ -15,7 +15,7 @@ public class SeqMainTest {
 
 	// seq.playTestNote();
 
-	seq.generateSequence(8, am);
+	//seq.generateSequence(8, am);
 	seq.playSequence();
 
 	System.out.println("Press S to Stop playing or N for new sequence:");
@@ -30,7 +30,7 @@ public class SeqMainTest {
 		break;
 	    } else if (choice.equals("n") || choice.equals("N")) {
 		seq.stopSequence();
-		seq.generateSequence(8, am);
+		//seq.generateSequence(8, am);
 		seq.playSequence();
 	    }
 	}

@@ -33,10 +33,18 @@ public class Controller implements ActionListener {
 		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence()));
 
+		//Add ActionListeners to singleSteps
 		addActionListenersToNoteChooser();
 		addActionListenersToVelocityChooser();
+		addActionListenersToNoteOnButton();
+		
 
 		gui.repaintSequencer(seq.getSequence());
+	}
+
+	private void addActionListenersToNoteOnButton() {
+		//TODO
+		
 	}
 
 	private void addActionListenersToNoteChooser() {

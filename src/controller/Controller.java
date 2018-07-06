@@ -82,7 +82,7 @@ public class Controller implements ActionListener {
 	}
 
 	private void generateSequence() {
-		seq.generateSequence(gui.getNrOfSteps(), gui.getKey());
+		seq.generateSequence(gui.getNrOfSteps(), gui.getKey(), gui.isNoDuplChecked());
 		gui.repaintSequencer(seq.getSequence());
 	}
 

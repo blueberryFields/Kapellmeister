@@ -8,6 +8,7 @@ import java.awt.Insets;
 
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -64,14 +65,35 @@ public class PrototypeGui extends JFrame {
 
 	// Create components for generatorpanel
 	private JPanel generatorPanel = new JPanel();
-	private JButton generateButton = new JButton("Generate");
+	
+	private JPanel firstRowPanel = new JPanel();
+	private JButton generateButton = new JButton("Generate");	
+	private JPanel nrOfStepsPanel = new JPanel();
 	private JLabel nrOfStepsText = new JLabel("Nr of Steps:");
 	private SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
-	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
+	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);	
+	private JPanel keyPanel = new JPanel();
 	private JLabel keyText = new JLabel("Key:");
 	private String[] keyArr = new String[] { "Am", "C" };
 	private SpinnerModel keyChooserModel = new SpinnerListModel(keyArr);
 	private JSpinner keyChooser = new JSpinner(keyChooserModel);
+
+	private JPanel secondRowPanel = new JPanel();
+	private JLabel noDuplText = new JLabel("No duplicates in a row");
+	private JCheckBox noDuplCheck = new JCheckBox();
+
+	private JPanel thirdRowPanel = new JPanel();
+	private JPanel rndVeloCheckPanel = new JPanel();
+	private JPanel veloLowPanel = new JPanel();
+	private JPanel veloHighPanel = new JPanel();
+	private JLabel rndVeloText = new JLabel("Random velocity:");
+	private JCheckBox rndVeloCheckBox = new JCheckBox();
+	private JLabel fromText = new JLabel("from:");
+	private JLabel toText = new JLabel("to:");
+	private SpinnerModel veloLowModel = new SpinnerNumberModel(70, 0, 127, 1);
+	private JSpinner veloLowChooser = new JSpinner(veloLowModel);
+	private SpinnerModel veloHighModel = new SpinnerNumberModel(110, 0, 127, 1);
+	private JSpinner veloHighChooser = new JSpinner(veloHighModel);
 
 	// Konstruktor
 	public PrototypeGui(Info[] infos) {
@@ -94,20 +116,58 @@ public class PrototypeGui extends JFrame {
 		tempoPanel.add(bpmText);
 		tempoPanel.add(bpmChooser);
 		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
-		partNotesChooser.setValue("1/16");
+		partNotesChooser.setValue("1/8");
 		partNotesChooser.setPreferredSize(new Dimension(60, 25));
 		tempoPanel.add(partNotesChooser);
 
 		// Add stuff to generatorpanel
+		generatorPanel.setLayout(new GridBagLayout());
+		GridBagConstraints generatorPanelGbc = new GridBagConstraints();
+		
 		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
 		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
 		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
 		keyChooser.setPreferredSize(new Dimension(55, 25));
-		generatorPanel.add(generateButton);
-		generatorPanel.add(nrOfStepsText);
-		generatorPanel.add(nrOfStepsChooser);
-		generatorPanel.add(keyText);
-		generatorPanel.add(keyChooser);
+
+		generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
+		
+		firstRowPanel.add(generateButton);		
+		
+		nrOfStepsPanel.add(nrOfStepsText);
+		nrOfStepsPanel.add(nrOfStepsChooser);		
+		firstRowPanel.add(nrOfStepsPanel);		
+		
+		keyPanel.add(keyText);
+		keyPanel.add(keyChooser);
+		firstRowPanel.add(keyPanel);
+		generatorPanelGbc.gridx = 0;
+		generatorPanelGbc.gridy = 0;
+		generatorPanel.add(firstRowPanel, generatorPanelGbc);
+		
+		veloLowChooser.setEditor(new JSpinner.DefaultEditor(veloLowChooser));
+		veloHighChooser.setEditor(new JSpinner.DefaultEditor(veloHighChooser));
+		
+		rndVeloCheckPanel.add(rndVeloText);
+		rndVeloCheckPanel.add(rndVeloCheckBox);
+		thirdRowPanel.add(rndVeloCheckPanel);
+		
+		veloLowPanel.add(fromText);
+		veloLowPanel.add(veloLowChooser);
+		thirdRowPanel.add(veloLowPanel);
+		
+		veloHighPanel.add(toText);
+		veloHighPanel.add(veloHighChooser);
+		thirdRowPanel.add(veloHighPanel);
+		
+		generatorPanelGbc.gridx = 0;
+		generatorPanelGbc.gridy = 1;
+		generatorPanel.add(thirdRowPanel, generatorPanelGbc);
+		
+		secondRowPanel.add(noDuplText);
+		secondRowPanel.add(noDuplCheck);
+		generatorPanelGbc.gridx = 0;
+		generatorPanelGbc.gridy = 2;
+		generatorPanel.add(secondRowPanel, generatorPanelGbc);
 
 		// Add stuff to and configure stepPanel
 		for (int i = 0; i < noteChooser.length; i++) {
@@ -252,23 +312,23 @@ public class PrototypeGui extends JFrame {
 	public JSpinner[] getNoteChooserArray() {
 		return noteChooser;
 	}
-	
+
 	public JSpinner getNoteChooser(int index) {
 		return noteChooser[index];
 	}
-	
+
 	public JSpinner[] getVelocityChooserArray() {
 		return velocityChooser;
 	}
-	
+
 	public JSpinner getVelocityChooser(int index) {
 		return velocityChooser[index];
 	}
-	
+
 	public JSpinner getNrOfStepsChooser() {
 		return nrOfStepsChooser;
 	}
-	
+
 	public JComboBox getDeviceChooser() {
 		return deviceChooser;
 	}
@@ -346,5 +406,9 @@ public class PrototypeGui extends JFrame {
 		} else {
 			singleSteps[currentStep - 1].setBackground(enabledStep);
 		}
+	}
+	
+	public boolean isNoDuplChecked() {
+		return noDuplCheck.isSelected();
 	}
 }

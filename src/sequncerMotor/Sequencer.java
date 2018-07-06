@@ -14,7 +14,7 @@ import javax.swing.Timer;
 public class Sequencer {
 
 	// boolean running = false;
-	//private Timer clock = new Timer(500, this);
+	// private Timer clock = new Timer(500, this);
 	private MidiDevice device;
 	private MidiDevice.Info[] infos;
 	private Receiver rcvr;
@@ -88,13 +88,15 @@ public class Sequencer {
 		rcvr.send(testNoteOff, timeStamp);
 	}
 
-	public void generateSequence(int nrOfSteps, NoteGenerator key) {
+	public void generateSequence(int nrOfSteps, NoteGenerator key, boolean noDuplisChecked) {
 		sequence = new Note[nrOfSteps];
-		for (int i = 0; i < sequence.length; i++) {
-			sequence[i] = new Note(100, key.getRandomNote());
-		}		
+		if (noDuplisChecked) {
+			sequence = key.getRndSeqNoDuplInRow(sequence);
+		} else {
+			sequence = key.getRndSequence(sequence);
+		}
 	}
-	
+
 	public void setStep(int index) {
 		sequence[index] = new Note();
 	}
@@ -102,11 +104,11 @@ public class Sequencer {
 	public void setSequence(Note[] sequence) {
 		this.sequence = sequence;
 	}
-	
+
 	public Note[] getSequence() {
 		return sequence;
 	}
-	
+
 	public Note getSingleStep(int index) {
 		return sequence[index];
 	}
@@ -168,11 +170,11 @@ public class Sequencer {
 	public void setCurrentStep(int step) {
 		currentStep = step;
 	}
-	
+
 	public int getCurrentStep() {
 		return currentStep;
 	}
-	
+
 	public boolean isFirstNote() {
 		return firstNote;
 	}

@@ -88,12 +88,13 @@ public class Sequencer {
 		rcvr.send(testNoteOff, timeStamp);
 	}
 
-	public void generateSequence(int nrOfSteps, NoteGenerator key, boolean noDuplisChecked) {
+	public void generateSequence(int nrOfSteps, NoteGenerator key, boolean noDuplisChecked, boolean rndVeloIsChecked,
+			int veloLow, int veloHigh) {
 		sequence = new Note[nrOfSteps];
 		if (noDuplisChecked) {
-			sequence = key.getRndSeqNoDuplInRow(sequence);
+			sequence = key.getRndSeqNoDuplInRow(sequence, rndVeloIsChecked, veloLow, veloHigh);
 		} else {
-			sequence = key.getRndSequence(sequence);
+			sequence = key.getRndSequence(sequence, rndVeloIsChecked, veloLow, veloHigh);
 		}
 	}
 
@@ -137,15 +138,47 @@ public class Sequencer {
 		rcvr.close();
 	}
 
-	public boolean playStep() {
-		try {
-			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
-					sequence[currentStep].getVelo());
-		} catch (InvalidMidiDataException e1) {
-			e1.printStackTrace();
-		}
-		rcvr.send(noteOn, timeStamp);
+	// public void playStep() {
+	// try {
+	// noteOn.setMessage(ShortMessage.NOTE_ON, 0,
+	// sequence[currentStep].getMidiNote(),
+	// sequence[currentStep].getVelo());
+	// } catch (InvalidMidiDataException e1) {
+	// e1.printStackTrace();
+	// }
+	// if (sequence[currentStep].noteIsOn()) {
+	// rcvr.send(noteOn, timeStamp);
+	// }
+	//
+	// if (currentStep == 0 && !firstNote) {
+	// try {
+	// noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length -
+	// 1].getMidiNote(),
+	// sequence[currentStep].getVelo());
+	// } catch (InvalidMidiDataException e1) {
+	// e1.printStackTrace();
+	// }
+	// if (!sequence[currentStep].isHold()) {
+	// rcvr.send(noteOff, timeStamp);
+	// }
+	//
+	// } else if (!firstNote) {
+	// try {
+	// noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep -
+	// 1].getMidiNote(),
+	// sequence[currentStep].getVelo());
+	// } catch (InvalidMidiDataException e1) {
+	// e1.printStackTrace();
+	// }
+	// if (!sequence[currentStep].isHold()) {
+	// rcvr.send(noteOff, timeStamp);
+	// }
+	// } else
+	// firstNote = false;
+	// //return true;
+	// }
 
+	public void playStep() {
 		if (currentStep == 0 && !firstNote) {
 			try {
 				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
@@ -153,18 +186,41 @@ public class Sequencer {
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
 			}
-			rcvr.send(noteOff, timeStamp);
-		} else if (!firstNote) {
-			try {
-				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
-						sequence[currentStep].getVelo());
-			} catch (InvalidMidiDataException e1) {
-				e1.printStackTrace();
+			if (sequence[currentStep].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+				rcvr.send(noteOff, timeStamp);
 			}
-			rcvr.send(noteOff, timeStamp);
-		} else
+
+		} else if (!firstNote) {
+			if (sequence[currentStep - 1].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+				try {
+					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
+							sequence[currentStep].getVelo());
+				} catch (InvalidMidiDataException e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				try {
+					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getHoldValue(),
+							sequence[currentStep].getVelo());
+				} catch (InvalidMidiDataException e1) {
+					e1.printStackTrace();
+				}
+			}
+			if (sequence[currentStep].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+				rcvr.send(noteOff, timeStamp);
+			}
+		} else {
 			firstNote = false;
-		return true;
+		}
+		try {
+			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
+					sequence[currentStep].getVelo());
+		} catch (InvalidMidiDataException e1) {
+			e1.printStackTrace();
+		}
+		if (sequence[currentStep].getNoteOnButtonEnum() == NoteOnButtonEnum.ON) {
+			rcvr.send(noteOn, timeStamp);
+		}
 	}
 
 	public void setCurrentStep(int step) {

@@ -26,6 +26,7 @@ import sequncerMotor.Bbm;
 import sequncerMotor.C;
 import sequncerMotor.Note;
 import sequncerMotor.NoteGenerator;
+import sequncerMotor.NoteOnButtonEnum;
 
 public class PrototypeGui extends JFrame {
 
@@ -65,13 +66,13 @@ public class PrototypeGui extends JFrame {
 
 	// Create components for generatorpanel
 	private JPanel generatorPanel = new JPanel();
-	
+
 	private JPanel firstRowPanel = new JPanel();
-	private JButton generateButton = new JButton("Generate");	
+	private JButton generateButton = new JButton("Generate");
 	private JPanel nrOfStepsPanel = new JPanel();
 	private JLabel nrOfStepsText = new JLabel("Nr of Steps:");
 	private SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
-	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);	
+	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
 	private JPanel keyPanel = new JPanel();
 	private JLabel keyText = new JLabel("Key:");
 	private String[] keyArr = new String[] { "Am", "C" };
@@ -123,46 +124,46 @@ public class PrototypeGui extends JFrame {
 		// Add stuff to generatorpanel
 		generatorPanel.setLayout(new GridBagLayout());
 		GridBagConstraints generatorPanelGbc = new GridBagConstraints();
-		
+
 		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
 		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
 		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
 		keyChooser.setPreferredSize(new Dimension(55, 25));
 
 		generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
-		
-		firstRowPanel.add(generateButton);		
-		
+
+		firstRowPanel.add(generateButton);
+
 		nrOfStepsPanel.add(nrOfStepsText);
-		nrOfStepsPanel.add(nrOfStepsChooser);		
-		firstRowPanel.add(nrOfStepsPanel);		
-		
+		nrOfStepsPanel.add(nrOfStepsChooser);
+		firstRowPanel.add(nrOfStepsPanel);
+
 		keyPanel.add(keyText);
 		keyPanel.add(keyChooser);
 		firstRowPanel.add(keyPanel);
 		generatorPanelGbc.gridx = 0;
 		generatorPanelGbc.gridy = 0;
 		generatorPanel.add(firstRowPanel, generatorPanelGbc);
-		
+
 		veloLowChooser.setEditor(new JSpinner.DefaultEditor(veloLowChooser));
 		veloHighChooser.setEditor(new JSpinner.DefaultEditor(veloHighChooser));
-		
+
 		rndVeloCheckPanel.add(rndVeloText);
 		rndVeloCheckPanel.add(rndVeloCheckBox);
 		thirdRowPanel.add(rndVeloCheckPanel);
-		
+
 		veloLowPanel.add(fromText);
 		veloLowPanel.add(veloLowChooser);
 		thirdRowPanel.add(veloLowPanel);
-		
+
 		veloHighPanel.add(toText);
 		veloHighPanel.add(veloHighChooser);
 		thirdRowPanel.add(veloHighPanel);
-		
+
 		generatorPanelGbc.gridx = 0;
 		generatorPanelGbc.gridy = 1;
 		generatorPanel.add(thirdRowPanel, generatorPanelGbc);
-		
+
 		secondRowPanel.add(noDuplText);
 		secondRowPanel.add(noDuplCheck);
 		generatorPanelGbc.gridx = 0;
@@ -184,8 +185,8 @@ public class PrototypeGui extends JFrame {
 			velocityChooser[i].setPreferredSize(new Dimension(50, 25));
 		}
 		for (int i = 0; i < noteOnButton.length; i++) {
-			noteOnButton[i] = new JButton("on");
-			noteOnButton[i].setPreferredSize(new Dimension(40, 25));
+			noteOnButton[i] = new JButton("");
+			noteOnButton[i].setPreferredSize(new Dimension(55, 25));
 		}
 
 		for (int i = 0; i < singleSteps.length; i++) {
@@ -252,7 +253,6 @@ public class PrototypeGui extends JFrame {
 		// Enable steps wich is included in sequence
 		for (int i = 0; i < sequence.length; i++) {
 			noteChooser[i].setEnabled(true);
-			//octaveChooser[i].setEnabled(true);
 			velocityChooser[i].setEnabled(true);
 			noteOnButton[i].setEnabled(true);
 			singleSteps[i].setBackground(enabledStep);
@@ -262,14 +262,25 @@ public class PrototypeGui extends JFrame {
 		for (int i = 0; i < sequence.length; i++) {
 			velocityChooser[i].setValue(sequence[i].getVelo());
 			noteChooser[i].setValue(sequence[i].getNote());
+			switch (sequence[i].getNoteOnButtonEnum()) {
+			case ON:
+				noteOnButton[i].setText("On");
+				break;
+			case HOLD:
+				noteOnButton[i].setText("Hold");
+				break;
+			case OFF:
+				noteOnButton[i].setText("Off");
+				break;
+			}
 		}
 
 		// Disable steps wich is not included in sequence
 		for (int i = sequence.length; i < 16; i++) {
 			noteChooser[i].setEnabled(false);
-			//octaveChooser[i].setEnabled(false);
 			velocityChooser[i].setEnabled(false);
 			noteOnButton[i].setEnabled(false);
+			noteOnButton[i].setText("Off");
 			singleSteps[i].setBackground(disabledStep);
 		}
 
@@ -316,9 +327,21 @@ public class PrototypeGui extends JFrame {
 	public JSpinner getVelocityChooser(int index) {
 		return velocityChooser[index];
 	}
-	
+
 	public JButton[] getNoteOnButtonArray() {
 		return noteOnButton;
+	}
+
+	public JButton getNoteOnButton(int index) {
+		return noteOnButton[index];
+	}
+
+	public void setNoteOnButtonText(int index, String text) {
+		noteOnButton[index].setText(text);
+	}
+
+	public String getNoteOnButtonText(int index) {
+		return noteOnButton[index].getText();
 	}
 
 	public JSpinner getNrOfStepsChooser() {
@@ -403,8 +426,36 @@ public class PrototypeGui extends JFrame {
 			singleSteps[currentStep - 1].setBackground(enabledStep);
 		}
 	}
-	
+
 	public boolean isNoDuplChecked() {
 		return noDuplCheck.isSelected();
+	}
+
+	public boolean isRndVeloChecked() {
+		return rndVeloCheckBox.isSelected();
+	}
+
+	public int getVeloLowChooserValue() {
+		return (int) veloLowChooser.getValue();
+	}
+
+	public void setVeloLowChooserValue(int value) {
+		veloLowChooser.setValue(value);
+	}
+
+	public int getVeloHighChooserValue() {
+		return (int) veloHighChooser.getValue();
+	}
+
+	public void setVeloHighChooserValue(int value) {
+		veloHighChooser.setValue(value);
+	}
+
+	public JSpinner getVeloLowChooser() {
+		return veloLowChooser;
+	}
+
+	public JSpinner getVeloHighChooser() {
+		return veloHighChooser;
 	}
 }

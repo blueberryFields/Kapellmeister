@@ -5,35 +5,52 @@ public class Note {
 	private int midiNote;
 	private int velo;
 	private String note;
-	
-	//konstruktor
+	private NoteOnButtonEnum noteOnButton;
+	private int holdValue = -1;
+
+	// konstruktor
 	public Note() {
 		setMidiNote(48);
 		setVelo(100);
 		setNote("C3");
+		setNoteOnButtonEnum(NoteOnButtonEnum.ON);
+		
 	}
-	
+
 	public Note(int midiNote, int velo, String note) {
 		setMidiNote(midiNote);
 		setVelo(velo);
 		setNote(note);
+		setNoteOnButtonEnum(NoteOnButtonEnum.ON);
 	}
-	
+
 	public Note(int velo, String note) {
 		setVelo(velo);
 		setNote(note);
 		setMidiNote(noteToMidiConverter(note));
+		setNoteOnButtonEnum(NoteOnButtonEnum.ON);
 	}
 	
+	public void setNoteOnButtonEnum(NoteOnButtonEnum value) {
+		noteOnButton = value;
+	}
+	
+	public NoteOnButtonEnum getNoteOnButtonEnum() {
+		return noteOnButton;
+	}
+
 	public int getMidiNote() {
 		return midiNote;
 	}
+
 	public void setMidiNote(int note) {
 		this.midiNote = note;
 	}
+
 	public int getVelo() {
 		return velo;
 	}
+
 	public void setVelo(int velo) {
 		this.velo = velo;
 	}
@@ -45,15 +62,26 @@ public class Note {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	
+
 	public void changeNote(String note) {
 		setNote(note);
-		//setVelo(velo);
 		setMidiNote(noteToMidiConverter(note));
 	}
 	
+	public void setHoldValue(int holdValue) {
+		this.holdValue = holdValue;
+	}
+	
+	public int getHoldValue() {
+		return holdValue;
+	}
+	
+	public void initHoldValue() {
+		holdValue = -1;
+	}
+
 	public int noteToMidiConverter(String note) {
-		switch(note) {
+		switch (note) {
 		case "C3":
 			return 48;
 		case "C#3":
@@ -98,7 +126,7 @@ public class Note {
 			return 68;
 		case "A4":
 			return 69;
-		case "A#4": 
+		case "A#4":
 			return 70;
 		case "B4":
 			return 71;
@@ -107,11 +135,11 @@ public class Note {
 		}
 		return 48;
 	}
-	
+
 	@Override
 	public String toString() {
 		String s = note + ", " + midiNote + ", " + velo + "; ";
 		return s;
-		
+
 	}
 }

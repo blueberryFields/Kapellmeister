@@ -138,59 +138,20 @@ public class Sequencer {
 		rcvr.close();
 	}
 
-	// public void playStep() {
-	// try {
-	// noteOn.setMessage(ShortMessage.NOTE_ON, 0,
-	// sequence[currentStep].getMidiNote(),
-	// sequence[currentStep].getVelo());
-	// } catch (InvalidMidiDataException e1) {
-	// e1.printStackTrace();
-	// }
-	// if (sequence[currentStep].noteIsOn()) {
-	// rcvr.send(noteOn, timeStamp);
-	// }
-	//
-	// if (currentStep == 0 && !firstNote) {
-	// try {
-	// noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length -
-	// 1].getMidiNote(),
-	// sequence[currentStep].getVelo());
-	// } catch (InvalidMidiDataException e1) {
-	// e1.printStackTrace();
-	// }
-	// if (!sequence[currentStep].isHold()) {
-	// rcvr.send(noteOff, timeStamp);
-	// }
-	//
-	// } else if (!firstNote) {
-	// try {
-	// noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep -
-	// 1].getMidiNote(),
-	// sequence[currentStep].getVelo());
-	// } catch (InvalidMidiDataException e1) {
-	// e1.printStackTrace();
-	// }
-	// if (!sequence[currentStep].isHold()) {
-	// rcvr.send(noteOff, timeStamp);
-	// }
-	// } else
-	// firstNote = false;
-	// //return true;
-	// }
-
 	public void playStep() {
 		if (currentStep == 0 && !firstNote) {
-			try {
-				noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
-						sequence[currentStep].getVelo());
-			} catch (InvalidMidiDataException e1) {
-				e1.printStackTrace();
+			if (sequence[sequence.length - 1].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+				try {
+					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
+							sequence[currentStep].getVelo());
+				} catch (InvalidMidiDataException e1) {
+					e1.printStackTrace();
+				}
 			}
 			if (sequence[currentStep].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
 				rcvr.send(noteOff, timeStamp);
 			}
-
-		} else if (!firstNote) {
+		} else if (currentStep != 0) {	
 			if (sequence[currentStep - 1].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
@@ -200,7 +161,7 @@ public class Sequencer {
 				}
 			} else {
 				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getHoldValue(),
+					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getHoldNote(),
 							sequence[currentStep].getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();

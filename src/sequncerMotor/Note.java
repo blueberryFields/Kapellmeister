@@ -6,7 +6,7 @@ public class Note {
 	private int velo;
 	private String note;
 	private NoteOnButtonEnum noteOnButton;
-	private int holdValue = -1;
+	private int holdNote = -1;
 
 	// konstruktor
 	public Note() {
@@ -68,16 +68,16 @@ public class Note {
 		setMidiNote(noteToMidiConverter(note));
 	}
 	
-	public void setHoldValue(int holdValue) {
-		this.holdValue = holdValue;
+	public void setHoldNote(int holdValue) {
+		this.holdNote = holdValue;
 	}
 	
-	public int getHoldValue() {
-		return holdValue;
+	public int getHoldNote() {
+		return holdNote;
 	}
 	
 	public void initHoldValue() {
-		holdValue = -1;
+		holdNote = -1;
 	}
 
 	public int noteToMidiConverter(String note) {

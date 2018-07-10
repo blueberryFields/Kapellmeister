@@ -66,47 +66,87 @@ public class Controller implements ActionListener {
 	private void clickNoteOnButton(int index) {
 		switch (gui.getNoteOnButtonText(index)) {
 		case "On":
-			seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.HOLD);
-			gui.setNoteOnButtonText(index, "Hold");
 			hold(index);
 			break;
 		case "Hold":
-			seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.OFF);
-			gui.setNoteOnButtonText(index, "Off");
 			Off(index);
 			break;
 		case "Off":
-			seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.ON);
-			gui.setNoteOnButtonText(index, "On");
 			On(index);
 			break;
 		}
-
 	}
 
 	private void Off(int index) {
-		seq.getSingleStep(index).setHoldValue(-1);
-		
+		seq.getSingleStep(index).setHoldNote(-1);
+		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.OFF);
+		gui.setNoteOnButtonText(index, "Off");
+		setHold(index);
 	}
 
 	private void On(int index) {
-		seq.getSingleStep(index).setHoldValue(-1);	
+		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.ON);
+		gui.setNoteOnButtonText(index, "On");
+		seq.getSingleStep(index).setHoldNote(-1);
+		setHold(index);
 	}
 
 	private void hold(int index) {
-		if (index == 0) {
-			if (seq.getSingleStep(seq.getSequence().length-1).getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
-				seq.getSingleStep(index).setHoldValue(seq.getSingleStep(seq.getSequence().length-1).getMidiNote());
-			} else {
-				seq.getSingleStep(index).setHoldValue(seq.getSingleStep(seq.getSequence().length-1).getHoldValue());
+		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.HOLD);
+		gui.setNoteOnButtonText(index, "Hold");
+		setHold(index);
+	}
+
+	private void setHold(int index) {
+		int loopStart = index;
+		for (int i = 0; i < 2; i++) {
+			for (int j = loopStart; j < seq.getSequence().length; j++) {
+				if (j == 0) {
+					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
+						if (seq.getSingleStep(seq.getSequence().length - 1)
+								.getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+							seq.getSingleStep(j)
+									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
+						} else {
+							seq.getSingleStep(j)
+									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getHoldNote());
+						}
+					}
+				} else {
+					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
+						if (seq.getSingleStep(j - 1).getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getMidiNote());
+						} else {
+							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getHoldNote());
+						}
+					}
+				}
 			}
-		} else {
-			if (seq.getSingleStep(index - 1).getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
-				seq.getSingleStep(index).setHoldValue(seq.getSingleStep(index - 1).getMidiNote());
-			} else {
-				seq.getSingleStep(index).setHoldValue(seq.getSingleStep(index - 1).getHoldValue());
-			}
+			loopStart = 0;
 		}
+		// for (int i = 0; i < seq.getSequence().length; i++) {
+		// if (i == 0) {
+		// if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
+		// if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOnButtonEnum() !=
+		// NoteOnButtonEnum.HOLD) {
+		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length -
+		// 1).getMidiNote());
+		// } else {
+		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length -
+		// 1).getHoldNote());
+		// }
+		// }
+		// } else {
+		// if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
+		// if (seq.getSingleStep(i - 1).getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD)
+		// {
+		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getMidiNote());
+		// } else {
+		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getHoldNote());
+		// }
+		// }
+		// }
+		// }
 	}
 
 	private void addActionListenersToNoteChooser() {

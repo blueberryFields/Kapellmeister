@@ -1,15 +1,11 @@
 package sequncerMotor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
-import javax.swing.Timer;
 
 public class Sequencer {
 
@@ -23,7 +19,7 @@ public class Sequencer {
 	private int currentStep = 0;
 	private ShortMessage noteOn = new ShortMessage();
 	private ShortMessage noteOff = new ShortMessage();
-	private NoteGenerator key;
+	// private NoteGenerator key;
 	private boolean firstNote;
 
 	// Konstruktor
@@ -88,13 +84,16 @@ public class Sequencer {
 		rcvr.send(testNoteOff, timeStamp);
 	}
 
-	public void generateSequence(int nrOfSteps, NoteGenerator key, boolean noDuplisChecked, boolean rndVeloIsChecked,
+	public void generateSequence(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
 			int veloLow, int veloHigh) {
 		sequence = new Note[nrOfSteps];
-		if (noDuplisChecked) {
-			sequence = key.getRndSeqNoDuplInRow(sequence, rndVeloIsChecked, veloLow, veloHigh);
-		} else {
+		switch (generatorAlgorithm) {
+		case "Random":
 			sequence = key.getRndSequence(sequence, rndVeloIsChecked, veloLow, veloHigh);
+			break;
+		case "Random, no duplicates":
+			sequence = key.getRndSeqNoDuplInRow(sequence, rndVeloIsChecked, veloLow, veloHigh);
+			break;
 		}
 	}
 
@@ -151,7 +150,7 @@ public class Sequencer {
 			if (sequence[currentStep].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
 				rcvr.send(noteOff, timeStamp);
 			}
-		} else if (currentStep != 0) {	
+		} else if (currentStep != 0) {
 			if (sequence[currentStep - 1].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
@@ -196,4 +195,25 @@ public class Sequencer {
 		return firstNote;
 	}
 
+	public void nudgeLeft() {
+		Note[] tempSeq = sequence.clone();
+		for(int i = 0; i < sequence.length; i++) {
+			if(i == sequence.length-1) {
+				sequence[i] = tempSeq[0];
+			} else {
+				sequence[i] = tempSeq[i +1];
+			}
+		}
+	}
+
+	public void nudgeRight() {
+		Note[] tempSeq = sequence.clone();
+		for (int i = 0; i < sequence.length; i++) {
+			if (i == 0) {
+				sequence[i] = tempSeq[sequence.length - 1];
+			} else {
+				sequence[i] = tempSeq[i - 1];
+			}
+		}
+	}
 }

@@ -30,6 +30,8 @@ public class Controller implements ActionListener {
 		gui.getStopButton().addActionListener(e -> stopSequence());
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
+		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
+		gui.getNudgeRight().addActionListener(e -> nudgeRight());
 
 		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence()));
@@ -41,6 +43,16 @@ public class Controller implements ActionListener {
 		addActionListenersToVelocityChooser();
 		addActionListenersToNoteOnButton();
 
+		gui.repaintSequencer(seq.getSequence());
+	}
+	
+	private void nudgeLeft() {
+		seq.nudgeLeft();
+		gui.repaintSequencer(seq.getSequence());
+	}
+	
+	private void nudgeRight() {
+		seq.nudgeRight();
 		gui.repaintSequencer(seq.getSequence());
 	}
 
@@ -192,7 +204,7 @@ public class Controller implements ActionListener {
 	}
 
 	private void generateSequence() {
-		seq.generateSequence(gui.getNrOfSteps(), gui.getKey(), gui.isNoDuplChecked(), gui.isRndVeloChecked(),
+		seq.generateSequence(gui.getNrOfSteps(), gui.getKey(), gui.getGeneratorAlgoRithmChooser(), gui.isRndVeloChecked(),
 				gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue());
 		gui.repaintSequencer(seq.getSequence());
 	}

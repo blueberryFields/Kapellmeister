@@ -1,4 +1,4 @@
-package sequncerMotor;
+package note;
 
 public class C extends NoteGenerator{
 	

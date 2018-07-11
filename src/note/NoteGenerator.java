@@ -1,4 +1,4 @@
-package sequncerMotor;
+package note;
 
 import java.util.LinkedList;
 import java.util.List;

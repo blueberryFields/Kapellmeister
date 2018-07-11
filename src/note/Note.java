@@ -1,41 +1,45 @@
-package sequncerMotor;
+package note;
 
 public class Note {
 
 	private int midiNote;
 	private int velo;
 	private String note;
-	private NoteOnButtonEnum noteOnButton;
+	private NoteOn noteOnButton;
 	private int holdNote = -1;
+	private NoteToMidiConverter noteToMidiConverter; 
 
 	// konstruktor
 	public Note() {
+		noteToMidiConverter =  new NoteToMidiConverter();
 		setMidiNote(48);
 		setVelo(100);
 		setNote("C3");
-		setNoteOnButtonEnum(NoteOnButtonEnum.ON);
+		setNoteOnButtonEnum(NoteOn.ON);
 		
 	}
 
 	public Note(int midiNote, int velo, String note) {
+		noteToMidiConverter =  new NoteToMidiConverter();
 		setMidiNote(midiNote);
 		setVelo(velo);
 		setNote(note);
-		setNoteOnButtonEnum(NoteOnButtonEnum.ON);
+		setNoteOnButtonEnum(NoteOn.ON);
 	}
 
 	public Note(int velo, String note) {
+		noteToMidiConverter =  new NoteToMidiConverter();
 		setVelo(velo);
 		setNote(note);
-		setMidiNote(noteToMidiConverter(note));
-		setNoteOnButtonEnum(NoteOnButtonEnum.ON);
+		setMidiNote(noteToMidiConverter.get(note));
+		setNoteOnButtonEnum(NoteOn.ON);
 	}
 	
-	public void setNoteOnButtonEnum(NoteOnButtonEnum value) {
+	public void setNoteOnButtonEnum(NoteOn value) {
 		noteOnButton = value;
 	}
 	
-	public NoteOnButtonEnum getNoteOnButtonEnum() {
+	public NoteOn getNoteOnButtonEnum() {
 		return noteOnButton;
 	}
 
@@ -65,7 +69,7 @@ public class Note {
 
 	public void changeNote(String note) {
 		setNote(note);
-		setMidiNote(noteToMidiConverter(note));
+		setMidiNote(noteToMidiConverter.get(note));
 	}
 	
 	public void setHoldNote(int holdValue) {

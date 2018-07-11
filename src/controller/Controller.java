@@ -9,8 +9,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import Gui.PrototypeGui;
-import sequncerMotor.Note;
-import sequncerMotor.NoteOnButtonEnum;
+import note.Note;
+import note.NoteOn;
 import sequncerMotor.Sequencer;
 
 public class Controller implements ActionListener {
@@ -32,11 +32,15 @@ public class Controller implements ActionListener {
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
+		gui.getMute().addActionListener(e -> mute());
+		gui.getSolo().addActionListener(e -> solo());
 
 		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence()));
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
+		gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
+		gui.getOctaveHighSpinner().addChangeListener(e -> changeOctaveHigh());
 
 		// Add ActionListeners to singleSteps
 		addActionListenersToNoteChooser();
@@ -46,6 +50,35 @@ public class Controller implements ActionListener {
 		gui.repaintSequencer(seq.getSequence());
 	}
 	
+	private void changeOctaveHigh() {
+		// TODO 
+		
+	}
+
+	private void changeOctaveLow() {
+		// TODO 
+	}
+
+	private void solo() {
+		// TODO 
+		gui.setSoloColor();
+		if(seq.getMute()) {
+			seq.mute();
+			gui.setMuteColor();
+		}
+		seq.solo();
+	}
+
+	private void mute() {
+		gui.setMuteColor();
+		if (seq.getSolo()) {
+			seq.solo();
+			gui.setSoloColor();
+		}
+		seq.mute();
+		seq.killLastNote();
+	}
+
 	private void nudgeLeft() {
 		seq.nudgeLeft();
 		gui.repaintSequencer(seq.getSequence());
@@ -91,20 +124,20 @@ public class Controller implements ActionListener {
 
 	private void Off(int index) {
 		seq.getSingleStep(index).setHoldNote(-1);
-		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.OFF);
+		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.OFF);
 		gui.setNoteOnButtonText(index, "Off");
 		setHold(index);
 	}
 
 	private void On(int index) {
-		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.ON);
+		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.ON);
 		gui.setNoteOnButtonText(index, "On");
 		seq.getSingleStep(index).setHoldNote(-1);
 		setHold(index);
 	}
 
 	private void hold(int index) {
-		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOnButtonEnum.HOLD);
+		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.HOLD);
 		gui.setNoteOnButtonText(index, "Hold");
 		setHold(index);
 	}
@@ -114,9 +147,9 @@ public class Controller implements ActionListener {
 		for (int i = 0; i < 2; i++) {
 			for (int j = loopStart; j < seq.getSequence().length; j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
+					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOn.HOLD) {
 						if (seq.getSingleStep(seq.getSequence().length - 1)
-								.getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+								.getNoteOnButtonEnum() != NoteOn.HOLD) {
 							seq.getSingleStep(j)
 									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
 						} else {
@@ -125,8 +158,8 @@ public class Controller implements ActionListener {
 						}
 					}
 				} else {
-					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
-						if (seq.getSingleStep(j - 1).getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
+					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOn.HOLD) {
+						if (seq.getSingleStep(j - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
 							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getMidiNote());
 						} else {
 							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getHoldNote());
@@ -136,29 +169,6 @@ public class Controller implements ActionListener {
 			}
 			loopStart = 0;
 		}
-		// for (int i = 0; i < seq.getSequence().length; i++) {
-		// if (i == 0) {
-		// if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
-		// if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOnButtonEnum() !=
-		// NoteOnButtonEnum.HOLD) {
-		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length -
-		// 1).getMidiNote());
-		// } else {
-		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length -
-		// 1).getHoldNote());
-		// }
-		// }
-		// } else {
-		// if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOnButtonEnum.HOLD) {
-		// if (seq.getSingleStep(i - 1).getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD)
-		// {
-		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getMidiNote());
-		// } else {
-		// seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getHoldNote());
-		// }
-		// }
-		// }
-		// }
 	}
 
 	private void addActionListenersToNoteChooser() {

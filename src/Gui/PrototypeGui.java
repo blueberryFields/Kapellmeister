@@ -20,12 +20,12 @@ import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
-import sequncerMotor.A;
-import sequncerMotor.Am;
-import sequncerMotor.Bbm;
-import sequncerMotor.C;
-import sequncerMotor.Note;
-import sequncerMotor.NoteGenerator;
+import note.A;
+import note.Am;
+import note.Bbm;
+import note.C;
+import note.Note;
+import note.NoteGenerator;
 
 public class PrototypeGui extends JFrame {
 
@@ -37,9 +37,20 @@ public class PrototypeGui extends JFrame {
 	private NoteGenerator key;
 
 	// Create colorscheme
-	private Color disabledStep = Color.GRAY;
-	private Color enabledStep = Color.WHITE;
-	private Color activeStep = Color.RED;
+	private Color backGroundColor = new Color(142, 175, 206);
+	private Color disabledStepColor = new Color(76, 94, 112);
+	private Color enabledStepColor = new Color(193, 218, 242);
+	private Color activeStepColor = Color.RED;
+	private Color muteColor = Color.BLUE;
+	private Color soloColor = new Color(188, 167, 30);
+	// private Color buttonColor = Color.LIGHT_GRAY;
+	private Color textColor = Color.BLACK;
+	// private Color stepPanelColor = new Color(77, 108, 137);
+
+	// Create dimensions
+	Dimension buttonDimSmall = new Dimension(55, 25);
+	Dimension veloChooserDim = new Dimension(50, 25);
+	Dimension noteChooserDim = new Dimension(42, 25);
 
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
@@ -64,7 +75,10 @@ public class PrototypeGui extends JFrame {
 	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
 	private JLabel bpmText = new JLabel("Bpm:");
+	private JLabel partNotesText = new JLabel("Partnotes:");
 	private JTextField bpmChooser = new JTextField("120", 2);
+	private JButton mute = new JButton("Mute");
+	private JButton solo = new JButton("Solo");
 
 	// Create components for generatorpanel
 	private JPanel generatorPanel = new JPanel();
@@ -81,11 +95,13 @@ public class PrototypeGui extends JFrame {
 	private SpinnerModel keyChooserModel = new SpinnerListModel(keyArr);
 	private JSpinner keyChooser = new JSpinner(keyChooserModel);
 
-	private JPanel generatorAlgorithmPanel = new JPanel();
-	private JLabel generatorAlgorithmText = new JLabel("Generator Algorithm:");
-	//private JCheckBox noDuplCheck = new JCheckBox();
-	private String[] genAlgorithmStrings = {"Random", "Random, no duplicates"};
-	private JComboBox<String> generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
+	private JPanel octaveRangePanel = new JPanel();
+	private JLabel octaveRangeFromText = new JLabel("Octave-range, from:");
+	private JLabel octaveRangeToText = new JLabel("to:");
+	private SpinnerModel octaveLowModel = new SpinnerNumberModel(3, -1, 9, 1);
+	private SpinnerModel octaveHighModel = new SpinnerNumberModel(3, -1, 9, 1);
+	private JSpinner octaveLowChooser = new JSpinner(octaveLowModel);
+	private JSpinner octaveHighChooser = new JSpinner(octaveHighModel);
 
 	private JPanel rndVeloPanel = new JPanel();
 	private JPanel rndVeloCheckPanel = new JPanel();
@@ -100,14 +116,51 @@ public class PrototypeGui extends JFrame {
 	private SpinnerModel veloHighModel = new SpinnerNumberModel(110, 0, 127, 1);
 	private JSpinner veloHighChooser = new JSpinner(veloHighModel);
 
+	private JPanel generatorAlgorithmPanel = new JPanel();
+	private JLabel generatorAlgorithmText = new JLabel("Generator Algorithm:");
+	private String[] genAlgorithmStrings = { "Random", "Random, no duplicates in a row" };
+	private JComboBox<String> generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
+
+	// Create components for nudgeSequencePanel
 	private JPanel nudgeSequencePanel = new JPanel();
 	private JButton nudgeLeft = new JButton("<-");
 	private JButton nudgeRight = new JButton("->");
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
-	
+
 	// Konstruktor
 	public PrototypeGui(Info[] infos) {
 		super("KapellMeister");
+
+		// Code for setting the Ui to Crossplatformlokk and feel, looks like shiiiet
+		// though:
+		//
+		// try {
+		// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+
+		// Set colors for panels
+		rndVeloCheckPanel.setBackground(backGroundColor);
+		rndVeloPanel.setBackground(backGroundColor);
+		veloLowPanel.setBackground(backGroundColor);
+		veloHighPanel.setBackground(backGroundColor);
+		generatorPanel.setBackground(backGroundColor);
+		generatePanel.setBackground(backGroundColor);
+		generatorAlgorithmPanel.setBackground(backGroundColor);
+		nudgeSequencePanel.setBackground(backGroundColor);
+		keyPanel.setBackground(backGroundColor);
+		nrOfStepsPanel.setBackground(backGroundColor);
+		masterPanel.setBackground(backGroundColor);
+		tempoPanel.setBackground(backGroundColor);
+		stepPanel.setBackground(backGroundColor);
+		octaveRangePanel.setBackground(backGroundColor);
+
+		mute.setForeground(textColor);
+		solo.setForeground(textColor);
+
+		// Set BackgroundColor for frame
+		getContentPane().setBackground(backGroundColor);
 
 		// Add stuff to masterPanel
 		for (int i = 0; i < playStopButtons.length; i++) {
@@ -128,7 +181,14 @@ public class PrototypeGui extends JFrame {
 		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
 		partNotesChooser.setValue("1/8");
 		partNotesChooser.setPreferredSize(new Dimension(60, 25));
+		tempoPanel.add(partNotesText);
 		tempoPanel.add(partNotesChooser);
+		mute.setPreferredSize(buttonDimSmall);
+		// mute.setOpaque(true);
+		tempoPanel.add(mute);
+		solo.setPreferredSize(buttonDimSmall);
+		// solo.setOpaque(true);
+		tempoPanel.add(solo);
 
 		// Add stuff to generatorpanel
 		generatorPanel.setLayout(new GridBagLayout());
@@ -139,10 +199,9 @@ public class PrototypeGui extends JFrame {
 		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
 		keyChooser.setPreferredSize(new Dimension(55, 25));
 
-		generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
+		//generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
 
 		generatePanel.add(generateButton);
-
 		nrOfStepsPanel.add(nrOfStepsText);
 		nrOfStepsPanel.add(nrOfStepsChooser);
 		generatePanel.add(nrOfStepsPanel);
@@ -153,6 +212,21 @@ public class PrototypeGui extends JFrame {
 		generatorPanelGbc.gridx = 0;
 		generatorPanelGbc.gridy = 0;
 		generatorPanel.add(generatePanel, generatorPanelGbc);
+		
+		octaveLowChooser.setEditor(new JSpinner.DefaultEditor(octaveLowChooser));
+		octaveHighChooser.setEditor(new JSpinner.DefaultEditor(octaveHighChooser));
+		
+		octaveLowChooser.setPreferredSize(new Dimension(40,25));
+		octaveHighChooser.setPreferredSize(new Dimension(40, 25));
+		
+		octaveRangePanel.add(octaveRangeFromText);
+		octaveRangePanel.add(octaveLowChooser);
+		octaveRangePanel.add(octaveRangeToText);
+		octaveRangePanel.add(octaveHighChooser);
+		
+		generatorPanelGbc.gridx = 0;
+		generatorPanelGbc.gridy = 1;
+		generatorPanel.add(octaveRangePanel, generatorPanelGbc);
 
 		veloLowChooser.setEditor(new JSpinner.DefaultEditor(veloLowChooser));
 		veloHighChooser.setEditor(new JSpinner.DefaultEditor(veloHighChooser));
@@ -170,49 +244,47 @@ public class PrototypeGui extends JFrame {
 		rndVeloPanel.add(veloHighPanel);
 
 		generatorPanelGbc.gridx = 0;
-		generatorPanelGbc.gridy = 1;
+		generatorPanelGbc.gridy = 2;
 		generatorPanel.add(rndVeloPanel, generatorPanelGbc);
 
 		generatorAlgorithmPanel.add(generatorAlgorithmText);
 		generatorAlgorithmPanel.add(generatorAlgorithmChooser);
 		generatorPanelGbc.gridx = 0;
-		generatorPanelGbc.gridy = 2;
+		generatorPanelGbc.gridy = 3;
 		generatorPanel.add(generatorAlgorithmPanel, generatorPanelGbc);
-		
-		nudgeLeft.setPreferredSize(new Dimension(50, 25));
-		nudgeRight.setPreferredSize(new Dimension(50, 25));
+
+		// Add stuff to and configure nudgeSequencePanel
+		nudgeLeft.setPreferredSize(buttonDimSmall);
+		nudgeRight.setPreferredSize(buttonDimSmall);
 		nudgeSequencePanel.add(nudgeLeft);
 		nudgeSequencePanel.add(nudgeText);
 		nudgeSequencePanel.add(nudgeRight);
-		generatorPanelGbc.gridx = 0;
-		generatorPanelGbc.gridy = 3;
-		generatorPanel.add(nudgeSequencePanel, generatorPanelGbc);
 
 		// Add stuff to and configure stepPanel
 		for (int i = 0; i < noteChooser.length; i++) {
 			noteModel[i] = new SpinnerListModel(notes);
 			noteChooser[i] = new JSpinner(noteModel[i]);
 			noteChooser[i].setEditor(new JSpinner.DefaultEditor(noteChooser[i]));
-			noteChooser[i].setPreferredSize(new Dimension(50, 25));
+			noteChooser[i].setPreferredSize(noteChooserDim);
 		}
 
 		for (int i = 0; i < velocityChooser.length; i++) {
 			velocityModel[i] = new SpinnerNumberModel(100, 0, 127, 1);
 			velocityChooser[i] = new JSpinner(velocityModel[i]);
 			velocityChooser[i].setEditor(new JSpinner.DefaultEditor(velocityChooser[i]));
-			velocityChooser[i].setPreferredSize(new Dimension(50, 25));
+			velocityChooser[i].setPreferredSize(veloChooserDim);
 		}
 		for (int i = 0; i < noteOnButton.length; i++) {
 			noteOnButton[i] = new JButton("");
-			noteOnButton[i].setPreferredSize(new Dimension(55, 25));
+			noteOnButton[i].setPreferredSize(buttonDimSmall);
 		}
 
 		for (int i = 0; i < singleSteps.length; i++) {
 			singleSteps[i] = new JPanel();
 			singleSteps[i].setLayout(new GridBagLayout());
-			singleSteps[i].setBackground(enabledStep);
+			singleSteps[i].setBackground(enabledStepColor);
 			GridBagConstraints singleStepsGbc = new GridBagConstraints();
-			singleStepsGbc.insets = new Insets(1, 1, 1, 1);
+			// singleStepsGbc.insets = new Insets(1, 1, 1, 1);
 			singleStepsGbc.gridx = 0;
 			singleStepsGbc.gridy = 0;
 			singleSteps[i].add(noteChooser[i], singleStepsGbc);
@@ -248,18 +320,18 @@ public class PrototypeGui extends JFrame {
 		frameGbc.gridx = 0;
 		frameGbc.gridy = 0;
 		add(masterPanel, frameGbc);
-		frameGbc.gridx = 0;
+
 		frameGbc.gridy = 1;
 		add(tempoPanel, frameGbc);
-		frameGbc.gridx = 0;
+
 		frameGbc.gridy = 2;
 		add(generatorPanel, frameGbc);
-		frameGbc.gridx = 0;
-		frameGbc.gridy = 3;
-		add(stepPanel, frameGbc);
 
-		// Set BackgroundColor for frame
-		// getContentPane().setBackground(Color.DARK_GRAY);
+		frameGbc.gridy = 3;
+		add(nudgeSequencePanel, frameGbc);
+		
+		frameGbc.gridy = 4;
+		add(stepPanel, frameGbc);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
@@ -273,7 +345,7 @@ public class PrototypeGui extends JFrame {
 			noteChooser[i].setEnabled(true);
 			velocityChooser[i].setEnabled(true);
 			noteOnButton[i].setEnabled(true);
-			singleSteps[i].setBackground(enabledStep);
+			singleSteps[i].setBackground(enabledStepColor);
 		}
 
 		// set note and velocity on steps
@@ -299,7 +371,7 @@ public class PrototypeGui extends JFrame {
 			velocityChooser[i].setEnabled(false);
 			noteOnButton[i].setEnabled(false);
 			noteOnButton[i].setText("Off");
-			singleSteps[i].setBackground(disabledStep);
+			singleSteps[i].setBackground(disabledStepColor);
 		}
 
 	}
@@ -425,26 +497,25 @@ public class PrototypeGui extends JFrame {
 
 	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
 		if (isFirstNote) {
-			singleSteps[currentStep - 1].setBackground(activeStep);
+			singleSteps[currentStep - 1].setBackground(activeStepColor);
 		} else if (currentStep == 0 && !isFirstNote) {
-			singleSteps[currentStep].setBackground(activeStep);
-			singleSteps[sequence.length - 1].setBackground(enabledStep);
+			singleSteps[currentStep].setBackground(activeStepColor);
+			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
 		} else {
-			singleSteps[currentStep].setBackground(activeStep);
-			singleSteps[currentStep - 1].setBackground(enabledStep);
+			singleSteps[currentStep].setBackground(activeStepColor);
+			singleSteps[currentStep - 1].setBackground(enabledStepColor);
 		}
 	}
 
 	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
 		if (isFirstNote) {
-			singleSteps[currentStep - 1].setBackground(enabledStep);
+			singleSteps[currentStep - 1].setBackground(enabledStepColor);
 		} else if (currentStep == 0 && !isFirstNote) {
-			singleSteps[sequence.length - 1].setBackground(enabledStep);
+			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
 		} else {
-			singleSteps[currentStep - 1].setBackground(enabledStep);
+			singleSteps[currentStep - 1].setBackground(enabledStepColor);
 		}
 	}
-	
 
 	public String getGeneratorAlgoRithmChooser() {
 		return (String) generatorAlgorithmChooser.getSelectedItem();
@@ -477,13 +548,44 @@ public class PrototypeGui extends JFrame {
 	public JSpinner getVeloHighChooser() {
 		return veloHighChooser;
 	}
-	
+
 	public JButton getNudgeLeft() {
 		return nudgeLeft;
 	}
-	
+
 	public JButton getNudgeRight() {
 		return nudgeRight;
 	}
-}
 
+	public JButton getMute() {
+		return mute;
+	}
+
+	public JButton getSolo() {
+		return solo;
+	}
+
+	public void setMuteColor() {
+		if (mute.getForeground() == textColor) {
+			mute.setForeground(muteColor);
+		} else {
+			mute.setForeground(textColor);
+		}
+	}
+
+	public void setSoloColor() {
+		if (solo.getForeground() == textColor) {
+			solo.setForeground(soloColor);
+		} else {
+			solo.setForeground(textColor);
+		}
+	}
+	
+	public JSpinner getOctaveLowChooser() {
+		return octaveLowChooser;
+	}
+	
+	public JSpinner getOctaveHighSpinner() {
+		return octaveHighChooser;
+	}
+}

@@ -7,6 +7,10 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
+import note.Note;
+import note.NoteGenerator;
+import note.NoteOn;
+
 public class Sequencer {
 
 	// boolean running = false;
@@ -21,6 +25,8 @@ public class Sequencer {
 	private ShortMessage noteOff = new ShortMessage();
 	// private NoteGenerator key;
 	private boolean firstNote;
+	private boolean mute = false;
+	private boolean solo = false;
 
 	// Konstruktor
 	public Sequencer() {
@@ -91,7 +97,7 @@ public class Sequencer {
 		case "Random":
 			sequence = key.getRndSequence(sequence, rndVeloIsChecked, veloLow, veloHigh);
 			break;
-		case "Random, no duplicates":
+		case "Random, no duplicates in a row":
 			sequence = key.getRndSeqNoDuplInRow(sequence, rndVeloIsChecked, veloLow, veloHigh);
 			break;
 		}
@@ -138,48 +144,50 @@ public class Sequencer {
 	}
 
 	public void playStep() {
-		if (currentStep == 0 && !firstNote) {
-			if (sequence[sequence.length - 1].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
-				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
-							sequence[currentStep].getVelo());
-				} catch (InvalidMidiDataException e1) {
-					e1.printStackTrace();
+		if (!mute) {
+			if (currentStep == 0 && !firstNote) {
+				if (sequence[sequence.length - 1].getNoteOnButtonEnum() != NoteOn.HOLD) {
+					try {
+						noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
+								sequence[currentStep].getVelo());
+					} catch (InvalidMidiDataException e1) {
+						e1.printStackTrace();
+					}
 				}
-			}
-			if (sequence[currentStep].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
-				rcvr.send(noteOff, timeStamp);
-			}
-		} else if (currentStep != 0) {
-			if (sequence[currentStep - 1].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
-				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
-							sequence[currentStep].getVelo());
-				} catch (InvalidMidiDataException e1) {
-					e1.printStackTrace();
+				if (sequence[currentStep].getNoteOnButtonEnum() != NoteOn.HOLD) {
+					rcvr.send(noteOff, timeStamp);
+				}
+			} else if (currentStep != 0) {
+				if (sequence[currentStep - 1].getNoteOnButtonEnum() != NoteOn.HOLD) {
+					try {
+						noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
+								sequence[currentStep].getVelo());
+					} catch (InvalidMidiDataException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					try {
+						noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getHoldNote(),
+								sequence[currentStep].getVelo());
+					} catch (InvalidMidiDataException e1) {
+						e1.printStackTrace();
+					}
+				}
+				if (sequence[currentStep].getNoteOnButtonEnum() != NoteOn.HOLD) {
+					rcvr.send(noteOff, timeStamp);
 				}
 			} else {
-				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getHoldNote(),
-							sequence[currentStep].getVelo());
-				} catch (InvalidMidiDataException e1) {
-					e1.printStackTrace();
-				}
+				firstNote = false;
 			}
-			if (sequence[currentStep].getNoteOnButtonEnum() != NoteOnButtonEnum.HOLD) {
-				rcvr.send(noteOff, timeStamp);
+			try {
+				noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
+						sequence[currentStep].getVelo());
+			} catch (InvalidMidiDataException e1) {
+				e1.printStackTrace();
 			}
-		} else {
-			firstNote = false;
-		}
-		try {
-			noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
-					sequence[currentStep].getVelo());
-		} catch (InvalidMidiDataException e1) {
-			e1.printStackTrace();
-		}
-		if (sequence[currentStep].getNoteOnButtonEnum() == NoteOnButtonEnum.ON) {
-			rcvr.send(noteOn, timeStamp);
+			if (sequence[currentStep].getNoteOnButtonEnum() == NoteOn.ON) {
+				rcvr.send(noteOn, timeStamp);
+			}
 		}
 	}
 
@@ -197,11 +205,11 @@ public class Sequencer {
 
 	public void nudgeLeft() {
 		Note[] tempSeq = sequence.clone();
-		for(int i = 0; i < sequence.length; i++) {
-			if(i == sequence.length-1) {
+		for (int i = 0; i < sequence.length; i++) {
+			if (i == sequence.length - 1) {
 				sequence[i] = tempSeq[0];
 			} else {
-				sequence[i] = tempSeq[i +1];
+				sequence[i] = tempSeq[i + 1];
 			}
 		}
 	}
@@ -214,6 +222,61 @@ public class Sequencer {
 			} else {
 				sequence[i] = tempSeq[i - 1];
 			}
+		}
+	}
+
+	public void mute() {
+		if (!mute) {
+			mute = true;
+		} else {
+			mute = false;
+		}
+	}
+
+	public void solo() {
+		if (!solo) {
+			solo = true;
+		} else {
+			solo = false;
+		}
+	}
+
+	public boolean getSolo() {
+		return solo;
+	}
+
+	public boolean getMute() {
+		return mute;
+	}
+
+	public void killLastNote() {
+		if (currentStep == 0 && !firstNote) {
+			if (sequence[sequence.length - 1].getNoteOnButtonEnum() != NoteOn.HOLD) {
+				try {
+					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
+							sequence[currentStep].getVelo());
+				} catch (InvalidMidiDataException e1) {
+					e1.printStackTrace();
+				}
+			}
+			rcvr.send(noteOff, timeStamp);
+		} else if (currentStep != 0) {
+			if (sequence[currentStep - 1].getNoteOnButtonEnum() != NoteOn.HOLD) {
+				try {
+					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
+							sequence[currentStep].getVelo());
+				} catch (InvalidMidiDataException e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				try {
+					noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getHoldNote(),
+							sequence[currentStep].getVelo());
+				} catch (InvalidMidiDataException e1) {
+					e1.printStackTrace();
+				}
+			}
+			rcvr.send(noteOff, timeStamp);
 		}
 	}
 }

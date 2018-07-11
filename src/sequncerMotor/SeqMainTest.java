@@ -2,6 +2,8 @@ package sequncerMotor;
 
 import java.util.Scanner;
 
+import note.Am;
+
 public class SeqMainTest {
 
     public static void main(String[] args) {

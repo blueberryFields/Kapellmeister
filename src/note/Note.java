@@ -139,8 +139,7 @@ public class Note {
 
 	@Override
 	public String toString() {
-		String s = note + ", " + midiNote + ", " + velo + "; ";
-		return s;
+		return note;
 
 	}
 }

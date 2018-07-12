@@ -25,13 +25,13 @@ public class SeqMainTest {
 	while (true) {
 	    String choice = in.next();
 	    if (choice.equals("s") || choice.equals("S")) {
-		seq.stopSequence();
+		//seq.stopSequence();
 		seq.closeDevice();
 		seq.closeRcvr();
 		in.close();
 		break;
 	    } else if (choice.equals("n") || choice.equals("N")) {
-		seq.stopSequence();
+		//seq.stopSequence();
 		//seq.generateSequence(8, am);
 		seq.playSequence();
 	    }

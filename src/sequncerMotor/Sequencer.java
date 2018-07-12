@@ -91,14 +91,14 @@ public class Sequencer {
 	}
 
 	public void generateSequence(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
-			int veloLow, int veloHigh) {
+			int veloLow, int veloHigh, int octaveLow, int octaveHigh) {
 		sequence = new Note[nrOfSteps];
 		switch (generatorAlgorithm) {
 		case "Random":
-			sequence = key.getRndSequence(sequence, rndVeloIsChecked, veloLow, veloHigh);
+			sequence = key.getRndSequence(sequence, rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh);
 			break;
 		case "Random, no duplicates in a row":
-			sequence = key.getRndSeqNoDuplInRow(sequence, rndVeloIsChecked, veloLow, veloHigh);
+			sequence = key.getRndSeqNoDuplInRow(sequence, rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh);
 			break;
 		}
 	}

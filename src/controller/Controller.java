@@ -215,7 +215,7 @@ public class Controller implements ActionListener {
 
 	private void generateSequence() {
 		seq.generateSequence(gui.getNrOfSteps(), gui.getKey(), gui.getGeneratorAlgoRithmChooser(), gui.isRndVeloChecked(),
-				gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue());
+				gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(), gui.getOctaveHigh());
 		gui.repaintSequencer(seq.getSequence());
 	}
 

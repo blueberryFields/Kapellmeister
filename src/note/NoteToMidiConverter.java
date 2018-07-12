@@ -8,7 +8,7 @@ public class NoteToMidiConverter {
 	Map<String,Integer> noteToMidiMap = new HashMap<String, Integer>();
 	
 	//Konstruktor
-	NoteToMidiConverter(){
+	public NoteToMidiConverter(){
 		noteToMidiMap.put("C-1", 0);
 		noteToMidiMap.put("C#-1", 1);
 		noteToMidiMap.put("D-1", 2);
@@ -76,7 +76,7 @@ public class NoteToMidiConverter {
 		noteToMidiMap.put("E4", 64);
 		noteToMidiMap.put("F4", 65);
 		noteToMidiMap.put("F#4", 66);
-		noteToMidiMap.put("G3", 67);
+		noteToMidiMap.put("G4", 67);
 		noteToMidiMap.put("G#4", 68);
 		noteToMidiMap.put("A4", 69);
 		noteToMidiMap.put("A#4", 70);

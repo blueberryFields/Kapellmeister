@@ -124,15 +124,6 @@ public class Sequencer {
 		firstNote = true;
 	}
 
-	public void stopSequence() {
-		try {
-			noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep].getMidiNote(), 100);
-		} catch (InvalidMidiDataException e1) {
-			e1.printStackTrace();
-		}
-		rcvr.send(noteOff, timeStamp);
-	}
-
 	public void closeDevice() {
 		if (device.isOpen()) {
 			device.close();

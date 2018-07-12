@@ -237,7 +237,7 @@ public class Controller implements ActionListener {
 
 	private void stopSequence() {
 		gui.enableGui();
-		seq.stopSequence();
+		seq.killLastNote();
 		clock.stop();
 		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
 	}

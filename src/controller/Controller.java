@@ -40,7 +40,7 @@ public class Controller implements ActionListener {
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
 		gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
-		gui.getOctaveHighSpinner().addChangeListener(e -> changeOctaveHigh());
+		gui.getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
 
 		// Add ActionListeners to singleSteps
 		addActionListenersToNoteChooser();
@@ -49,20 +49,21 @@ public class Controller implements ActionListener {
 
 		gui.repaintSequencer(seq.getSequence());
 	}
-	
+
 	private void changeOctaveHigh() {
-		// TODO 
-		
+		// TODO: octave high shouldnt be able to go lower then octave low and vice versa
+
 	}
 
 	private void changeOctaveLow() {
-		// TODO 
+		// TODO: see change octavehigh!!!
+
 	}
 
 	private void solo() {
-		// TODO 
+		// TODO
 		gui.setSoloColor();
-		if(seq.getMute()) {
+		if (seq.getMute()) {
 			seq.mute();
 			gui.setMuteColor();
 		}
@@ -76,16 +77,20 @@ public class Controller implements ActionListener {
 			gui.setSoloColor();
 		}
 		seq.mute();
-		seq.killLastNote();
+		if (seq.getRunning()) {
+			seq.killLastNote();
+		}
 	}
 
 	private void nudgeLeft() {
 		seq.nudgeLeft();
+		checkHold();
 		gui.repaintSequencer(seq.getSequence());
 	}
-	
+
 	private void nudgeRight() {
 		seq.nudgeRight();
+		checkHold();
 		gui.repaintSequencer(seq.getSequence());
 	}
 
@@ -126,30 +131,51 @@ public class Controller implements ActionListener {
 		seq.getSingleStep(index).setHoldNote(-1);
 		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.OFF);
 		gui.setNoteOnButtonText(index, "Off");
-		setHold(index);
+		checkHold(index);
 	}
 
 	private void On(int index) {
 		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.ON);
 		gui.setNoteOnButtonText(index, "On");
 		seq.getSingleStep(index).setHoldNote(-1);
-		setHold(index);
+		checkHold(index);
 	}
 
 	private void hold(int index) {
 		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.HOLD);
 		gui.setNoteOnButtonText(index, "Hold");
-		setHold(index);
+		checkHold(index);
 	}
 
-	private void setHold(int index) {
+	private void checkHold() {
+		for (int i = 0; i < seq.getSequence().length; i++) {
+			if (i == 0) {
+				if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOn.HOLD) {
+					if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
+						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
+					} else {
+						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getHoldNote());
+					}
+				}
+			} else {
+				if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOn.HOLD) {
+					if (seq.getSingleStep(i - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
+						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getMidiNote());
+					} else {
+						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getHoldNote());
+					}
+				}
+			}
+		}
+	}
+
+	private void checkHold(int index) {
 		int loopStart = index;
 		for (int i = 0; i < 2; i++) {
 			for (int j = loopStart; j < seq.getSequence().length; j++) {
 				if (j == 0) {
 					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOn.HOLD) {
-						if (seq.getSingleStep(seq.getSequence().length - 1)
-								.getNoteOnButtonEnum() != NoteOn.HOLD) {
+						if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
 							seq.getSingleStep(j)
 									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
 						} else {
@@ -214,8 +240,10 @@ public class Controller implements ActionListener {
 	}
 
 	private void generateSequence() {
-		seq.generateSequence(gui.getNrOfSteps(), gui.getKey(), gui.getGeneratorAlgoRithmChooser(), gui.isRndVeloChecked(),
-				gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(), gui.getOctaveHigh());
+		seq.generateSequence(gui.getNrOfSteps(), gui.getKey(), gui.getGeneratorAlgoRithmChooser(),
+				gui.isRndVeloChecked(), gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(),
+				gui.getOctaveHigh());
+		checkHold();
 		gui.repaintSequencer(seq.getSequence());
 	}
 
@@ -237,7 +265,7 @@ public class Controller implements ActionListener {
 
 	private void stopSequence() {
 		gui.enableGui();
-		seq.killLastNote();
+		seq.stopSequence();
 		clock.stop();
 		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
 	}

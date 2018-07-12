@@ -122,8 +122,8 @@ public class PrototypeGui extends JFrame {
 	private JSpinner veloHighChooser = new JSpinner(veloHighModel);
 
 	private JPanel generatorAlgorithmPanel = new JPanel();
-	private JLabel generatorAlgorithmText = new JLabel("Generator Algorithm:");
-	private String[] genAlgorithmStrings = { "Random", "Random, no duplicates in a row" };
+	private JLabel generatorAlgorithmText = new JLabel("Gen Algorithm:");
+	private String[] genAlgorithmStrings = { "Rnd notes", "Rnd notes, no dupl in row", "Rnd notes and On/Hold/Off", "Rnd notes, no dupl in row, On/Hold/Off" };
 	private JComboBox<String> generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
 
 	// Create components for nudgeSequencePanel
@@ -590,7 +590,7 @@ public class PrototypeGui extends JFrame {
 		return octaveLowChooser;
 	}
 	
-	public JSpinner getOctaveHighSpinner() {
+	public JSpinner getOctaveHighChooser() {
 		return octaveHighChooser;
 	}
 	

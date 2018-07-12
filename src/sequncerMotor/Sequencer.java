@@ -13,7 +13,7 @@ import note.NoteOn;
 
 public class Sequencer {
 
-	// boolean running = false;
+	boolean running = false;
 	// private Timer clock = new Timer(500, this);
 	private MidiDevice device;
 	private MidiDevice.Info[] infos;
@@ -94,12 +94,18 @@ public class Sequencer {
 			int veloLow, int veloHigh, int octaveLow, int octaveHigh) {
 		sequence = new Note[nrOfSteps];
 		switch (generatorAlgorithm) {
-		case "Random":
+		case "Rnd notes":
 			sequence = key.getRndSequence(sequence, rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh);
 			break;
-		case "Random, no duplicates in a row":
+		case "Rnd notes, no dupl in row":
 			sequence = key.getRndSeqNoDuplInRow(sequence, rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh);
 			break;
+		case "Rnd notes and On/Hold/Off":
+			sequence = key.getRndSequenceOnHoldOff(sequence, rndVeloIsChecked, veloLow, veloHigh, octaveLow,
+					octaveHigh);
+		case "Rnd notes, no dupl in row, On/Hold/Off":
+			sequence = key.getRndSeqNoDuplInRowOnHoldOff(sequence, rndVeloIsChecked, veloLow, veloHigh, octaveLow,
+					octaveHigh);
 		}
 	}
 
@@ -122,6 +128,12 @@ public class Sequencer {
 	public void playSequence() {
 		currentStep = 0;
 		firstNote = true;
+		running = true;
+	}
+
+	public void stopSequence() {
+		killLastNote();
+		running = false;
 	}
 
 	public void closeDevice() {
@@ -270,4 +282,13 @@ public class Sequencer {
 			rcvr.send(noteOff, timeStamp);
 		}
 	}
+
+	public boolean getRunning() {
+		return running;
+	}
+
+	public void isRunning(boolean running) {
+		this.running = running;
+	}
+
 }

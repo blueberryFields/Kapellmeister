@@ -357,7 +357,7 @@ public class PrototypeGui extends JFrame {
 		for (int i = 0; i < sequence.length; i++) {
 			velocityChooser[i].setValue(sequence[i].getVelo());
 			noteChooser[i].setValue(sequence[i].getNote());
-			switch (sequence[i].getNoteOnButtonEnum()) {
+			switch (sequence[i].getNoteOn()) {
 			case ON:
 				noteOnButton[i].setText("On");
 				break;
@@ -600,5 +600,13 @@ public class PrototypeGui extends JFrame {
 	
 	public int getOctaveHigh() {
 		return (int)octaveHighChooser.getValue();
+	}
+	
+	public void setOctaveLow(int value) {
+		octaveLowChooser.setValue(value);
+	}
+	
+	public void setOctaveHigh(int value) {
+		octaveHighChooser.setValue(value);
 	}
 }

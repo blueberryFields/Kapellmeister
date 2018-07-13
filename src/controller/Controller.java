@@ -51,13 +51,15 @@ public class Controller implements ActionListener {
 	}
 
 	private void changeOctaveHigh() {
-		// TODO: octave high shouldnt be able to go lower then octave low and vice versa
-
+		if (gui.getOctaveHigh() < gui.getOctaveLow()) {
+			gui.setOctaveHigh(gui.getOctaveLow());
+		}
 	}
 
 	private void changeOctaveLow() {
-		// TODO: see change octavehigh!!!
-
+		if (gui.getOctaveLow() > gui.getOctaveHigh()) {
+			gui.setOctaveLow(gui.getOctaveHigh());
+		}
 	}
 
 	private void solo() {
@@ -129,40 +131,44 @@ public class Controller implements ActionListener {
 
 	private void Off(int index) {
 		seq.getSingleStep(index).setHoldNote(-1);
-		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.OFF);
+		seq.getSingleStep(index).setNoteOn(NoteOn.OFF);
 		gui.setNoteOnButtonText(index, "Off");
 		checkHold(index);
 	}
 
 	private void On(int index) {
-		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.ON);
+		seq.getSingleStep(index).setNoteOn(NoteOn.ON);
 		gui.setNoteOnButtonText(index, "On");
 		seq.getSingleStep(index).setHoldNote(-1);
 		checkHold(index);
 	}
 
 	private void hold(int index) {
-		seq.getSingleStep(index).setNoteOnButtonEnum(NoteOn.HOLD);
+		seq.getSingleStep(index).setNoteOn(NoteOn.HOLD);
 		gui.setNoteOnButtonText(index, "Hold");
 		checkHold(index);
 	}
 
 	private void checkHold() {
-		for (int i = 0; i < seq.getSequence().length; i++) {
-			if (i == 0) {
-				if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOn.HOLD) {
-					if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
-						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
-					} else {
-						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getHoldNote());
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < seq.getSequence().length; j++) {
+				if (j == 0) {
+					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(j)
+									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
+						} else {
+							seq.getSingleStep(j)
+									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getHoldNote());
+						}
 					}
-				}
-			} else {
-				if (seq.getSingleStep(i).getNoteOnButtonEnum() == NoteOn.HOLD) {
-					if (seq.getSingleStep(i - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
-						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getMidiNote());
-					} else {
-						seq.getSingleStep(i).setHoldNote(seq.getSingleStep(i - 1).getHoldNote());
+				} else {
+					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(j - 1).getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getMidiNote());
+						} else {
+							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getHoldNote());
+						}
 					}
 				}
 			}
@@ -174,8 +180,8 @@ public class Controller implements ActionListener {
 		for (int i = 0; i < 2; i++) {
 			for (int j = loopStart; j < seq.getSequence().length; j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOn.HOLD) {
-						if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
+					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOn() != NoteOn.HOLD) {
 							seq.getSingleStep(j)
 									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
 						} else {
@@ -184,8 +190,8 @@ public class Controller implements ActionListener {
 						}
 					}
 				} else {
-					if (seq.getSingleStep(j).getNoteOnButtonEnum() == NoteOn.HOLD) {
-						if (seq.getSingleStep(j - 1).getNoteOnButtonEnum() != NoteOn.HOLD) {
+					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(j - 1).getNoteOn() != NoteOn.HOLD) {
 							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getMidiNote());
 						} else {
 							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getHoldNote());

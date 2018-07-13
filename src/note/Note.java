@@ -5,7 +5,7 @@ public class Note {
 	private int midiNote;
 	private int velo;
 	private String note;
-	private NoteOn noteOnButton;
+	private NoteOn noteOn;
 	private int holdNote = -1;
 	private NoteToMidiConverter noteToMidiConverter = new NoteToMidiConverter();
 
@@ -14,7 +14,7 @@ public class Note {
 		setMidiNote(48);
 		setVelo(100);
 		setNote("C3");
-		setNoteOnButtonEnum(NoteOn.ON);
+		setNoteOn(NoteOn.ON);
 
 	}
 
@@ -22,29 +22,29 @@ public class Note {
 		setMidiNote(midiNote);
 		setVelo(velo);
 		setNote(note);
-		setNoteOnButtonEnum(NoteOn.ON);
+		setNoteOn(NoteOn.ON);
 	}
 
 	public Note(int velo, String note) {
 		setVelo(velo);
 		setNote(note);
 		setMidiNote(noteToMidiConverter.get(note));
-		setNoteOnButtonEnum(NoteOn.ON);
+		setNoteOn(NoteOn.ON);
 	}
 	
 	public Note(int velo, String note, NoteOn value) {
 		setVelo(velo);
 		setNote(note);
 		setMidiNote(noteToMidiConverter.get(note));
-		setNoteOnButtonEnum(value);
+		setNoteOn(value);
 	}
 
-	public void setNoteOnButtonEnum(NoteOn value) {
-		noteOnButton = value;
+	public void setNoteOn(NoteOn value) {
+		noteOn = value;
 	}
 
-	public NoteOn getNoteOnButtonEnum() {
-		return noteOnButton;
+	public NoteOn getNoteOn() {
+		return noteOn;
 	}
 
 	public int getMidiNote() {

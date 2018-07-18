@@ -19,6 +19,8 @@ public class Controller implements ActionListener {
 	private PrototypeGui gui;
 	private Timer clock;
 
+	private long guiDelay;
+
 	// Konstruktor
 	public Controller() {
 		seq = new Sequencer();
@@ -29,6 +31,7 @@ public class Controller implements ActionListener {
 		gui.getPlayButton().addActionListener(e -> playSequence());
 		gui.getStopButton().addActionListener(e -> stopSequence());
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
+		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
@@ -47,7 +50,20 @@ public class Controller implements ActionListener {
 		addActionListenersToVelocityChooser();
 		addActionListenersToNoteOnButton();
 
+		// Add changeListeners to Sliders
+		gui.getGuiDelaySLider().addChangeListener(e -> changeGuiDelay());
+
 		gui.repaintSequencer(seq.getSequence());
+	}
+
+	private void chooseMidiChannel() {
+		seq.setMidiChannel((int) gui.getMidiChannelChooser().getSelectedItem() - 1);
+	}
+
+	private void changeGuiDelay() {
+		if (!gui.getGuiDelaySLider().getValueIsAdjusting()) {
+			guiDelay = gui.getGuiDelaySLider().getValue();
+		}
 	}
 
 	private void changeOctaveHigh() {
@@ -305,7 +321,7 @@ public class Controller implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		seq.playStep();
 		try {
-			Thread.sleep(85);
+			Thread.sleep(guiDelay);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}

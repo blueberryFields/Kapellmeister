@@ -27,6 +27,7 @@ public class Sequencer {
 	private boolean firstNote;
 	private boolean mute = false;
 	private boolean solo = false;
+	private int midiChannel = 0;
 
 	// Konstruktor
 	public Sequencer() {
@@ -61,6 +62,10 @@ public class Sequencer {
 		}
 	}
 
+	public void setMidiChannel(int midiChannel) {
+		this.midiChannel = midiChannel;
+	}
+
 	public MidiDevice.Info[] getAvailibleMidiDevices() {
 		return infos;
 	}
@@ -93,7 +98,7 @@ public class Sequencer {
 	public void generateSequence(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
 			int veloLow, int veloHigh, int octaveLow, int octaveHigh) {
 		sequence = new Note[nrOfSteps];
-		switch (generatorAlgorithm) {	
+		switch (generatorAlgorithm) {
 		case "Rnd notes":
 			sequence = key.getRndSequence(sequence, rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh);
 			break;
@@ -153,45 +158,57 @@ public class Sequencer {
 			if (currentStep == 0 && !firstNote) {
 				if (sequence[sequence.length - 1].getNoteOn() != NoteOn.HOLD) {
 					try {
-						noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[sequence.length - 1].getMidiNote(),
-								sequence[currentStep].getVelo());
+						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
+								sequence[sequence.length - 1].getMidiNote(), sequence[currentStep].getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
 				if (sequence[currentStep].getNoteOn() != NoteOn.HOLD) {
-					rcvr.send(noteOff, timeStamp);
+					try {
+						rcvr.send(noteOff, timeStamp);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			} else if (currentStep != 0) {
 				if (sequence[currentStep - 1].getNoteOn() != NoteOn.HOLD) {
 					try {
-						noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getMidiNote(),
+						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel, sequence[currentStep - 1].getMidiNote(),
 								sequence[currentStep].getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				} else {
 					try {
-						noteOff.setMessage(ShortMessage.NOTE_OFF, 0, sequence[currentStep - 1].getHoldNote(),
+						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel, sequence[currentStep - 1].getHoldNote(),
 								sequence[currentStep].getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
 				if (sequence[currentStep].getNoteOn() != NoteOn.HOLD) {
-					rcvr.send(noteOff, timeStamp);
+					try {
+						rcvr.send(noteOff, timeStamp);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			} else {
 				firstNote = false;
 			}
 			try {
-				noteOn.setMessage(ShortMessage.NOTE_ON, 0, sequence[currentStep].getMidiNote(),
+				noteOn.setMessage(ShortMessage.NOTE_ON, midiChannel, sequence[currentStep].getMidiNote(),
 						sequence[currentStep].getVelo());
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
 			}
 			if (sequence[currentStep].getNoteOn() == NoteOn.ON) {
-				rcvr.send(noteOn, timeStamp);
+				try {
+					rcvr.send(noteOn, timeStamp);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

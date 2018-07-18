@@ -92,7 +92,7 @@ public class NoteGenerator {
 		return sequence;
 	}
 
-	// TODO: Fix so when a note is set to Off a Hold wont follow
+	// !!!Sometimes something goes wrong here!!!
 	public Note[] getRndSeqNoDuplInRowOnHoldOff(Note[] sequence, boolean rndVeloIsChecked, int veloLow, int veloHigh,
 			int octaveLow, int octaveHigh) {
 		// generate for startindex of array

@@ -1,5 +1,6 @@
 package Gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -14,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
@@ -55,13 +57,14 @@ public class PrototypeGui extends JFrame {
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
 	private JPanel singleSteps[] = new JPanel[16];
-	private String[] notes = new String[] { "C-1","C#-1","D-1","D#-1","E-1","F#-1","G-1","G#-1", "A-1","A#-1","B-1", "C0","C#0","D0","D#0","E0","F0","F#0",
-			"G0","G#0","A0","A#0","B0","C1","C#1","D1","D#1","E1","F1","F#1","G1","G#1","A1","A#1","B1","C2","C#2","D2",
-			"D#2","E2", "F2","F#2","G2", "G#2","A2","A#2","B2","C3","C#3","D3","D#3","E3","F3","G3","G#3","A3","A#3","B3",
-			"C4","C#4","D4","D#4","E4","F4","F#4","G4","G#4","A4","A#4","B4","C5","C#5","D5", "D#5", "E5","F5","F#5","G5",
-			"G#5","A5","A#5","B5","C6","C#6","D6","D#6","E6","F6","F#6","G6","G#6","A6","A#6","B6","C7", "C#7","D7","D#7",
-			"E7","F7","F#7","G7","G#7","A7","A#7","B7","C8","C#8","D8","D#8","E8","F8","F#8","G8","G#8","A8","A#8","B8",
-			"C9","C#9","D9","D#9","E9","F9","F#9","G9", };
+	private String[] notes = new String[] { "C-1", "C#-1", "D-1", "D#-1", "E-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1",
+			"B-1", "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0", "C1", "C#1", "D1",
+			"D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2",
+			"G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4",
+			"D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5",
+			"G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6",
+			"C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7", "C8", "C#8", "D8", "D#8", "E8",
+			"F8", "F#8", "G8", "G#8", "A8", "A#8", "B8", "C9", "C#9", "D9", "D#9", "E9", "F9", "F#9", "G9", };
 	private SpinnerListModel[] noteModel = new SpinnerListModel[16];
 	private JSpinner noteChooser[] = new JSpinner[16];
 	private SpinnerModel[] velocityModel = new SpinnerNumberModel[16];
@@ -73,6 +76,9 @@ public class PrototypeGui extends JFrame {
 	private JButton[] playStopButtons = new JButton[] { new JButton("Play"), new JButton("Stop") };
 	private String[] availibleDevices;
 	private JComboBox<String> deviceChooser;
+	private JLabel channelText = new JLabel("ch:");
+	private Integer[] midiChannels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+	private JComboBox<Integer> midiChannelChooser = new JComboBox<Integer>(midiChannels);
 
 	// Create components for tempopanel
 	private JPanel tempoPanel = new JPanel();
@@ -123,20 +129,28 @@ public class PrototypeGui extends JFrame {
 
 	private JPanel generatorAlgorithmPanel = new JPanel();
 	private JLabel generatorAlgorithmText = new JLabel("Gen Algorithm:");
-	private String[] genAlgorithmStrings = { "Rnd notes", "Rnd notes, no dupl in row", "Rnd notes and On/Hold/Off", "Rnd notes, no dupl in row, On/Hold/Off" };
+	private String[] genAlgorithmStrings = { "Rnd notes", "Rnd notes, no dupl in row", "Rnd notes and On/Hold/Off",
+			"Rnd notes, no dupl in row, On/Hold/Off" };
 	private JComboBox<String> generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
 
-	// Create components for nudgeSequencePanel
-	private JPanel nudgeSequencePanel = new JPanel();
+	// Create components for nudgePanel
+	private JPanel nudgePanel = new JPanel();
 	private JButton nudgeLeft = new JButton("<-");
 	private JButton nudgeRight = new JButton("->");
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
+	// Create stuff for JSLider
+	private JPanel sliderPanel = new JPanel();
+	private JLabel sliderText = new JLabel("    Gui delay:");
+	private final int minDelay = 0;
+	private final int maxDelay = 100;
+	private final int initDelay = 0;
+	private JSlider guiDelaySlider = new JSlider(JSlider.HORIZONTAL, minDelay, maxDelay, initDelay);
 
 	// Konstruktor
 	public PrototypeGui(Info[] infos) {
 		super("KapellMeister");
 
-		// Code for setting the Ui to Crossplatformlokk and feel, looks like shiiiet
+		// Code for setting the Ui to Crossplatformlook and feel, looks like shiiiet
 		// though:
 		//
 		// try {
@@ -153,7 +167,7 @@ public class PrototypeGui extends JFrame {
 		generatorPanel.setBackground(backGroundColor);
 		generatePanel.setBackground(backGroundColor);
 		generatorAlgorithmPanel.setBackground(backGroundColor);
-		nudgeSequencePanel.setBackground(backGroundColor);
+		nudgePanel.setBackground(backGroundColor);
 		keyPanel.setBackground(backGroundColor);
 		nrOfStepsPanel.setBackground(backGroundColor);
 		masterPanel.setBackground(backGroundColor);
@@ -168,6 +182,7 @@ public class PrototypeGui extends JFrame {
 		getContentPane().setBackground(backGroundColor);
 
 		// Add stuff to masterPanel
+
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
 		}
@@ -177,8 +192,11 @@ public class PrototypeGui extends JFrame {
 		for (int i = 1; i < availibleDevices.length; i++) {
 			availibleDevices[i] = infos[i - 1].toString();
 		}
-		masterPanel.add(deviceChooser = new JComboBox(availibleDevices));
+		masterPanel.add(deviceChooser = new JComboBox<String>(availibleDevices));
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
+		midiChannelChooser.setPreferredSize(new Dimension(70, 25));
+		//masterPanel.add(channelText);
+		masterPanel.add(midiChannelChooser);
 
 		// Add stuff to tempoPanel
 		tempoPanel.add(bpmText);
@@ -204,7 +222,7 @@ public class PrototypeGui extends JFrame {
 		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
 		keyChooser.setPreferredSize(new Dimension(55, 25));
 
-		//generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
+		// generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
 
 		generatePanel.add(generateButton);
 		nrOfStepsPanel.add(nrOfStepsText);
@@ -217,18 +235,18 @@ public class PrototypeGui extends JFrame {
 		generatorPanelGbc.gridx = 0;
 		generatorPanelGbc.gridy = 0;
 		generatorPanel.add(generatePanel, generatorPanelGbc);
-		
+
 		octaveLowChooser.setEditor(new JSpinner.DefaultEditor(octaveLowChooser));
 		octaveHighChooser.setEditor(new JSpinner.DefaultEditor(octaveHighChooser));
-		
-		octaveLowChooser.setPreferredSize(new Dimension(40,25));
+
+		octaveLowChooser.setPreferredSize(new Dimension(40, 25));
 		octaveHighChooser.setPreferredSize(new Dimension(40, 25));
-		
+
 		octaveRangePanel.add(octaveRangeFromText);
 		octaveRangePanel.add(octaveLowChooser);
 		octaveRangePanel.add(octaveRangeToText);
 		octaveRangePanel.add(octaveHighChooser);
-		
+
 		generatorPanelGbc.gridx = 0;
 		generatorPanelGbc.gridy = 1;
 		generatorPanel.add(octaveRangePanel, generatorPanelGbc);
@@ -259,11 +277,21 @@ public class PrototypeGui extends JFrame {
 		generatorPanel.add(generatorAlgorithmPanel, generatorPanelGbc);
 
 		// Add stuff to and configure nudgeSequencePanel
+		guiDelaySlider.setMajorTickSpacing(10);
+		guiDelaySlider.setMinorTickSpacing(5);
+		guiDelaySlider.setPaintTicks(true);
+		guiDelaySlider.setPaintLabels(true);
+		sliderPanel.setLayout(new BorderLayout());
+		sliderPanel.add(sliderText, BorderLayout.NORTH);
+		sliderPanel.add(guiDelaySlider, BorderLayout.SOUTH);
+		sliderPanel.setOpaque(false);
+
 		nudgeLeft.setPreferredSize(buttonDimSmall);
 		nudgeRight.setPreferredSize(buttonDimSmall);
-		nudgeSequencePanel.add(nudgeLeft);
-		nudgeSequencePanel.add(nudgeText);
-		nudgeSequencePanel.add(nudgeRight);
+		nudgePanel.add(sliderPanel);
+		nudgePanel.add(nudgeLeft);
+		nudgePanel.add(nudgeText);
+		nudgePanel.add(nudgeRight);
 
 		// Add stuff to and configure stepPanel
 		for (int i = 0; i < noteChooser.length; i++) {
@@ -333,8 +361,8 @@ public class PrototypeGui extends JFrame {
 		add(generatorPanel, frameGbc);
 
 		frameGbc.gridy = 3;
-		add(nudgeSequencePanel, frameGbc);
-		
+		add(nudgePanel, frameGbc);
+
 		frameGbc.gridy = 4;
 		add(stepPanel, frameGbc);
 
@@ -585,28 +613,36 @@ public class PrototypeGui extends JFrame {
 			solo.setForeground(textColor);
 		}
 	}
-	
+
 	public JSpinner getOctaveLowChooser() {
 		return octaveLowChooser;
 	}
-	
+
 	public JSpinner getOctaveHighChooser() {
 		return octaveHighChooser;
 	}
-	
+
 	public int getOctaveLow() {
-		return (int)octaveLowChooser.getValue();
+		return (int) octaveLowChooser.getValue();
 	}
-	
+
 	public int getOctaveHigh() {
-		return (int)octaveHighChooser.getValue();
+		return (int) octaveHighChooser.getValue();
 	}
-	
+
 	public void setOctaveLow(int value) {
 		octaveLowChooser.setValue(value);
 	}
-	
+
 	public void setOctaveHigh(int value) {
 		octaveHighChooser.setValue(value);
+	}
+	
+	public JComboBox<Integer> getMidiChannelChooser() {
+		return midiChannelChooser;
+	}
+	
+	public JSlider getGuiDelaySLider() {
+		return guiDelaySlider;
 	}
 }

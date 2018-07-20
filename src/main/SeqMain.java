@@ -2,8 +2,8 @@ package main;
 
 import javax.swing.SwingUtilities;
 
-import Gui.PrototypeGui;
-import controller.Controller;
+import Gui.SequencerGui;
+import controller.SequencerController;
 
 public class SeqMain {
     
@@ -12,7 +12,7 @@ public class SeqMain {
 
 	    @Override
 	    public void run() {
-		Controller ctrl = new Controller();
+		SequencerController ctrl = new SequencerController();
 	    }
 	});	
     }

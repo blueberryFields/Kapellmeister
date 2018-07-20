@@ -8,23 +8,23 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import Gui.PrototypeGui;
+import Gui.SequencerGui;
+import model.SequencerModel;
 import note.Note;
 import note.NoteOn;
-import sequncerMotor.Sequencer;
 
-public class Controller implements ActionListener {
+public class SequencerController implements ActionListener {
 
-	private Sequencer seq;
-	private PrototypeGui gui;
+	private SequencerModel seq;
+	private SequencerGui gui;
 	private Timer clock;
 
 	private long guiDelay;
 
 	// Konstruktor
-	public Controller() {
-		seq = new Sequencer();
-		gui = new PrototypeGui(seq.getAvailibleMidiDevices());
+	public SequencerController() {
+		seq = new SequencerModel();
+		gui = new SequencerGui(seq.getAvailibleMidiDevices());
 		clock = new Timer(500, this);
 
 		// Add actionListeners to buttons

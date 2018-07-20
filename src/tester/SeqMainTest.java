@@ -1,14 +1,15 @@
-package sequncerMotor;
+package tester;
 
 import java.util.Scanner;
 
+import model.SequencerModel;
 import note.Am;
 
 public class SeqMainTest {
 
     public static void main(String[] args) {
 	Scanner in = new Scanner(System.in);
-	Sequencer seq = new Sequencer();
+	SequencerModel seq = new SequencerModel();
 	Am am = new Am();
 
 	System.out.println("Choose a device:");

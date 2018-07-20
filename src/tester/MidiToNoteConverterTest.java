@@ -1,6 +1,6 @@
 package tester;
 
-import Gui.MidiToNoteConverter;
+import note.MidiToNoteConverter;
 import note.NoteToMidiConverter;
 
 public class MidiToNoteConverterTest {

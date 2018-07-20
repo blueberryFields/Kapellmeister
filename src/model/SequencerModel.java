@@ -1,4 +1,4 @@
-package sequncerMotor;
+package model;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
@@ -11,7 +11,7 @@ import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
 
-public class Sequencer {
+public class SequencerModel {
 
 	boolean running = false;
 	// private Timer clock = new Timer(500, this);
@@ -30,7 +30,7 @@ public class Sequencer {
 	private int midiChannel = 0;
 
 	// Konstruktor
-	public Sequencer() {
+	public SequencerModel() {
 		infos = MidiSystem.getMidiDeviceInfo();
 		initSeq();
 	}

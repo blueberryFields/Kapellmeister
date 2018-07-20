@@ -4,13 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.sound.midi.MidiDevice.Info;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import Gui.MstrMoGui;
 import Gui.SequencerGui;
 import model.SequencerModel;
 import note.Note;
+import note.NoteGenerator;
 import note.NoteOn;
 
 public class SequencerController implements ActionListener {
@@ -22,9 +25,16 @@ public class SequencerController implements ActionListener {
 	private long guiDelay;
 
 	// Konstruktor
-	public SequencerController() {
-		seq = new SequencerModel();
-		gui = new SequencerGui(seq.getAvailibleMidiDevices());
+	public SequencerController(NoteGenerator key, int bpm) {
+		seq = new SequencerModel(key, bpm);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				gui = new SequencerGui(seq.getAvailibleMidiDevices());
+			}
+		});
+
 		clock = new Timer(500, this);
 
 		// Add actionListeners to buttons
@@ -262,7 +272,7 @@ public class SequencerController implements ActionListener {
 	}
 
 	private void generateSequence() {
-		seq.generateSequence(gui.getNrOfSteps(), gui.getKey(), gui.getGeneratorAlgoRithmChooser(),
+		seq.generateSequence(gui.getNrOfSteps(), seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
 				gui.isRndVeloChecked(), gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(),
 				gui.getOctaveHigh());
 		checkHold();
@@ -279,7 +289,7 @@ public class SequencerController implements ActionListener {
 	}
 
 	private void playSequence() {
-		setTempo(gui.getBpm(), gui.getPartnotes());
+		setTempo(seq.getBpm(), gui.getPartnotes());
 		seq.playSequence();
 		clock.start();
 		gui.disableGui();

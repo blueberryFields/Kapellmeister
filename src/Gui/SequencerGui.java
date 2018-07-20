@@ -71,8 +71,8 @@ public class SequencerGui extends JFrame {
 	private JSpinner velocityChooser[] = new JSpinner[16];
 	private JButton[] noteOnButton = new JButton[16];
 
-	// Create components for masterpanel
-	private JPanel masterPanel = new JPanel();
+	// Create components for channelpanel
+	private JPanel channelPanel = new JPanel();
 	private JButton[] playStopButtons = new JButton[] { new JButton("Play"), new JButton("Stop") };
 	private String[] availibleDevices;
 	private JComboBox<String> deviceChooser;
@@ -85,9 +85,9 @@ public class SequencerGui extends JFrame {
 	private String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
 	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
-	private JLabel bpmText = new JLabel("Bpm:");
+//	private JLabel bpmText = new JLabel("Bpm:");
 	private JLabel partNotesText = new JLabel("Partnotes:");
-	private JTextField bpmChooser = new JTextField("120", 2);
+//	private JTextField bpmChooser = new JTextField("120", 2);
 	private JButton mute = new JButton("Mute");
 	private JButton solo = new JButton("Solo");
 
@@ -100,11 +100,11 @@ public class SequencerGui extends JFrame {
 	private JLabel nrOfStepsText = new JLabel("Nr of Steps:");
 	private SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
 	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
-	private JPanel keyPanel = new JPanel();
-	private JLabel keyText = new JLabel("Key:");
-	private String[] keyArr = new String[] { "Am", "C" };
-	private SpinnerModel keyChooserModel = new SpinnerListModel(keyArr);
-	private JSpinner keyChooser = new JSpinner(keyChooserModel);
+//	private JPanel keyPanel = new JPanel();
+//	private JLabel keyText = new JLabel("Key:");
+//	private String[] keyArr = new String[] { "Am", "C" };
+//	private SpinnerModel keyChooserModel = new SpinnerListModel(keyArr);
+//	private JSpinner keyChooser = new JSpinner(keyChooserModel);
 
 	private JPanel octaveRangePanel = new JPanel();
 	private JLabel octaveRangeFromText = new JLabel("Octave-range, from:");
@@ -168,9 +168,9 @@ public class SequencerGui extends JFrame {
 		generatePanel.setBackground(backGroundColor);
 		generatorAlgorithmPanel.setBackground(backGroundColor);
 		nudgePanel.setBackground(backGroundColor);
-		keyPanel.setBackground(backGroundColor);
+	//	keyPanel.setBackground(backGroundColor);
 		nrOfStepsPanel.setBackground(backGroundColor);
-		masterPanel.setBackground(backGroundColor);
+		channelPanel.setBackground(backGroundColor);
 		tempoPanel.setBackground(backGroundColor);
 		stepPanel.setBackground(backGroundColor);
 		octaveRangePanel.setBackground(backGroundColor);
@@ -184,7 +184,7 @@ public class SequencerGui extends JFrame {
 		// Add stuff to masterPanel
 
 		for (int i = 0; i < playStopButtons.length; i++) {
-			masterPanel.add(playStopButtons[i]);
+			channelPanel.add(playStopButtons[i]);
 		}
 		playStopButtons[0].setEnabled(false);
 		availibleDevices = new String[infos.length + 1];
@@ -192,15 +192,15 @@ public class SequencerGui extends JFrame {
 		for (int i = 1; i < availibleDevices.length; i++) {
 			availibleDevices[i] = infos[i - 1].toString();
 		}
-		masterPanel.add(deviceChooser = new JComboBox<String>(availibleDevices));
+		channelPanel.add(deviceChooser = new JComboBox<String>(availibleDevices));
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
 		midiChannelChooser.setPreferredSize(new Dimension(70, 25));
 		//masterPanel.add(channelText);
-		masterPanel.add(midiChannelChooser);
+		channelPanel.add(midiChannelChooser);
 
 		// Add stuff to tempoPanel
-		tempoPanel.add(bpmText);
-		tempoPanel.add(bpmChooser);
+//		tempoPanel.add(bpmText);
+//		tempoPanel.add(bpmChooser);
 		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
 		partNotesChooser.setValue("1/8");
 		partNotesChooser.setPreferredSize(new Dimension(60, 25));
@@ -219,8 +219,8 @@ public class SequencerGui extends JFrame {
 
 		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
 		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
-		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
-		keyChooser.setPreferredSize(new Dimension(55, 25));
+//		keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
+//		keyChooser.setPreferredSize(new Dimension(55, 25));
 
 		// generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
 
@@ -229,9 +229,9 @@ public class SequencerGui extends JFrame {
 		nrOfStepsPanel.add(nrOfStepsChooser);
 		generatePanel.add(nrOfStepsPanel);
 
-		keyPanel.add(keyText);
-		keyPanel.add(keyChooser);
-		generatePanel.add(keyPanel);
+//		keyPanel.add(keyText);
+//		keyPanel.add(keyChooser);
+//		generatePanel.add(keyPanel);
 		generatorPanelGbc.gridx = 0;
 		generatorPanelGbc.gridy = 0;
 		generatorPanel.add(generatePanel, generatorPanelGbc);
@@ -352,7 +352,7 @@ public class SequencerGui extends JFrame {
 		frameGbc.insets = new Insets(5, 5, 5, 5);
 		frameGbc.gridx = 0;
 		frameGbc.gridy = 0;
-		add(masterPanel, frameGbc);
+		add(channelPanel, frameGbc);
 
 		frameGbc.gridy = 1;
 		add(tempoPanel, frameGbc);
@@ -409,19 +409,19 @@ public class SequencerGui extends JFrame {
 
 	}
 
-	public NoteGenerator getKey() {
-		switch ((String) keyChooser.getValue()) {
-		case "Am":
-			return key = new Am();
-		case "A":
-			return key = new A();
-		case "Bbm":
-			return key = new Bbm();
-		case "C":
-			return key = new C();
-		}
-		return key = null;
-	}
+//	public NoteGenerator getKey() {
+//		switch ((String) keyChooser.getValue()) {
+//		case "Am":
+//			return key = new Am();
+//		case "A":
+//			return key = new A();
+//		case "Bbm":
+//			return key = new Bbm();
+//		case "C":
+//			return key = new C();
+//		}
+//		return key = null;
+//	}
 
 	public int getChoosenDevice() {
 		return deviceChooser.getSelectedIndex();
@@ -483,16 +483,16 @@ public class SequencerGui extends JFrame {
 		return (int) nrOfStepsChooser.getValue();
 	}
 
-	public int getBpm() {
-		int bpm = 120;
-		try {
-			bpm = Integer.parseInt(bpmChooser.getText());
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this,
-					bpmChooser.getText() + " is not an accepteble Bpm-value! /n Initializing Bpm to 120");
-		}
-		return bpm;
-	}
+//	public int getBpm() {
+//		int bpm = 120;
+//		try {
+//			bpm = Integer.parseInt(bpmChooser.getText());
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(this,
+//					bpmChooser.getText() + " is not an accepteble Bpm-value! /n Initializing Bpm to 120");
+//		}
+//		return bpm;
+//	}
 
 	public String getPartnotes() {
 		return (String) partNotesChooser.getValue();
@@ -501,23 +501,23 @@ public class SequencerGui extends JFrame {
 	public void disableGui() {
 		playStopButtons[0].setEnabled(false);
 		deviceChooser.setEnabled(false);
-		bpmText.setEnabled(false);
-		bpmChooser.setEnabled(false);
+//		bpmText.setEnabled(false);
+//		bpmChooser.setEnabled(false);
 		partNotesChooser.setEnabled(false);
 		generateButton.setEnabled(false);
-		keyText.setEnabled(false);
-		keyChooser.setEnabled(false);
+//		keyText.setEnabled(false);
+//		keyChooser.setEnabled(false);
 	}
 
 	public void enableGui() {
 		playStopButtons[0].setEnabled(true);
 		deviceChooser.setEnabled(true);
-		bpmText.setEnabled(true);
-		bpmChooser.setEnabled(true);
+//		bpmText.setEnabled(true);
+//		bpmChooser.setEnabled(true);
 		partNotesChooser.setEnabled(true);
 		generateButton.setEnabled(true);
-		keyText.setEnabled(true);
-		keyChooser.setEnabled(true);
+//		keyText.setEnabled(true);
+//		keyChooser.setEnabled(true);
 	}
 
 	public String[] getAvailibleDevices() {

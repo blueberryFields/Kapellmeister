@@ -28,10 +28,15 @@ public class SequencerModel {
 	private boolean mute = false;
 	private boolean solo = false;
 	private int midiChannel = 0;
+	
+	private NoteGenerator key;
+	private int bpm;
 
 	// Konstruktor
-	public SequencerModel() {
+	public SequencerModel(NoteGenerator Key, int bpm) {
 		infos = MidiSystem.getMidiDeviceInfo();
+		this.key = key;
+		this.bpm = bpm;
 		initSeq();
 	}
 
@@ -310,4 +315,20 @@ public class SequencerModel {
 		this.running = running;
 	}
 
+	public NoteGenerator getKey() {
+		return key;
+	}
+	 
+	public void setKey(NoteGenerator key) {
+		this.key = key;
+	}
+	
+	public int getBpm() {
+		return bpm;
+	}
+	
+	public void setBpm(int bpm) {
+		this.bpm = bpm;
+	}
+	
 }

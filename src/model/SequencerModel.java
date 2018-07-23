@@ -33,7 +33,7 @@ public class SequencerModel {
 	private int bpm;
 
 	// Konstruktor
-	public SequencerModel(NoteGenerator Key, int bpm) {
+	public SequencerModel(NoteGenerator key, int bpm) {
 		infos = MidiSystem.getMidiDeviceInfo();
 		this.key = key;
 		this.bpm = bpm;

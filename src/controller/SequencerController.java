@@ -21,25 +21,20 @@ public class SequencerController implements ActionListener {
 	private SequencerModel seq;
 	private SequencerGui gui;
 	private Timer clock;
-
 	private long guiDelay;
 
 	// Konstruktor
 	public SequencerController(NoteGenerator key, int bpm) {
 		seq = new SequencerModel(key, bpm);
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				gui = new SequencerGui(seq.getAvailibleMidiDevices());
-			}
-		});
+
+		gui = new SequencerGui(seq.getAvailibleMidiDevices());
 
 		clock = new Timer(500, this);
+		setTempo();
 
 		// Add actionListeners to buttons
-		gui.getPlayButton().addActionListener(e -> playSequence());
-		gui.getStopButton().addActionListener(e -> stopSequence());
+		// gui.getPlayButton().addActionListener(e -> playSequence());
+		// gui.getStopButton().addActionListener(e -> stopSequence());
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
@@ -66,6 +61,14 @@ public class SequencerController implements ActionListener {
 		gui.repaintSequencer(seq.getSequence());
 	}
 
+	public void setTitle(String title) {
+		gui.setTitle(title);
+	}
+	
+	public String getTitle() {
+		return gui.getTitle();
+	}
+	
 	private void chooseMidiChannel() {
 		seq.setMidiChannel((int) gui.getMidiChannelChooser().getSelectedItem() - 1);
 	}
@@ -281,30 +284,34 @@ public class SequencerController implements ActionListener {
 
 	private void chooseMidiDevice() {
 		seq.chooseMidiDevice(gui.getChoosenDevice());
-		if (gui.getChoosenDevice() != 0) {
-			gui.getPlayButton().setEnabled(true);
-		} else {
-			gui.getPlayButton().setEnabled(false);
-		}
+		// if (gui.getChoosenDevice() != 0) {
+		// gui.getPlayButton().setEnabled(true);
+		// } else {
+		// gui.getPlayButton().setEnabled(false);
+		// }
 	}
 
-	private void playSequence() {
-		setTempo(seq.getBpm(), gui.getPartnotes());
+	public void playSequence() {
+		setTempo();
 		seq.playSequence();
 		clock.start();
 		gui.disableGui();
 	}
 
-	private void stopSequence() {
+	public void stopSequence() {
 		gui.enableGui();
 		seq.stopSequence();
 		clock.stop();
 		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
 	}
 
-	public void setTempo(int bpm, String partNotes) {
-		int tempo = 60000 / bpm;
-		switch (partNotes) {
+	public void setBpm(int bpm) {
+		seq.setBpm(bpm);
+	}
+	
+	public void setTempo() {
+		int tempo = 60000 / seq.getBpm();
+		switch (gui.getPartnotes()) {
 		case "1 bar":
 			tempo *= 4;
 			break;
@@ -323,6 +330,10 @@ public class SequencerController implements ActionListener {
 		clock.setDelay(tempo);
 	}
 
+	public void setKey(NoteGenerator key) {
+		seq.setKey(key);
+	}
+	
 	public Info[] getAvailibleMidiDevices() {
 		return seq.getAvailibleMidiDevices();
 	}

@@ -1,5 +1,7 @@
 package controller;
 
+import javax.swing.JOptionPane;
+
 import Gui.MstrMoGui;
 import model.MstrMoModel;
 import note.KeyConverter;
@@ -34,7 +36,37 @@ public class MstrMoController {
 
 	private void createStandardSequencer() {
 		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm());
-		mstrMoGui.addNewSeqStrip("Standard Sequencer", mstrMoModel.getLastIndex());
+		mstrMoGui.addNewSeqStrip("Standard Sequencer:", mstrMoModel.getLastIndex());
+		addActionListenersToSeqStrip(mstrMoModel.getLastIndex());
+	}
+
+	private void addActionListenersToSeqStrip(int index) {
+		mstrMoGui.getRename().get(index).addActionListener(e -> rename(index));
+		mstrMoGui.getOpen().get(index).addActionListener(e -> open(index));
+		mstrMoGui.getRemove().get(index).addActionListener(e -> remove(index));
+		mstrMoGui.getMute().get(index).addActionListener(e -> mute(index));
+		mstrMoGui.getSolo().get(index).addActionListener(e -> solo(index));
+	}
+
+	private void open(int index) {
+		mstrMoModel.open(index);
+	}
+
+	private void rename(int index) {
+		mstrMoModel.rename(mstrMoGui.rename(index), index);
+	}
+
+	private void remove(int index) {
+		mstrMoModel.removeSequencer(index);
+		mstrMoGui.removeSeqStrip(index);
+	}
+
+	private void mute(int index) {
+		mstrMoModel.mute(index);
+	}
+
+	private void solo(int index) {
+		mstrMoModel.solo(index);
 	}
 
 	private void start() {

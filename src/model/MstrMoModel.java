@@ -10,7 +10,7 @@ public class MstrMoModel {
 
 	private List<SequencerController> seqList = new LinkedList<SequencerController>();
 
-	private NoteGenerator key;
+	// private NoteGenerator key;
 
 	public void createStandardSequencer(NoteGenerator key, int bpm) {
 		seqList.add(new SequencerController(key, bpm));
@@ -42,6 +42,30 @@ public class MstrMoModel {
 
 	public int getLastIndex() {
 		return seqList.size() - 1;
+	}
+
+	public void removeSequencer(int index) {
+		seqList.get(index).disposeGui();
+		seqList.remove(index);
+	}
+
+	public void open(int index) {
+		seqList.get(index).open();
+
+	}
+
+	public void mute(int index) {
+		seqList.get(index).mute();
+
+	}
+
+	public void solo(int index) {
+		seqList.get(index).solo();
+
+	}
+
+	public void rename(String title, int index) {
+		seqList.get(index).setTitle(title);
 	}
 
 }

@@ -594,4 +594,8 @@ public class SequencerGui extends JFrame {
 	public JSlider getGuiDelaySLider() {
 		return guiDelaySlider;
 	}
+
+	public void open() {
+		setVisible(true);
+	}
 }

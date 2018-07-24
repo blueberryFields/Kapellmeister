@@ -60,6 +60,10 @@ public class SequencerController implements ActionListener {
 
 		gui.repaintSequencer(seq.getSequence());
 	}
+	
+	public void open() {
+		gui.open();
+	}
 
 	public void setTitle(String title) {
 		gui.setTitle(title);
@@ -91,7 +95,11 @@ public class SequencerController implements ActionListener {
 		}
 	}
 
-	private void solo() {
+	public void disposeGui() {
+		gui.dispose();
+	}
+	
+	public void solo() {
 		// TODO
 		gui.setSoloColor();
 		if (seq.getMute()) {
@@ -101,7 +109,7 @@ public class SequencerController implements ActionListener {
 		seq.solo();
 	}
 
-	private void mute() {
+	public void mute() {
 		gui.setMuteColor();
 		if (seq.getSolo()) {
 			seq.solo();

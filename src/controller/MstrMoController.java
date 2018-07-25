@@ -37,7 +37,7 @@ public class MstrMoController {
 	}
 
 	private void createStandardSequencer() {
-		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm(), nextIndex);
+		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm(), nextIndex, "Stnd Sequencer");
 		mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
 		addActionListenersToSeqStrip(nextIndex);
 		setNextIndex();
@@ -50,6 +50,14 @@ public class MstrMoController {
 		mstrMoGui.getMute()[index].addActionListener(e -> mute(index));
 		mstrMoGui.getSolo()[index].addActionListener(e -> solo(index));
 	}
+	
+	private void removeActionListenderFromStrip(int index) {
+		mstrMoGui.getTitles()[index].removeActionListener(e -> rename(index));
+		mstrMoGui.getOpen()[index].removeActionListener(e -> open(index));
+		mstrMoGui.getRemove()[index].removeActionListener(e -> remove(index));
+		mstrMoGui.getMute()[index].removeActionListener(e -> mute(index));
+		mstrMoGui.getSolo()[index].removeActionListener(e -> solo(index));
+	}
 
 	private void open(int index) {
 		mstrMoModel.open(index);
@@ -61,7 +69,27 @@ public class MstrMoController {
 
 	private void remove(int index) {
 		mstrMoModel.removeSequencer(index);
-		mstrMoGui.removeSeqStrip(index);
+		removeActionListenderFromStrip(index);
+		mstrMoGui.removeAllSeqStrips();	
+		addStripsToGui(mstrMoModel.lastUsedIndex());
+		mstrMoGui.paintAndPack();
+	}
+	
+	private void addStripsToGui(int lastUsedIndex) {
+		for(int i = 0; i <= lastUsedIndex; i++) {
+			mstrMoGui.addNewSeqStrip(mstrMoModel.getTitle(i), i);
+			addActionListenersToSeqStrip(i);
+		}
+	}
+	
+	public int getLastUsedIndex(Object[] array) {
+		int index = -1;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != null) {
+				index = i;
+			}
+		}
+		return index;
 	}
 
 	private void mute(int index) {
@@ -82,6 +110,6 @@ public class MstrMoController {
 	}
 
 	private void setNextIndex() {
-		nextIndex = mstrMoModel.getNextIndex();
+		nextIndex = mstrMoModel.nextIndex();
 	}
 }

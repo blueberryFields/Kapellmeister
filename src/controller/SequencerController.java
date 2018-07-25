@@ -22,12 +22,15 @@ public class SequencerController implements ActionListener {
 	private SequencerGui gui;
 	private Timer clock;
 	private long guiDelay;
+	private String title;
 
 	// Konstruktor
-	public SequencerController(NoteGenerator key, int bpm) {
+	public SequencerController(NoteGenerator key, int bpm, String title) {
+		this.title = title;
+		
 		seq = new SequencerModel(key, bpm);
 
-		gui = new SequencerGui(seq.getAvailibleMidiDevices());
+		gui = new SequencerGui(seq.getAvailibleMidiDevices(), title);
 
 		clock = new Timer(500, this);
 		setTempo();
@@ -66,6 +69,7 @@ public class SequencerController implements ActionListener {
 	}
 
 	public void setTitle(String title) {
+		this.title = title;
 		gui.setTitle(title);
 	}
 	

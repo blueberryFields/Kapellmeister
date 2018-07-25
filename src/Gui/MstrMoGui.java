@@ -23,6 +23,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 
+import controller.SequencerController;
+
 public class MstrMoGui extends JFrame {
 
 	// Create colorscheme
@@ -150,9 +152,6 @@ public class MstrMoGui extends JFrame {
 	}
 
 	public void addNewSeqStrip(String title, int index) {
-		// titlePanels.add(new JPanel());
-		// titlePanels.get(index).setPreferredSize(titlePanelDim);
-		// titlePanels.get(index).setBackground(backGroundColor);
 		titles[index] = new JTextField(title, 10);
 		titles[index].setHorizontalAlignment(JTextField.RIGHT);
 		titles[index].setBackground(backGroundColor);
@@ -194,14 +193,18 @@ public class MstrMoGui extends JFrame {
 		pack();
 	}
 
-//	public String rename(int index) {
-//		String title = JOptionPane.showInputDialog("Enter new name:");
-//		titles.get(index).setText(title + ":");
-//		return title;
-//	}
-	
 	public String getTitle(int index) {
 		return titles[index].getText();
+	}
+
+	public void removeAllSeqStrips() {
+		for (int i = 0; i < seqPanels.length; i++) {
+			if (seqPanels[i] != null) {
+				removeSeqStrip(i);
+			}
+		}
+		// repaint();
+		// pack();
 	}
 
 	public void removeSeqStrip(int index) {
@@ -218,6 +221,11 @@ public class MstrMoGui extends JFrame {
 		mute[index] = null;
 		solo[index] = null;
 		seqPanels[index] = null;
+		// repaint();
+		// pack();
+	}
+
+	public void paintAndPack() {
 		repaint();
 		pack();
 	}
@@ -282,4 +290,7 @@ public class MstrMoGui extends JFrame {
 		return bpmChooser;
 	}
 
+	public JPanel[] getSeqPanels() {
+		return seqPanels;
+	}
 }

@@ -55,15 +55,13 @@ public class MstrMoGui extends JFrame {
 
 	// Create stuff for seqStrips
 	private JPanel stripPanel = new JPanel();
-	// private List<JSeparator> separators = new LinkedList<>();
-	private List<JPanel> seqPanels = new LinkedList<>();
-	// private List<JPanel> titlePanels = new LinkedList<>();
-	private List<JTextField> titles = new LinkedList<>();
-	private List<JLabel> colon = new LinkedList<>();
-	private List<JButton> open = new LinkedList<>();
-	private List<JButton> remove = new LinkedList<>();
-	private List<JButton> mute = new LinkedList<>();
-	private List<JButton> solo = new LinkedList<>();
+	private JPanel[] seqPanels = new JPanel[8];
+	private JTextField[] titles = new JTextField[8];
+	private JLabel[] colon = new JLabel[8];
+	private JButton[] open = new JButton[8];
+	private JButton[] remove = new JButton[8];
+	private JButton[] mute = new JButton[8];
+	private JButton[] solo = new JButton[8];
 
 	// Create stuff for create panel
 	private JPanel createPanel = new JPanel();
@@ -155,44 +153,44 @@ public class MstrMoGui extends JFrame {
 		// titlePanels.add(new JPanel());
 		// titlePanels.get(index).setPreferredSize(titlePanelDim);
 		// titlePanels.get(index).setBackground(backGroundColor);
-		titles.add(new JTextField(title, 10));
-		titles.get(index).setHorizontalAlignment(JTextField.RIGHT);
-		titles.get(index).setBackground(backGroundColor);
-		colon.add(new JLabel(":"));
-		open.add(new JButton("Open"));
-		remove.add(new JButton("Remove"));
-		mute.add(new JButton("Mute"));
-		solo.add(new JButton("Solo"));
-		seqPanels.add(new JPanel());
-		seqPanels.get(index).setLayout(new GridBagLayout());
-		seqPanels.get(index).setBackground(backGroundColor);
+		titles[index] = new JTextField(title, 10);
+		titles[index].setHorizontalAlignment(JTextField.RIGHT);
+		titles[index].setBackground(backGroundColor);
+		colon[index] = new JLabel(":");
+		open[index] = new JButton("Open");
+		remove[index] = new JButton("Remove");
+		mute[index] = new JButton("Mute");
+		solo[index] = new JButton("Solo");
+		seqPanels[index] = new JPanel();
+		seqPanels[index].setLayout(new GridBagLayout());
+		seqPanels[index].setBackground(backGroundColor);
 		GridBagConstraints seqPanelGbc = new GridBagConstraints();
 		// GridBagConstraints seqSepGbc = new GridBagConstraints();
 		// titlePanels.get(index).add(titles.get(index));
 		seqPanelGbc.gridx = 0;
 		seqPanelGbc.gridy = 0;
 		// seqPanelGbc.gridwidth = 2;
-		seqPanels.get(index).add(titles.get(index), seqPanelGbc);
+		seqPanels[index].add(titles[index], seqPanelGbc);
 		// seqPanelGbc.gridwidth = 1;
 		seqPanelGbc.gridx = 2;
 		seqPanelGbc.gridy = 0;
-		seqPanels.get(index).add(colon.get(index), seqPanelGbc);
+		seqPanels[index].add(colon[index], seqPanelGbc);
 		seqPanelGbc.gridx = 3;
 		seqPanelGbc.gridy = 0;
-		seqPanels.get(index).add(open.get(index), seqPanelGbc);
+		seqPanels[index].add(open[index], seqPanelGbc);
 		seqPanelGbc.gridx = 4;
 		seqPanelGbc.gridy = 0;
-		seqPanels.get(index).add(remove.get(index), seqPanelGbc);
+		seqPanels[index].add(remove[index], seqPanelGbc);
 		seqPanelGbc.gridx = 5;
 		seqPanelGbc.gridy = 0;
-		seqPanels.get(index).add(mute.get(index), seqPanelGbc);
+		seqPanels[index].add(mute[index], seqPanelGbc);
 		seqPanelGbc.gridx = 6;
 		seqPanelGbc.gridy = 0;
-		seqPanels.get(index).add(solo.get(index), seqPanelGbc);
+		seqPanels[index].add(solo[index], seqPanelGbc);
 
 		gbc.gridy = index;
-		seqPanels.get(index).setPreferredSize(stripDim);
-		stripPanel.add(seqPanels.get(index), gbc);
+		seqPanels[index].setPreferredSize(stripDim);
+		stripPanel.add(seqPanels[index], gbc);
 		pack();
 	}
 
@@ -203,48 +201,48 @@ public class MstrMoGui extends JFrame {
 //	}
 	
 	public String getTitle(int index) {
-		return titles.get(index).getText();
+		return titles[index].getText();
 	}
 
 	public void removeSeqStrip(int index) {
-		seqPanels.get(index).remove(titles.get(index));
-		seqPanels.get(index).remove(colon.get(index));
-		seqPanels.get(index).remove(remove.get(index));
-		seqPanels.get(index).remove(mute.get(index));
-		seqPanels.get(index).remove(solo.get(index));
-		stripPanel.remove(seqPanels.get(index));
+		seqPanels[index].remove(titles[index]);
+		seqPanels[index].remove(colon[index]);
+		seqPanels[index].remove(remove[index]);
+		seqPanels[index].remove(mute[index]);
+		seqPanels[index].remove(solo[index]);
+		stripPanel.remove(seqPanels[index]);
 
-		titles.remove(index);
-		colon.remove(index);
-		remove.remove(index);
-		mute.remove(index);
-		solo.remove(index);
-		seqPanels.remove(index);
+		titles[index] = null;
+		colon[index] = null;
+		remove[index] = null;
+		mute[index] = null;
+		solo[index] = null;
+		seqPanels[index] = null;
 		repaint();
 		pack();
 	}
 
-	public List<JTextField> getTitles() {
+	public JTextField[] getTitles() {
 		return titles;
 	}
 
-	public List<JLabel> getRename() {
+	public JLabel[] getRename() {
 		return colon;
 	}
 
-	public List<JButton> getOpen() {
+	public JButton[] getOpen() {
 		return open;
 	}
 
-	public List<JButton> getRemove() {
+	public JButton[] getRemove() {
 		return remove;
 	}
 
-	public List<JButton> getMute() {
+	public JButton[] getMute() {
 		return mute;
 	}
 
-	public List<JButton> getSolo() {
+	public JButton[] getSolo() {
 		return solo;
 	}
 

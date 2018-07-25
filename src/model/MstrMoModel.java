@@ -9,63 +9,68 @@ import note.NoteGenerator;
 public class MstrMoModel {
 
 	private List<SequencerController> seqList = new LinkedList<SequencerController>();
+	private SequencerController[] seqArr = new SequencerController[8];
 
-	// private NoteGenerator key;
-
-	public void createStandardSequencer(NoteGenerator key, int bpm) {
-		seqList.add(new SequencerController(key, bpm));
+	public void createStandardSequencer(NoteGenerator key, int bpm, int index) {
+		seqArr[index] = (new SequencerController(key, bpm));
 	}
 
 	public void start() {
-		for (int i = 0; i < seqList.size(); i++) {
-			seqList.get(i).playSequence();
+		for (int i = 0; i < seqArr.length; i++) {
+			seqArr[i].playSequence();
 		}
 	}
 
 	public void stop() {
-		for (int i = 0; i < seqList.size(); i++) {
-			seqList.get(i).stopSequence();
+		for (int i = 0; i < seqArr.length; i++) {
+			seqArr[i].stopSequence();
 		}
 	}
 
 	public void changeKey(NoteGenerator key) {
-		for (int i = 0; i < seqList.size(); i++) {
-			seqList.get(i).setKey(key);
+		for (int i = 0; i < seqArr.length; i++) {
+			seqArr[i].setKey(key);
 		}
 	}
 
 	public void changeBpm(int bpm) {
-		for (int i = 0; i < seqList.size(); i++) {
+		for (int i = 0; i < seqArr.length; i++) {
 			seqList.get(i).setBpm(bpm);
 		}
 	}
 
-	public int getLastIndex() {
-		return seqList.size() - 1;
+	public int getNextIndex() {	
+		int i = 0;
+		while (true) {
+		if(seqArr[i] == null) {
+			break;
+		}
+		i++;
+		}
+		return i;
 	}
 
 	public void removeSequencer(int index) {
-		seqList.get(index).disposeGui();
-		seqList.remove(index);
+		seqArr[index].disposeGui();
+		seqArr[index] = null;
 	}
 
 	public void open(int index) {
-		seqList.get(index).open();
-
+		seqArr[index].open();
 	}
 
 	public void mute(int index) {
-		seqList.get(index).mute();
+		seqArr[index].mute();
 
 	}
 
 	public void solo(int index) {
-		seqList.get(index).solo();
+		seqArr[index].solo();
 
 	}
 
 	public void rename(String title, int index) {
-		seqList.get(index).setTitle(title);
+		seqArr[index].setTitle(title);
 	}
 
 }

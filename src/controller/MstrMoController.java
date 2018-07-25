@@ -11,6 +11,8 @@ public class MstrMoController {
 	private KeyConverter keyConv;
 	private MstrMoGui mstrMoGui;
 	private MstrMoModel mstrMoModel;
+	
+	private int nextIndex = 0;
 
 	public MstrMoController() {
 
@@ -35,17 +37,18 @@ public class MstrMoController {
 	}
 
 	private void createStandardSequencer() {
-		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm());
-		mstrMoGui.addNewSeqStrip("Stnd Sequencer", mstrMoModel.getLastIndex());
-		addActionListenersToSeqStrip(mstrMoModel.getLastIndex());
+		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm(), nextIndex);
+		mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
+		addActionListenersToSeqStrip(nextIndex);
+		setNextIndex();
 	}
 
 	private void addActionListenersToSeqStrip(int index) {
-		mstrMoGui.getTitles().get(index).addActionListener(e -> rename(index));
-		mstrMoGui.getOpen().get(index).addActionListener(e -> open(index));
-		mstrMoGui.getRemove().get(index).addActionListener(e -> remove(index));
-		mstrMoGui.getMute().get(index).addActionListener(e -> mute(index));
-		mstrMoGui.getSolo().get(index).addActionListener(e -> solo(index));
+		mstrMoGui.getTitles()[index].addActionListener(e -> rename(index));
+		mstrMoGui.getOpen()[index].addActionListener(e -> open(index));
+		mstrMoGui.getRemove()[index].addActionListener(e -> remove(index));
+		mstrMoGui.getMute()[index].addActionListener(e -> mute(index));
+		mstrMoGui.getSolo()[index].addActionListener(e -> solo(index));
 	}
 
 	private void open(int index) {
@@ -78,4 +81,7 @@ public class MstrMoController {
 		mstrMoModel.stop();
 	}
 
+	private void setNextIndex() {
+		nextIndex = mstrMoModel.getNextIndex();
+	}
 }

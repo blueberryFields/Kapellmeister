@@ -57,9 +57,9 @@ public class MstrMoGui extends JFrame {
 	private JPanel stripPanel = new JPanel();
 	// private List<JSeparator> separators = new LinkedList<>();
 	private List<JPanel> seqPanels = new LinkedList<>();
-	private List<JPanel> titlePanels = new LinkedList<>();
-	private List<JLabel> titles = new LinkedList<>();
-	private List<JButton> rename = new LinkedList<>();
+	// private List<JPanel> titlePanels = new LinkedList<>();
+	private List<JTextField> titles = new LinkedList<>();
+	private List<JLabel> colon = new LinkedList<>();
 	private List<JButton> open = new LinkedList<>();
 	private List<JButton> remove = new LinkedList<>();
 	private List<JButton> mute = new LinkedList<>();
@@ -72,7 +72,7 @@ public class MstrMoGui extends JFrame {
 	private JMenuItem standardSequencer = new JMenuItem("Standard Sequencer");
 
 	// Size for masterPanel and seqStrips
-	private Dimension stripDim = new Dimension(550, 35);
+	private Dimension stripDim = new Dimension(500, 35);
 	// Size for titlePanels
 	private Dimension titlePanelDim = new Dimension(275, 25);
 
@@ -152,12 +152,13 @@ public class MstrMoGui extends JFrame {
 	}
 
 	public void addNewSeqStrip(String title, int index) {
-		titlePanels.add(new JPanel());
-		titlePanels.get(index).setPreferredSize(titlePanelDim);
-		titlePanels.get(index).setBackground(backGroundColor);
-		titles.add(new JLabel(title));
-		//titles.get(index).setPreferredSize(new Dimension(250, 25));
-		rename.add(new JButton("Rename"));
+		// titlePanels.add(new JPanel());
+		// titlePanels.get(index).setPreferredSize(titlePanelDim);
+		// titlePanels.get(index).setBackground(backGroundColor);
+		titles.add(new JTextField(title, 10));
+		titles.get(index).setHorizontalAlignment(JTextField.RIGHT);
+		titles.get(index).setBackground(backGroundColor);
+		colon.add(new JLabel(":"));
 		open.add(new JButton("Open"));
 		remove.add(new JButton("Remove"));
 		mute.add(new JButton("Mute"));
@@ -167,15 +168,15 @@ public class MstrMoGui extends JFrame {
 		seqPanels.get(index).setBackground(backGroundColor);
 		GridBagConstraints seqPanelGbc = new GridBagConstraints();
 		// GridBagConstraints seqSepGbc = new GridBagConstraints();
-		titlePanels.get(index).add(titles.get(index));
+		// titlePanels.get(index).add(titles.get(index));
 		seqPanelGbc.gridx = 0;
 		seqPanelGbc.gridy = 0;
-		seqPanelGbc.gridwidth = 2;
-		seqPanels.get(index).add(titlePanels.get(index), seqPanelGbc);
-		seqPanelGbc.gridwidth = 1;
+		// seqPanelGbc.gridwidth = 2;
+		seqPanels.get(index).add(titles.get(index), seqPanelGbc);
+		// seqPanelGbc.gridwidth = 1;
 		seqPanelGbc.gridx = 2;
 		seqPanelGbc.gridy = 0;
-		seqPanels.get(index).add(rename.get(index), seqPanelGbc);
+		seqPanels.get(index).add(colon.get(index), seqPanelGbc);
 		seqPanelGbc.gridx = 3;
 		seqPanelGbc.gridy = 0;
 		seqPanels.get(index).add(open.get(index), seqPanelGbc);
@@ -195,22 +196,26 @@ public class MstrMoGui extends JFrame {
 		pack();
 	}
 
-	public String rename(int index) {
-		String title = JOptionPane.showInputDialog("Enter new name:");
-		titles.get(index).setText(title + ":");
-		return title;
+//	public String rename(int index) {
+//		String title = JOptionPane.showInputDialog("Enter new name:");
+//		titles.get(index).setText(title + ":");
+//		return title;
+//	}
+	
+	public String getTitle(int index) {
+		return titles.get(index).getText();
 	}
 
 	public void removeSeqStrip(int index) {
 		seqPanels.get(index).remove(titles.get(index));
-		seqPanels.get(index).remove(rename.get(index));
+		seqPanels.get(index).remove(colon.get(index));
 		seqPanels.get(index).remove(remove.get(index));
 		seqPanels.get(index).remove(mute.get(index));
 		seqPanels.get(index).remove(solo.get(index));
 		stripPanel.remove(seqPanels.get(index));
-		
+
 		titles.remove(index);
-		rename.remove(index);
+		colon.remove(index);
 		remove.remove(index);
 		mute.remove(index);
 		solo.remove(index);
@@ -219,12 +224,12 @@ public class MstrMoGui extends JFrame {
 		pack();
 	}
 
-	public List<JLabel> getTitles() {
+	public List<JTextField> getTitles() {
 		return titles;
 	}
 
-	public List<JButton> getRename() {
-		return rename;
+	public List<JLabel> getRename() {
+		return colon;
 	}
 
 	public List<JButton> getOpen() {

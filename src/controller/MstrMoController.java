@@ -36,12 +36,12 @@ public class MstrMoController {
 
 	private void createStandardSequencer() {
 		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm());
-		mstrMoGui.addNewSeqStrip("Standard Sequencer:", mstrMoModel.getLastIndex());
+		mstrMoGui.addNewSeqStrip("Stnd Sequencer", mstrMoModel.getLastIndex());
 		addActionListenersToSeqStrip(mstrMoModel.getLastIndex());
 	}
 
 	private void addActionListenersToSeqStrip(int index) {
-		mstrMoGui.getRename().get(index).addActionListener(e -> rename(index));
+		mstrMoGui.getTitles().get(index).addActionListener(e -> rename(index));
 		mstrMoGui.getOpen().get(index).addActionListener(e -> open(index));
 		mstrMoGui.getRemove().get(index).addActionListener(e -> remove(index));
 		mstrMoGui.getMute().get(index).addActionListener(e -> mute(index));
@@ -53,7 +53,7 @@ public class MstrMoController {
 	}
 
 	private void rename(int index) {
-		mstrMoModel.rename(mstrMoGui.rename(index), index);
+		mstrMoModel.rename(mstrMoGui.getTitle(index), index);
 	}
 
 	private void remove(int index) {

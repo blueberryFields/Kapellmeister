@@ -25,10 +25,11 @@ public class SequencerModel {
 	private ShortMessage noteOff = new ShortMessage();
 	// private NoteGenerator key;
 	private boolean firstNote;
-	private boolean mute = false;
-	private boolean solo = false;
+	private SoloMute soloMute;
+	// private boolean mute = false;
+	// private boolean solo = false;
 	private int midiChannel = 0;
-	
+
 	private NoteGenerator key;
 	private int bpm;
 
@@ -42,6 +43,7 @@ public class SequencerModel {
 
 	public void initSeq() {
 		sequence = new Note[8];
+		soloMute = SoloMute.NONE;
 		for (int i = 0; i < sequence.length; i++) {
 			sequence[i] = new Note();
 		}
@@ -159,7 +161,7 @@ public class SequencerModel {
 	}
 
 	public void playStep() {
-		if (!mute) {
+		if (soloMute != SoloMute.MUTE) {
 			if (currentStep == 0 && !firstNote) {
 				if (sequence[sequence.length - 1].getNoteOn() != NoteOn.HOLD) {
 					try {
@@ -253,27 +255,15 @@ public class SequencerModel {
 	}
 
 	public void mute() {
-		if (!mute) {
-			mute = true;
-		} else {
-			mute = false;
-		}
+		soloMute = SoloMute.MUTE;
 	}
 
 	public void solo() {
-		if (!solo) {
-			solo = true;
-		} else {
-			solo = false;
-		}
+		soloMute = SoloMute.SOLO;
 	}
 
-	public boolean getSolo() {
-		return solo;
-	}
-
-	public boolean getMute() {
-		return mute;
+	public void unSoloMute() {
+		soloMute = SoloMute.NONE;
 	}
 
 	public void killLastNote() {
@@ -318,17 +308,25 @@ public class SequencerModel {
 	public NoteGenerator getKey() {
 		return key;
 	}
-	 
+
 	public void setKey(NoteGenerator key) {
 		this.key = key;
 	}
-	
+
 	public int getBpm() {
 		return bpm;
 	}
-	
+
 	public void setBpm(int bpm) {
 		this.bpm = bpm;
 	}
-	
+
+	public SoloMute getSoloMute() {
+		return soloMute;
+	}
+
+	public void setSoloMute(SoloMute soloMute) {
+		this.soloMute = soloMute;
+	}
+
 }

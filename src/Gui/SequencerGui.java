@@ -13,21 +13,16 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 
-import note.A;
-import note.Am;
-import note.Bbm;
-import note.C;
+import model.SoloMute;
 import note.Note;
-import note.NoteGenerator;
 
 public class SequencerGui extends JFrame {
 
@@ -36,23 +31,22 @@ public class SequencerGui extends JFrame {
 	 */
 	private static final long serialVersionUID = -5048555444576060385L;
 
-	// private NoteGenerator key;
-
 	// Create colorscheme
 	private Color backGroundColor = new Color(142, 175, 206);
 	private Color disabledStepColor = new Color(76, 94, 112);
 	private Color enabledStepColor = new Color(193, 218, 242);
 	private Color activeStepColor = Color.RED;
 	private Color muteColor = Color.BLUE;
-	private Color soloColor = new Color(188, 167, 30);
+	private Color soloColor = Color.YELLOW;
 	// private Color buttonColor = Color.LIGHT_GRAY;
-	private Color textColor = Color.BLACK;
+	// private Color textColor = Color.BLACK;
 	// private Color stepPanelColor = new Color(77, 108, 137);
 
 	// Create dimensions
-	Dimension buttonDimSmall = new Dimension(55, 25);
-	Dimension veloChooserDim = new Dimension(50, 25);
-	Dimension noteChooserDim = new Dimension(50, 25);
+	private Dimension buttonDimSmall = new Dimension(55, 25);
+	private Dimension veloChooserDim = new Dimension(50, 25);
+	private Dimension noteChooserDim = new Dimension(50, 25);
+	private Dimension soloMuteBarDim = new Dimension(55, 20);
 
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
@@ -60,11 +54,12 @@ public class SequencerGui extends JFrame {
 	private String[] notes = new String[] { "C-1", "C#-1", "D-1", "D#-1", "E-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1",
 			"B-1", "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0", "C1", "C#1", "D1",
 			"D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2",
-			"G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4",
-			"D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5",
-			"G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6",
-			"C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7", "C8", "C#8", "D8", "D#8", "E8",
-			"F8", "F#8", "G8", "G#8", "A8", "A#8", "B8", "C9", "C#9", "D9", "D#9", "E9", "F9", "F#9", "G9", };
+			"G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4",
+			"C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5",
+			"F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6",
+			"A#6", "B6", "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7", "C8", "C#8", "D8",
+			"D#8", "E8", "F8", "F#8", "G8", "G#8", "A8", "A#8", "B8", "C9", "C#9", "D9", "D#9", "E9", "F9", "F#9",
+			"G9", };
 	private SpinnerListModel[] noteModel = new SpinnerListModel[16];
 	private JSpinner noteChooser[] = new JSpinner[16];
 	private SpinnerModel[] velocityModel = new SpinnerNumberModel[16];
@@ -85,8 +80,9 @@ public class SequencerGui extends JFrame {
 	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
 	private JLabel partNotesText = new JLabel("Partnotes:");
-	private JButton mute = new JButton("Mute");
-	private JButton solo = new JButton("Solo");
+	// private JButton mute = new JButton("Mute");
+	// private JButton solo = new JButton("Solo");
+	private JLabel soloMuteBar = new JLabel();
 
 	// Create components for generatorpanel
 	private JPanel generatorPanel = new JPanel();
@@ -142,16 +138,7 @@ public class SequencerGui extends JFrame {
 	public SequencerGui(Info[] infos, String title) {
 		super(title);
 
-		// Code for setting the Ui to Crossplatformlook and feel, looks like shiiiet
-		// though:
-		//
-		// try {
-		// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-
-		// Set colors for panels
+		// Set colors for panels n the like
 		rndVeloCheckPanel.setBackground(backGroundColor);
 		rndVeloPanel.setBackground(backGroundColor);
 		veloLowPanel.setBackground(backGroundColor);
@@ -160,25 +147,18 @@ public class SequencerGui extends JFrame {
 		generatePanel.setBackground(backGroundColor);
 		generatorAlgorithmPanel.setBackground(backGroundColor);
 		nudgePanel.setBackground(backGroundColor);
-		// keyPanel.setBackground(backGroundColor);
 		nrOfStepsPanel.setBackground(backGroundColor);
 		channelPanel.setBackground(backGroundColor);
 		tempoPanel.setBackground(backGroundColor);
 		stepPanel.setBackground(backGroundColor);
 		octaveRangePanel.setBackground(backGroundColor);
-
-		mute.setForeground(textColor);
-		solo.setForeground(textColor);
+		soloMuteBar.setBackground(backGroundColor);
 
 		// Set BackgroundColor for frame
 		getContentPane().setBackground(backGroundColor);
 
 		// Add stuff to masterPanel
 
-		// for (int i = 0; i < playStopButtons.length; i++) {
-		// channelPanel.add(playStopButtons[i]);
-		// }
-		// playStopButtons[0].setEnabled(false);
 		availibleDevices = new String[infos.length + 1];
 		availibleDevices[0] = "Choose a device...";
 		for (int i = 1; i < availibleDevices.length; i++) {
@@ -187,23 +167,12 @@ public class SequencerGui extends JFrame {
 		channelPanel.add(deviceChooser = new JComboBox<String>(availibleDevices));
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
 		midiChannelChooser.setPreferredSize(new Dimension(70, 25));
-		// masterPanel.add(channelText);
+		channelPanel.add(channelText);
 		channelPanel.add(midiChannelChooser);
-
-		// Add stuff to tempoPanel
-		// tempoPanel.add(bpmText);
-		// tempoPanel.add(bpmChooser);
-		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
-		partNotesChooser.setValue("1/8");
-		partNotesChooser.setPreferredSize(new Dimension(60, 25));
-		tempoPanel.add(partNotesText);
-		tempoPanel.add(partNotesChooser);
-		mute.setPreferredSize(buttonDimSmall);
-		// mute.setOpaque(true);
-		tempoPanel.add(mute);
-		solo.setPreferredSize(buttonDimSmall);
-		// solo.setOpaque(true);
-		tempoPanel.add(solo);
+		soloMuteBar.setPreferredSize(soloMuteBarDim);
+		soloMuteBar.setOpaque(true);
+		soloMuteBar.setHorizontalAlignment(SwingConstants.CENTER);
+		channelPanel.add(soloMuteBar);
 
 		// Add stuff to generatorpanel
 		generatorPanel.setLayout(new GridBagLayout());
@@ -211,8 +180,6 @@ public class SequencerGui extends JFrame {
 
 		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
 		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
-		// keyChooser.setEditor(new JSpinner.DefaultEditor(keyChooser));
-		// keyChooser.setPreferredSize(new Dimension(55, 25));
 
 		// generatorPanelGbc.insets = new Insets(0, 0, 0, 0);
 
@@ -220,10 +187,12 @@ public class SequencerGui extends JFrame {
 		nrOfStepsPanel.add(nrOfStepsText);
 		nrOfStepsPanel.add(nrOfStepsChooser);
 		generatePanel.add(nrOfStepsPanel);
+		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
+		partNotesChooser.setValue("1/8");
+		partNotesChooser.setPreferredSize(new Dimension(60, 25));
+		generatePanel.add(partNotesText);
+		generatePanel.add(partNotesChooser);
 
-		// keyPanel.add(keyText);
-		// keyPanel.add(keyChooser);
-		// generatePanel.add(keyPanel);
 		generatorPanelGbc.gridx = 0;
 		generatorPanelGbc.gridy = 0;
 		generatorPanel.add(generatePanel, generatorPanelGbc);
@@ -358,7 +327,8 @@ public class SequencerGui extends JFrame {
 		frameGbc.gridy = 4;
 		add(stepPanel, frameGbc);
 
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); //hopefully means I can later unhide this(setVisible(true)???
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // hopefully means I can later unhide this(setVisible(true)???
 		pack();
 		setVisible(true);
 	}
@@ -404,7 +374,7 @@ public class SequencerGui extends JFrame {
 	public int getChoosenDevice() {
 		return deviceChooser.getSelectedIndex();
 	}
-	
+
 	public JSpinner[] getNoteChooserArray() {
 		return noteChooser;
 	}
@@ -441,7 +411,7 @@ public class SequencerGui extends JFrame {
 		return nrOfStepsChooser;
 	}
 
-	public JComboBox getDeviceChooser() {
+	public JComboBox<String> getDeviceChooser() {
 		return deviceChooser;
 	}
 
@@ -459,14 +429,28 @@ public class SequencerGui extends JFrame {
 
 	public void disableGui() {
 		deviceChooser.setEnabled(false);
+		midiChannelChooser.setEnabled(false);
 		partNotesChooser.setEnabled(false);
 		generateButton.setEnabled(false);
+		octaveLowChooser.setEnabled(false);
+		octaveHighChooser.setEnabled(false);
+		rndVeloCheckBox.setEnabled(false);
+		veloLowChooser.setEnabled(false);
+		veloHighChooser.setEnabled(false);
+		generatorAlgorithmChooser.setEnabled(false);
 	}
 
 	public void enableGui() {
 		deviceChooser.setEnabled(true);
+		midiChannelChooser.setEnabled(true);
 		partNotesChooser.setEnabled(true);
 		generateButton.setEnabled(true);
+		octaveLowChooser.setEnabled(true);
+		octaveHighChooser.setEnabled(true);
+		rndVeloCheckBox.setEnabled(true);
+		veloLowChooser.setEnabled(true);
+		veloHighChooser.setEnabled(true);
+		generatorAlgorithmChooser.setEnabled(true);
 	}
 
 	public String[] getAvailibleDevices() {
@@ -539,27 +523,23 @@ public class SequencerGui extends JFrame {
 		return nudgeRight;
 	}
 
-	public JButton getMute() {
-		return mute;
-	}
-
-	public JButton getSolo() {
-		return solo;
-	}
-
-	public void setMuteColor() {
-		if (mute.getForeground() == textColor) {
-			mute.setForeground(muteColor);
-		} else {
-			mute.setForeground(textColor);
-		}
-	}
-
-	public void setSoloColor() {
-		if (solo.getForeground() == textColor) {
-			solo.setForeground(soloColor);
-		} else {
-			solo.setForeground(textColor);
+	public void setSoloMuteBar(SoloMute soloMute) {
+		switch (soloMute) {
+		case MUTE:
+			soloMuteBar.setBackground(muteColor);
+			soloMuteBar.setText("MUTE");
+			break;
+		case SOLO:
+			soloMuteBar.setBackground(soloColor);
+			soloMuteBar.setText("SOLO");
+			break;
+		case NONE:
+			soloMuteBar.setBackground(backGroundColor);
+			soloMuteBar.setText("");
+			break;
+		default:
+			soloMuteBar.setBackground(backGroundColor);
+			soloMuteBar.setText("");
 		}
 	}
 
@@ -597,5 +577,9 @@ public class SequencerGui extends JFrame {
 
 	public void open() {
 		setVisible(true);
+	}
+	
+	public void close() {
+		setVisible(false);
 	}
 }

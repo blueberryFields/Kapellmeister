@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 
 import Gui.MstrMoGui;
 import model.MstrMoModel;
+import model.SoloMute;
 import note.KeyConverter;
 
 public class MstrMoController {
@@ -11,7 +12,7 @@ public class MstrMoController {
 	private KeyConverter keyConv;
 	private MstrMoGui mstrMoGui;
 	private MstrMoModel mstrMoModel;
-	
+
 	private int nextIndex = 0;
 
 	public MstrMoController() {
@@ -37,7 +38,8 @@ public class MstrMoController {
 	}
 
 	private void createStandardSequencer() {
-		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm(), nextIndex, "Stnd Sequencer");
+		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm(), nextIndex,
+				"Stnd Sequencer");
 		mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
 		addActionListenersToSeqStrip(nextIndex);
 		setNextIndex();
@@ -50,7 +52,7 @@ public class MstrMoController {
 		mstrMoGui.getMute()[index].addActionListener(e -> mute(index));
 		mstrMoGui.getSolo()[index].addActionListener(e -> solo(index));
 	}
-	
+
 	private void removeActionListenderFromStrip(int index) {
 		mstrMoGui.getTitles()[index].removeActionListener(e -> rename(index));
 		mstrMoGui.getOpen()[index].removeActionListener(e -> open(index));
@@ -70,18 +72,18 @@ public class MstrMoController {
 	private void remove(int index) {
 		mstrMoModel.removeSequencer(index);
 		removeActionListenderFromStrip(index);
-		mstrMoGui.removeAllSeqStrips();	
+		mstrMoGui.removeAllSeqStrips();
 		addStripsToGui(mstrMoModel.lastUsedIndex());
 		mstrMoGui.paintAndPack();
 	}
-	
+
 	private void addStripsToGui(int lastUsedIndex) {
-		for(int i = 0; i <= lastUsedIndex; i++) {
+		for (int i = 0; i <= lastUsedIndex; i++) {
 			mstrMoGui.addNewSeqStrip(mstrMoModel.getTitle(i), i);
 			addActionListenersToSeqStrip(i);
 		}
 	}
-	
+
 	public int getLastUsedIndex(Object[] array) {
 		int index = -1;
 		for (int i = 0; i < array.length; i++) {
@@ -92,21 +94,31 @@ public class MstrMoController {
 		return index;
 	}
 
+	private void setSeqStripsColor() {
+		for (int i = 0; i <= mstrMoModel.lastUsedIndex(); i++) {
+			mstrMoGui.setSeqStripColor(mstrMoModel.getSoloMute(i), i);
+		}
+	}
+
 	private void mute(int index) {
 		mstrMoModel.mute(index);
+		mstrMoGui.setSeqStripColor(mstrMoModel.getSoloMute(index), index);
 	}
 
 	private void solo(int index) {
 		mstrMoModel.solo(index);
+		setSeqStripsColor();
 	}
 
 	private void start() {
 		changeBpm();
 		mstrMoModel.start();
+		mstrMoGui.disableGui(mstrMoModel.lastUsedIndex());
 	}
 
 	private void stop() {
 		mstrMoModel.stop();
+		mstrMoGui.enableGui(mstrMoModel.lastUsedIndex());
 	}
 
 	private void setNextIndex() {

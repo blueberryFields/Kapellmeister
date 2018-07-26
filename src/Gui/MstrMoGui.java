@@ -24,13 +24,16 @@ import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 
 import controller.SequencerController;
+import model.SoloMute;
 
 public class MstrMoGui extends JFrame {
 
 	// Create colorscheme
 	private Color backGroundColor = new Color(142, 175, 206);
-	private Color disabledStepColor = new Color(76, 94, 112);
-	private Color enabledStepColor = new Color(193, 218, 242);
+	private Color muteColor = Color.BLUE;
+	private Color soloColor = Color.YELLOW;
+	// private Color disabledStepColor = new Color(76, 94, 112);
+	// private Color enabledStepColor = new Color(193, 218, 242);
 	private Color sepColor = new Color(95, 125, 153);
 
 	private GridBagConstraints gbc = new GridBagConstraints();
@@ -60,10 +63,11 @@ public class MstrMoGui extends JFrame {
 	private JPanel[] seqPanels = new JPanel[8];
 	private JTextField[] titles = new JTextField[8];
 	private JLabel[] colon = new JLabel[8];
-	private JButton[] open = new JButton[8];
+	private JButton[] openClose = new JButton[8];
 	private JButton[] remove = new JButton[8];
 	private JButton[] mute = new JButton[8];
 	private JButton[] solo = new JButton[8];
+	private JLabel[] soloMuteBar = new JLabel[8];
 
 	// Create stuff for create panel
 	private JPanel createPanel = new JPanel();
@@ -71,10 +75,9 @@ public class MstrMoGui extends JFrame {
 	private JMenu createNewMenu = new JMenu("Create new");
 	private JMenuItem standardSequencer = new JMenuItem("Standard Sequencer");
 
-	// Size for masterPanel and seqStrips
-	private Dimension stripDim = new Dimension(500, 35);
-	// Size for titlePanels
-	private Dimension titlePanelDim = new Dimension(275, 25);
+	// Size for masterPanel and seqStrips and more
+	private Dimension stripDim = new Dimension(555, 35);
+	private Dimension soloMuteBarColor = new Dimension(55, 20);
 
 	// Create font for menus
 	private Font menuFont = playStopButtons[0].getFont();
@@ -156,10 +159,14 @@ public class MstrMoGui extends JFrame {
 		titles[index].setHorizontalAlignment(JTextField.RIGHT);
 		titles[index].setBackground(backGroundColor);
 		colon[index] = new JLabel(":");
-		open[index] = new JButton("Open");
+		openClose[index] = new JButton("Open");
 		remove[index] = new JButton("Remove");
 		mute[index] = new JButton("Mute");
 		solo[index] = new JButton("Solo");
+		soloMuteBar[index] = new JLabel();
+		soloMuteBar[index].setOpaque(true);
+		soloMuteBar[index].setPreferredSize(soloMuteBarColor);
+		soloMuteBar[index].setBackground(backGroundColor);
 		seqPanels[index] = new JPanel();
 		seqPanels[index].setLayout(new GridBagLayout());
 		seqPanels[index].setBackground(backGroundColor);
@@ -176,7 +183,7 @@ public class MstrMoGui extends JFrame {
 		seqPanels[index].add(colon[index], seqPanelGbc);
 		seqPanelGbc.gridx = 3;
 		seqPanelGbc.gridy = 0;
-		seqPanels[index].add(open[index], seqPanelGbc);
+		seqPanels[index].add(openClose[index], seqPanelGbc);
 		seqPanelGbc.gridx = 4;
 		seqPanelGbc.gridy = 0;
 		seqPanels[index].add(remove[index], seqPanelGbc);
@@ -186,6 +193,9 @@ public class MstrMoGui extends JFrame {
 		seqPanelGbc.gridx = 6;
 		seqPanelGbc.gridy = 0;
 		seqPanels[index].add(solo[index], seqPanelGbc);
+		seqPanelGbc.gridx = 7;
+		seqPanelGbc.gridy = 0;
+		seqPanels[index].add(soloMuteBar[index], seqPanelGbc);
 
 		gbc.gridy = index;
 		seqPanels[index].setPreferredSize(stripDim);
@@ -195,6 +205,22 @@ public class MstrMoGui extends JFrame {
 
 	public String getTitle(int index) {
 		return titles[index].getText();
+	}
+
+	public void setSeqStripColor(SoloMute soloMute, int index) {
+		switch (soloMute) {
+		case MUTE:
+			soloMuteBar[index].setBackground(muteColor);
+			break;
+		case SOLO:
+			soloMuteBar[index].setBackground(soloColor);
+			break;
+		case NONE:
+			soloMuteBar[index].setBackground(backGroundColor);
+			break;
+		default:
+			soloMuteBar[index].setBackground(backGroundColor);
+		}
 	}
 
 	public void removeAllSeqStrips() {
@@ -230,6 +256,30 @@ public class MstrMoGui extends JFrame {
 		pack();
 	}
 
+	public void disableGui(int lastUsedIndex) {
+		bpmChooser.setEnabled(false);
+		keyChooser.setEnabled(false);
+		createNewMenu.setEnabled(false);
+		saveLoadMenu.setEnabled(false);
+		for (int i = 0; i <= lastUsedIndex; i++) {
+			remove[i].setEnabled(false);
+		}
+	}
+
+	public void enableGui(int lastUsedIndex) {
+		bpmChooser.setEnabled(true);
+		keyChooser.setEnabled(true);
+		saveLoadMenu.setEnabled(true);
+		createNewMenu.setEnabled(true);
+		for (int i = 0; i <= lastUsedIndex; i++) {
+			remove[i].setEnabled(true);
+		}
+	}
+
+	public void setSoloMuteColor(SoloMute soloMute) {
+
+	}
+
 	public JTextField[] getTitles() {
 		return titles;
 	}
@@ -239,7 +289,7 @@ public class MstrMoGui extends JFrame {
 	}
 
 	public JButton[] getOpen() {
-		return open;
+		return openClose;
 	}
 
 	public JButton[] getRemove() {

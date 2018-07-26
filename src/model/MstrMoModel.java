@@ -82,27 +82,46 @@ public class MstrMoModel {
 	public void open(int index) {
 		seqArr[index].open();
 	}
+	
+	public void close(int index) {
+		seqArr[index].close();
+	}
 
 	public void mute(int index) {
-		seqArr[index].mute();
-
+		seqArr[index].muteButton();
 	}
 
 	public void solo(int index) {
-		seqArr[index].solo();
-
+		if (seqArr[index].getSoloMute() != SoloMute.SOLO) {
+			seqArr[index].solo();
+			for (int i = 0; i <= lastUsedIndex(); i++) {
+				if (i != index) {
+					seqArr[i].mute();
+				}
+			}
+		} else {
+			seqArr[index].solo();
+			for (int i = 0; i <= lastUsedIndex(); i++) {
+				if (i != index) {
+					seqArr[i].unSoloMute();
+				}
+			}
+		}
 	}
 
 	public void rename(String title, int index) {
 		seqArr[index].setTitle(title);
 	}
-	
+
+	public SoloMute getSoloMute(int index) {
+		return seqArr[index].getSoloMute();
+	}
+
 	public String getTitle(int index) {
 		return seqArr[index].getTitle();
 	}
-	
+
 	public SequencerController[] getSeqArr() {
 		return seqArr;
 	}
 }
-

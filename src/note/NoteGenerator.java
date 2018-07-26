@@ -23,6 +23,7 @@ public class NoteGenerator {
 		return sequence;
 	}
 
+	// !!!Sometimes something goes wrong here!!!
 	public Note[] getRndSeqNoDuplInRow(Note[] sequence, boolean rndVeloIsChecked, int veloLow, int veloHigh,
 			int octaveLow, int octaveHigh) {
 		Random rn = new Random();

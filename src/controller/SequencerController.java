@@ -12,6 +12,7 @@ import javax.swing.event.ChangeListener;
 import Gui.MstrMoGui;
 import Gui.SequencerGui;
 import model.SequencerModel;
+import model.SoloMute;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
@@ -27,7 +28,7 @@ public class SequencerController implements ActionListener {
 	// Konstruktor
 	public SequencerController(NoteGenerator key, int bpm, String title) {
 		this.title = title;
-		
+
 		seq = new SequencerModel(key, bpm);
 
 		gui = new SequencerGui(seq.getAvailibleMidiDevices(), title);
@@ -43,8 +44,8 @@ public class SequencerController implements ActionListener {
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
-		gui.getMute().addActionListener(e -> mute());
-		gui.getSolo().addActionListener(e -> solo());
+		// gui.getMute().addActionListener(e -> mute());
+		// gui.getSolo().addActionListener(e -> solo());
 
 		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence()));
@@ -63,20 +64,24 @@ public class SequencerController implements ActionListener {
 
 		gui.repaintSequencer(seq.getSequence());
 	}
-	
+
 	public void open() {
 		gui.open();
+	}
+	
+	public void close() {
+		gui.close();
 	}
 
 	public void setTitle(String title) {
 		this.title = title;
 		gui.setTitle(title);
 	}
-	
+
 	public String getTitle() {
 		return gui.getTitle();
 	}
-	
+
 	private void chooseMidiChannel() {
 		seq.setMidiChannel((int) gui.getMidiChannelChooser().getSelectedItem() - 1);
 	}
@@ -102,27 +107,47 @@ public class SequencerController implements ActionListener {
 	public void disposeGui() {
 		gui.dispose();
 	}
-	
+
 	public void solo() {
-		// TODO
-		gui.setSoloColor();
-		if (seq.getMute()) {
-			seq.mute();
-			gui.setMuteColor();
+		if (seq.getSoloMute() != SoloMute.SOLO) {
+			seq.solo();
+		} else {
+			seq.unSoloMute();
 		}
-		seq.solo();
+		gui.setSoloMuteBar(seq.getSoloMute());
 	}
 
 	public void mute() {
-		gui.setMuteColor();
-		if (seq.getSolo()) {
-			seq.solo();
-			gui.setSoloColor();
+		if (seq.getSoloMute() != SoloMute.MUTE) {
+			seq.mute();
+			if (seq.getRunning()) {
+				seq.killLastNote();
+			}
+			gui.setSoloMuteBar(seq.getSoloMute());
 		}
-		seq.mute();
-		if (seq.getRunning()) {
-			seq.killLastNote();
+	}
+	
+	public void unSoloMute() {
+		if(seq.getSoloMute() != SoloMute.NONE) {
+			seq.unSoloMute();
+			gui.setSoloMuteBar(seq.getSoloMute());
 		}
+	}
+
+	public void muteButton() {
+		if (seq.getSoloMute() != SoloMute.MUTE) {
+			seq.mute();
+			if (seq.getRunning()) {
+				seq.killLastNote();
+			}
+		} else {
+			seq.unSoloMute();
+		}
+		gui.setSoloMuteBar(seq.getSoloMute());
+	}
+	
+	public SoloMute getSoloMute() {
+		return seq.getSoloMute();
 	}
 
 	private void nudgeLeft() {
@@ -320,7 +345,7 @@ public class SequencerController implements ActionListener {
 	public void setBpm(int bpm) {
 		seq.setBpm(bpm);
 	}
-	
+
 	public void setTempo() {
 		int tempo = 60000 / seq.getBpm();
 		switch (gui.getPartnotes()) {
@@ -345,7 +370,7 @@ public class SequencerController implements ActionListener {
 	public void setKey(NoteGenerator key) {
 		seq.setKey(key);
 	}
-	
+
 	public Info[] getAvailibleMidiDevices() {
 		return seq.getAvailibleMidiDevices();
 	}

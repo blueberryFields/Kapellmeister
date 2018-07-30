@@ -62,7 +62,13 @@ public class MstrMoController {
 	}
 
 	private void open(int index) {
-		mstrMoModel.open(index);
+		if (mstrMoGui.getOpen()[index].getText().equals("Close")) {
+			mstrMoModel.close(index);
+			mstrMoGui.getOpen()[index].setText("Open");
+		} else {
+			mstrMoModel.open(index);
+			mstrMoGui.getOpen()[index].setText("Close");
+		}
 	}
 
 	private void rename(int index) {
@@ -96,13 +102,13 @@ public class MstrMoController {
 
 	private void setSeqStripsColor() {
 		for (int i = 0; i <= mstrMoModel.lastUsedIndex(); i++) {
-			mstrMoGui.setSeqStripColor(mstrMoModel.getSoloMute(i), i);
+			mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(i), i);
 		}
 	}
 
 	private void mute(int index) {
 		mstrMoModel.mute(index);
-		mstrMoGui.setSeqStripColor(mstrMoModel.getSoloMute(index), index);
+		mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(index), index);
 	}
 
 	private void solo(int index) {

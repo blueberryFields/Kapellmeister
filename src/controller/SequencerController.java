@@ -24,6 +24,8 @@ public class SequencerController implements ActionListener {
 	private Timer clock;
 	private long guiDelay;
 	private String title;
+	private int bpm;
+	private int activeSequence = 0;
 
 	// Konstruktor
 	public SequencerController(NoteGenerator key, int bpm, String title) {
@@ -34,6 +36,8 @@ public class SequencerController implements ActionListener {
 		gui = new SequencerGui(seq.getAvailibleMidiDevices(), title);
 
 		clock = new Timer(500, this);
+
+		setBpm(bpm);
 		setTempo();
 
 		// Add actionListeners to buttons
@@ -48,7 +52,8 @@ public class SequencerController implements ActionListener {
 		// gui.getSolo().addActionListener(e -> solo());
 
 		// Add ActionListeners to Jspinners
-		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence()));
+//		gui.getNrOfStepsChooser()
+//				.addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence(activeSequence)));
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
 		gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
@@ -62,13 +67,13 @@ public class SequencerController implements ActionListener {
 		// Add changeListeners to Sliders
 		gui.getGuiDelaySLider().addChangeListener(e -> changeGuiDelay());
 
-		gui.repaintSequencer(seq.getSequence());
+		gui.repaintSequencer(seq.getSequence(activeSequence));
 	}
 
 	public void open() {
 		gui.open();
 	}
-	
+
 	public void close() {
 		gui.close();
 	}
@@ -121,14 +126,14 @@ public class SequencerController implements ActionListener {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				seq.killLastNote();
+				seq.killLastNote(activeSequence);
 			}
 			gui.setSoloMuteBar(seq.getSoloMute());
 		}
 	}
-	
+
 	public void unSoloMute() {
-		if(seq.getSoloMute() != SoloMute.NONE) {
+		if (seq.getSoloMute() != SoloMute.NONE) {
 			seq.unSoloMute();
 			gui.setSoloMuteBar(seq.getSoloMute());
 		}
@@ -138,28 +143,28 @@ public class SequencerController implements ActionListener {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				seq.killLastNote();
+				seq.killLastNote(activeSequence);
 			}
 		} else {
 			seq.unSoloMute();
 		}
 		gui.setSoloMuteBar(seq.getSoloMute());
 	}
-	
+
 	public SoloMute getSoloMute() {
 		return seq.getSoloMute();
 	}
 
 	private void nudgeLeft() {
-		seq.nudgeLeft();
+		seq.nudgeLeft(activeSequence);
 		checkHold();
-		gui.repaintSequencer(seq.getSequence());
+		gui.repaintSequencer(seq.getSequence(activeSequence));
 	}
 
 	private void nudgeRight() {
-		seq.nudgeRight();
+		seq.nudgeRight(activeSequence);
 		checkHold();
-		gui.repaintSequencer(seq.getSequence());
+		gui.repaintSequencer(seq.getSequence(activeSequence));
 	}
 
 	private void changeVeloHigh() {
@@ -196,44 +201,51 @@ public class SequencerController implements ActionListener {
 	}
 
 	private void Off(int index) {
-		seq.getSingleStep(index).setHoldNote(-1);
-		seq.getSingleStep(index).setNoteOn(NoteOn.OFF);
+		seq.getSingleStep(activeSequence, index).setHoldNote(-1);
+		seq.getSingleStep(activeSequence, index).setNoteOn(NoteOn.OFF);
 		gui.setNoteOnButtonText(index, "Off");
 		checkHold(index);
 	}
 
 	private void On(int index) {
-		seq.getSingleStep(index).setNoteOn(NoteOn.ON);
+		seq.getSingleStep(activeSequence, index).setNoteOn(NoteOn.ON);
 		gui.setNoteOnButtonText(index, "On");
-		seq.getSingleStep(index).setHoldNote(-1);
+		seq.getSingleStep(activeSequence, index).setHoldNote(-1);
 		checkHold(index);
 	}
 
 	private void hold(int index) {
-		seq.getSingleStep(index).setNoteOn(NoteOn.HOLD);
+		seq.getSingleStep(activeSequence, index).setNoteOn(NoteOn.HOLD);
 		gui.setNoteOnButtonText(index, "Hold");
 		checkHold(index);
 	}
 
 	private void checkHold() {
 		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < seq.getSequence().length; j++) {
+			for (int j = 0; j < seq.getSequence(activeSequence).length; j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(j)
-									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
+					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+								.getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq
+											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+											.getMidiNote());
 						} else {
-							seq.getSingleStep(j)
-									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getHoldNote());
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq
+											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+											.getHoldNote());
 						}
 					}
 				} else {
-					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(j - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getMidiNote());
+					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activeSequence, j - 1).getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getMidiNote());
 						} else {
-							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getHoldNote());
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getHoldNote());
 						}
 					}
 				}
@@ -244,23 +256,30 @@ public class SequencerController implements ActionListener {
 	private void checkHold(int index) {
 		int loopStart = index;
 		for (int i = 0; i < 2; i++) {
-			for (int j = loopStart; j < seq.getSequence().length; j++) {
+			for (int j = loopStart; j < seq.getSequence(activeSequence).length; j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(seq.getSequence().length - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(j)
-									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getMidiNote());
+					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+								.getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq
+											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+											.getMidiNote());
 						} else {
-							seq.getSingleStep(j)
-									.setHoldNote(seq.getSingleStep(seq.getSequence().length - 1).getHoldNote());
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq
+											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+											.getHoldNote());
 						}
 					}
 				} else {
-					if (seq.getSingleStep(j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(j - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getMidiNote());
+					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activeSequence, j - 1).getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getMidiNote());
 						} else {
-							seq.getSingleStep(j).setHoldNote(seq.getSingleStep(j - 1).getHoldNote());
+							seq.getSingleStep(activeSequence, j)
+									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getHoldNote());
 						}
 					}
 				}
@@ -275,7 +294,7 @@ public class SequencerController implements ActionListener {
 			gui.getNoteChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSingleStep(index).changeNote((String) gui.getNoteChooser(index).getValue());
+					seq.getSingleStep(activeSequence, index).changeNote((String) gui.getNoteChooser(index).getValue());
 				}
 			});
 		}
@@ -287,7 +306,7 @@ public class SequencerController implements ActionListener {
 			gui.getVelocityChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSingleStep(index).setVelo((int) gui.getVelocityChooser(index).getValue());
+					seq.getSingleStep(activeSequence, index).setVelo((int) gui.getVelocityChooser(index).getValue());
 				}
 			});
 		}
@@ -307,16 +326,18 @@ public class SequencerController implements ActionListener {
 				tempArray[i] = sequence[i];
 			}
 		}
-		seq.setSequence(tempArray);
-		gui.repaintSequencer(seq.getSequence());
+		seq.setSequence(tempArray, activeSequence);
+		gui.repaintSequencer(seq.getSequence(activeSequence));
 	}
 
+	
+	//temp solution, solve this later, get NrOfSteps from active sequence instead of manually putting value 8 there: gui.getNrOfSteps()
 	private void generateSequence() {
-		seq.generateSequence(gui.getNrOfSteps(), seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
+		seq.generateSequence(8, seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
 				gui.isRndVeloChecked(), gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(),
-				gui.getOctaveHigh());
+				gui.getOctaveHigh(), activeSequence);
 		checkHold();
-		gui.repaintSequencer(seq.getSequence());
+		gui.repaintSequencer(seq.getSequence(activeSequence));
 	}
 
 	private void chooseMidiDevice() {
@@ -330,25 +351,27 @@ public class SequencerController implements ActionListener {
 
 	public void playSequence() {
 		setTempo();
-		seq.playSequence();
+		seq.initPlayVaribles();
 		clock.start();
 		gui.disableGui();
 	}
 
 	public void stopSequence() {
 		gui.enableGui();
-		seq.stopSequence();
+		seq.stopSequence(activeSequence);
 		clock.stop();
-		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
+		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
 	}
 
 	public void setBpm(int bpm) {
-		seq.setBpm(bpm);
+		this.bpm = bpm;
 	}
 
+	
+	//temp solution, solve this later, get partNotes from active sequence instead of manually putting value 8 there: gui.getPartnotes()
 	public void setTempo() {
-		int tempo = 60000 / seq.getBpm();
-		switch (gui.getPartnotes()) {
+		int tempo = 60000 / bpm;
+		switch ("1/8") {
 		case "1 bar":
 			tempo *= 4;
 			break;
@@ -377,25 +400,25 @@ public class SequencerController implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		seq.playStep();
+		seq.playStep(activeSequence);
 		try {
 			Thread.sleep(guiDelay);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence());
+		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
 		int tempStep = seq.getCurrentStep();
 		tempStep++;
-		if (tempStep == seq.getSequence().length) {
+		if (tempStep == seq.getSequence(activeSequence).length) {
 			tempStep = 0;
 		}
 		seq.setCurrentStep(tempStep++);
 	}
 
-	public void printSequence() {
+	public void printSequence(int activeSequence) {
 		String s = "";
-		for (int i = 0; i < seq.getSequence().length; i++) {
-			s += seq.getSingleStep(i).toString();
+		for (int i = 0; i < seq.getSequence(activeSequence).length; i++) {
+			s += seq.getSingleStep(activeSequence, i).toString();
 		}
 		System.out.println(s);
 	}

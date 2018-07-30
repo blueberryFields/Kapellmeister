@@ -22,6 +22,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
+import javax.swing.SwingConstants;
 
 import controller.SequencerController;
 import model.SoloMute;
@@ -82,6 +83,7 @@ public class MstrMoGui extends JFrame {
 	// Create font for menus
 	private Font menuFont = playStopButtons[0].getFont();
 
+	//Konstruktor
 	public MstrMoGui() {
 		super("Master Module");
 
@@ -159,7 +161,7 @@ public class MstrMoGui extends JFrame {
 		titles[index].setHorizontalAlignment(JTextField.RIGHT);
 		titles[index].setBackground(backGroundColor);
 		colon[index] = new JLabel(":");
-		openClose[index] = new JButton("Open");
+		openClose[index] = new JButton("Close");
 		remove[index] = new JButton("Remove");
 		mute[index] = new JButton("Mute");
 		solo[index] = new JButton("Solo");
@@ -167,6 +169,7 @@ public class MstrMoGui extends JFrame {
 		soloMuteBar[index].setOpaque(true);
 		soloMuteBar[index].setPreferredSize(soloMuteBarColor);
 		soloMuteBar[index].setBackground(backGroundColor);
+		soloMuteBar[index].setHorizontalAlignment(SwingConstants.CENTER);
 		seqPanels[index] = new JPanel();
 		seqPanels[index].setLayout(new GridBagLayout());
 		seqPanels[index].setBackground(backGroundColor);
@@ -207,19 +210,23 @@ public class MstrMoGui extends JFrame {
 		return titles[index].getText();
 	}
 
-	public void setSeqStripColor(SoloMute soloMute, int index) {
+	public void setSoloMuteBar(SoloMute soloMute, int index) {
 		switch (soloMute) {
 		case MUTE:
 			soloMuteBar[index].setBackground(muteColor);
+			soloMuteBar[index].setText("MUTE");
 			break;
 		case SOLO:
 			soloMuteBar[index].setBackground(soloColor);
+			soloMuteBar[index].setText("SOLO");
 			break;
 		case NONE:
 			soloMuteBar[index].setBackground(backGroundColor);
+			soloMuteBar[index].setText("");
 			break;
 		default:
 			soloMuteBar[index].setBackground(backGroundColor);
+			soloMuteBar[index].setText("");
 		}
 	}
 
@@ -276,9 +283,9 @@ public class MstrMoGui extends JFrame {
 		}
 	}
 
-	public void setSoloMuteColor(SoloMute soloMute) {
-
-	}
+	// public void setSoloMuteColor(SoloMute soloMute) {
+	//
+	// }
 
 	public JTextField[] getTitles() {
 		return titles;

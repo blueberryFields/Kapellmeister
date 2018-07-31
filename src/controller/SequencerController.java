@@ -41,19 +41,16 @@ public class SequencerController implements ActionListener {
 		setTempo();
 
 		// Add actionListeners to buttons
-		// gui.getPlayButton().addActionListener(e -> playSequence());
-		// gui.getStopButton().addActionListener(e -> stopSequence());
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
-		// gui.getMute().addActionListener(e -> mute());
-		// gui.getSolo().addActionListener(e -> solo());
 
 		// Add ActionListeners to Jspinners
-//		gui.getNrOfStepsChooser()
-//				.addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps(), seq.getSequence(activeSequence)));
+		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
+		addActionListenersToPatterChoosers();
+		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
 		gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
@@ -68,6 +65,28 @@ public class SequencerController implements ActionListener {
 		gui.getGuiDelaySLider().addChangeListener(e -> changeGuiDelay());
 
 		gui.repaintSequencer(seq.getSequence(activeSequence));
+	}
+
+	private void changePartNotes(String partNotes) {
+		seq.setPartNotes(partNotes, activeSequence);
+	}
+
+	private void addActionListenersToPatterChoosers() {
+		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
+			int index = i;
+			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
+		}
+
+	}
+
+	private void choosePattern(int index) {
+		gui.disablePatternChooser(activeSequence);
+		activeSequence = index;
+		gui.enablePatternChooser(index);
+		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(index));
+		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(index));
+		gui.repaintSequencer(seq.getSequence(activeSequence));
+		gui.repaint();
 	}
 
 	public void open() {
@@ -133,7 +152,7 @@ public class SequencerController implements ActionListener {
 	}
 
 	public void unSoloMute() {
-		if (seq.getSoloMute() != SoloMute.NONE) {
+		if (seq.getSoloMute() != SoloMute.AUDIBLE) {
 			seq.unSoloMute();
 			gui.setSoloMuteBar(seq.getSoloMute());
 		}
@@ -312,28 +331,13 @@ public class SequencerController implements ActionListener {
 		}
 	}
 
-	private void changeNrOfSteps(int nrOfSteps, Note[] sequence) {
-		Note[] tempArray = new Note[nrOfSteps];
-		if (nrOfSteps > sequence.length) {
-			for (int i = 0; i < sequence.length; i++) {
-				tempArray[i] = sequence[i];
-			}
-			if (tempArray[tempArray.length - 1] == null) {
-				tempArray[tempArray.length - 1] = new Note();
-			}
-		} else {
-			for (int i = 0; i < nrOfSteps; i++) {
-				tempArray[i] = sequence[i];
-			}
-		}
-		seq.setSequence(tempArray, activeSequence);
+	private void changeNrOfSteps(int nrOfSteps) {
+		seq.changeNrOfSteps(nrOfSteps, activeSequence);
 		gui.repaintSequencer(seq.getSequence(activeSequence));
 	}
 
-	
-	//temp solution, solve this later, get NrOfSteps from active sequence instead of manually putting value 8 there: gui.getNrOfSteps()
 	private void generateSequence() {
-		seq.generateSequence(8, seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
+		seq.generateSequence(gui.getNrOfSteps(), seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
 				gui.isRndVeloChecked(), gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(),
 				gui.getOctaveHigh(), activeSequence);
 		checkHold();
@@ -367,11 +371,11 @@ public class SequencerController implements ActionListener {
 		this.bpm = bpm;
 	}
 
-	
-	//temp solution, solve this later, get partNotes from active sequence instead of manually putting value 8 there: gui.getPartnotes()
+	// temp solution, solve this later, get partNotes from active sequence instead
+	// of manually putting value 8 there: gui.getPartnotes()
 	public void setTempo() {
 		int tempo = 60000 / bpm;
-		switch ("1/8") {
+		switch (seq.getPartNotes(activeSequence)) {
 		case "1 bar":
 			tempo *= 4;
 			break;

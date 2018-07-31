@@ -220,7 +220,7 @@ public class MstrMoGui extends JFrame {
 			soloMuteBar[index].setBackground(soloColor);
 			soloMuteBar[index].setText("SOLO");
 			break;
-		case NONE:
+		case AUDIBLE:
 			soloMuteBar[index].setBackground(backGroundColor);
 			soloMuteBar[index].setText("");
 			break;

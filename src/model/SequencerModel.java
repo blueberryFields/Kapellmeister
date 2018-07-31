@@ -10,6 +10,7 @@ import javax.sound.midi.ShortMessage;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
+import note.Sequence;
 
 public class SequencerModel {
 
@@ -20,7 +21,8 @@ public class SequencerModel {
 	private Receiver rcvr;
 	private long timeStamp = -1;
 	private Note[] sequence;
-	private Note[][] sequences;
+	// private Note[][] sequences;
+	private Sequence[] sequences;
 	private int currentStep = 0;
 	private ShortMessage noteOn = new ShortMessage();
 	private ShortMessage noteOff = new ShortMessage();
@@ -45,11 +47,10 @@ public class SequencerModel {
 	}
 
 	public void initSeq() {
-		sequences = new Note[8][8];
-		soloMute = SoloMute.NONE;
+		sequences = new Sequence[8];
+		soloMute = SoloMute.AUDIBLE;
 		for (int i = 0; i < sequences.length; i++) {
-			for (int j = 0; j < sequences[i].length; j++)
-				sequences[i][j] = new Note();
+			sequences[i] = new Sequence();
 		}
 	}
 
@@ -108,23 +109,24 @@ public class SequencerModel {
 
 	public void generateSequence(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
 			int veloLow, int veloHigh, int octaveLow, int octaveHigh, int activeSequence) {
-		sequences[activeSequence] = new Note[nrOfSteps];
+		sequences[activeSequence] = new Sequence(nrOfSteps);
 		switch (generatorAlgorithm) {
 		case "Rnd notes":
-			sequences[activeSequence] = key.getRndSequence(sequences[activeSequence], rndVeloIsChecked, veloLow,
-					veloHigh, octaveLow, octaveHigh);
+			sequences[activeSequence].setSequence(key.getRndSequence(sequences[activeSequence].getSequence(),
+					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row":
-			sequences[activeSequence] = key.getRndSeqNoDuplInRow(sequences[activeSequence], rndVeloIsChecked, veloLow,
-					veloHigh, octaveLow, octaveHigh);
+			sequences[activeSequence].setSequence(key.getRndSeqNoDuplInRow(sequences[activeSequence].getSequence(),
+					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes and On/Hold/Off":
-			sequences[activeSequence] = key.getRndSequenceOnHoldOff(sequences[activeSequence], rndVeloIsChecked,
-					veloLow, veloHigh, octaveLow, octaveHigh);
+			sequences[activeSequence].setSequence(key.getRndSequenceOnHoldOff(sequences[activeSequence].getSequence(),
+					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row, On/Hold/Off":
-			sequences[activeSequence] = key.getRndSeqNoDuplInRowOnHoldOff(sequences[activeSequence], rndVeloIsChecked,
-					veloLow, veloHigh, octaveLow, octaveHigh);
+			sequences[activeSequence]
+					.setSequence(key.getRndSeqNoDuplInRowOnHoldOff(sequences[activeSequence].getSequence(),
+							rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		}
 	}
@@ -134,15 +136,15 @@ public class SequencerModel {
 	}
 
 	public void setSequence(Note[] sequence, int activeSequence) {
-		sequences[activeSequence] = sequence;
+		sequences[activeSequence].setSequence(sequence);
 	}
 
 	public Note[] getSequence(int activeSequence) {
-		return sequences[activeSequence];
+		return sequences[activeSequence].getSequence();
 	}
 
 	public Note getSingleStep(int activeSequence, int index) {
-		return sequences[activeSequence][index];
+		return sequences[activeSequence].getSingleStep(index);
 	}
 
 	public void initPlayVaribles() {
@@ -169,16 +171,18 @@ public class SequencerModel {
 	public void playStep(int activeSequence) {
 		if (soloMute != SoloMute.MUTE) {
 			if (currentStep == 0 && !firstNote) {
-				if (sequences[activeSequence][sequences[activeSequence].length - 1].getNoteOn() != NoteOn.HOLD) {
+				if (sequences[activeSequence].getSingleStep(getSequence(activeSequence).length - 1)
+						.getNoteOn() != NoteOn.HOLD) {
 					try {
-						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								sequences[activeSequence][sequences[activeSequence].length - 1].getMidiNote(),
-								sequences[activeSequence][currentStep].getVelo());
+						noteOff.setMessage(
+								ShortMessage.NOTE_OFF, midiChannel, sequences[activeSequence]
+										.getSingleStep(getSequence(activeSequence).length - 1).getMidiNote(),
+								sequences[activeSequence].getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
-				if (sequences[activeSequence][currentStep].getNoteOn() != NoteOn.HOLD) {
+				if (sequences[activeSequence].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
 					try {
 						rcvr.send(noteOff, timeStamp);
 					} catch (Exception e) {
@@ -186,24 +190,24 @@ public class SequencerModel {
 					}
 				}
 			} else if (currentStep != 0) {
-				if (sequences[activeSequence][currentStep - 1].getNoteOn() != NoteOn.HOLD) {
+				if (sequences[activeSequence].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								sequences[activeSequence][currentStep - 1].getMidiNote(),
-								sequences[activeSequence][currentStep].getVelo());
+								sequences[activeSequence].getSingleStep(currentStep - 1).getMidiNote(),
+								sequences[activeSequence].getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				} else {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								sequences[activeSequence][currentStep - 1].getHoldNote(),
-								sequences[activeSequence][currentStep].getVelo());
+								sequences[activeSequence].getSingleStep(currentStep - 1).getHoldNote(),
+								sequences[activeSequence].getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
-				if (sequences[activeSequence][currentStep].getNoteOn() != NoteOn.HOLD) {
+				if (sequences[activeSequence].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
 					try {
 						rcvr.send(noteOff, timeStamp);
 					} catch (Exception e) {
@@ -215,12 +219,12 @@ public class SequencerModel {
 			}
 			try {
 				noteOn.setMessage(ShortMessage.NOTE_ON, midiChannel,
-						sequences[activeSequence][currentStep].getMidiNote(),
-						sequences[activeSequence][currentStep].getVelo());
+						sequences[activeSequence].getSingleStep(currentStep).getMidiNote(),
+						sequences[activeSequence].getSingleStep(currentStep).getVelo());
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
 			}
-			if (sequences[activeSequence][currentStep].getNoteOn() == NoteOn.ON) {
+			if (sequences[activeSequence].getSingleStep(currentStep).getNoteOn() == NoteOn.ON) {
 				try {
 					rcvr.send(noteOn, timeStamp);
 				} catch (Exception e) {
@@ -287,25 +291,11 @@ public class SequencerModel {
 	}
 
 	public void nudgeLeft(int activeSequence) {
-		Note[] tempSeq = sequences[activeSequence].clone();
-		for (int i = 0; i < sequences[activeSequence].length; i++) {
-			if (i == sequences[activeSequence].length - 1) {
-				sequences[activeSequence][i] = tempSeq[0];
-			} else {
-				sequences[activeSequence][i] = tempSeq[i + 1];
-			}
-		}
+		sequences[activeSequence].nudgeLeft();
 	}
 
 	public void nudgeRight(int activeSequence) {
-		Note[] tempSeq = sequences[activeSequence].clone();
-		for (int i = 0; i < sequences[activeSequence].length; i++) {
-			if (i == 0) {
-				sequences[activeSequence][i] = tempSeq[sequences[activeSequence].length - 1];
-			} else {
-				sequences[activeSequence][i] = tempSeq[i - 1];
-			}
-		}
+		sequences[activeSequence].nudgeRight();
 	}
 
 	public void mute() {
@@ -317,35 +307,37 @@ public class SequencerModel {
 	}
 
 	public void unSoloMute() {
-		soloMute = SoloMute.NONE;
+		soloMute = SoloMute.AUDIBLE;
 	}
 
 	public void killLastNote(int activeSequence) {
 		if (currentStep == 0 && !firstNote) {
-			if (sequences[activeSequence][sequences[activeSequence].length - 1].getNoteOn() != NoteOn.HOLD) {
+			if (sequences[activeSequence].getSingleStep(sequences[activeSequence].getSequence().length - 1)
+					.getNoteOn() != NoteOn.HOLD) {
 				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, 0,
-							sequences[activeSequence][sequences[activeSequence].length - 1].getMidiNote(),
-							sequences[activeSequence][currentStep].getVelo());
+					noteOff.setMessage(
+							ShortMessage.NOTE_OFF, 0, sequences[activeSequence]
+									.getSingleStep(sequences[activeSequence].getSequence().length - 1).getMidiNote(),
+							sequences[activeSequence].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			}
 			rcvr.send(noteOff, timeStamp);
 		} else if (currentStep != 0) {
-			if (sequences[activeSequence][currentStep - 1].getNoteOn() != NoteOn.HOLD) {
+			if (sequences[activeSequence].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, 0,
-							sequences[activeSequence][currentStep - 1].getMidiNote(),
-							sequences[activeSequence][currentStep].getVelo());
+							sequences[activeSequence].getSingleStep(currentStep - 1).getMidiNote(),
+							sequences[activeSequence].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			} else {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, 0,
-							sequences[activeSequence][currentStep - 1].getHoldNote(),
-							sequences[activeSequence][currentStep].getVelo());
+							sequences[activeSequence].getSingleStep(currentStep - 1).getHoldNote(),
+							sequences[activeSequence].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
@@ -370,20 +362,32 @@ public class SequencerModel {
 		this.key = key;
 	}
 
-	// public int getBpm() {
-	// return bpm;
-	// }
-	//
-	// public void setBpm(int bpm) {
-	// this.bpm = bpm;
-	// }
-
 	public SoloMute getSoloMute() {
 		return soloMute;
 	}
 
 	public void setSoloMute(SoloMute soloMute) {
 		this.soloMute = soloMute;
+	}
+
+	public String getPartNotesChoice(int index) {
+		return sequences[index].getPartNotesChoise();
+	}
+	
+	public int getNrOfSteps(int index) {
+		return sequences[index].getNrOfSteps();
+	}
+	
+	public String getPartNotes(int index) {
+		return sequences[index].getPartNotesChoise();
+	}
+	
+	public void changeNrOfSteps(int nrOfSteps, int activeSequence) {
+		sequences[activeSequence].changeNrOfSteps(nrOfSteps);
+	}
+	
+	public void setPartNotes(String partNotes, int activeSequence) {
+		sequences[activeSequence].setpartNotesChoise(partNotes);
 	}
 
 }

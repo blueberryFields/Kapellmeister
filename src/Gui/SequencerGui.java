@@ -38,12 +38,15 @@ public class SequencerGui extends JFrame {
 	private Color activeStepColor = Color.RED;
 	private Color muteColor = Color.BLUE;
 	private Color soloColor = Color.YELLOW;
+	private Color enabledText = Color.BLACK;
+	private Color disabledText = Color.LIGHT_GRAY;
 	// private Color buttonColor = Color.LIGHT_GRAY;
 	// private Color textColor = Color.BLACK;
 	// private Color stepPanelColor = new Color(77, 108, 137);
 
 	// Create dimensions
 	private Dimension buttonDimSmall = new Dimension(55, 25);
+	private Dimension buttonDimLarge = new Dimension(75, 25);
 	private Dimension veloChooserDim = new Dimension(50, 25);
 	private Dimension noteChooserDim = new Dimension(50, 25);
 	private Dimension soloMuteBarDim = new Dimension(55, 20);
@@ -74,6 +77,7 @@ public class SequencerGui extends JFrame {
 	private JLabel channelText = new JLabel("ch:");
 	private Integer[] midiChannels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 	private JComboBox<Integer> midiChannelChooser = new JComboBox<Integer>(midiChannels);
+	private JButton refresh = new JButton("Refresh");
 
 	// Create components for tempopanel
 	private JPanel tempoPanel = new JPanel();
@@ -131,16 +135,18 @@ public class SequencerGui extends JFrame {
 	private JPanel patternPanel = new JPanel();
 	private JButton[] patternChoosers = new JButton[8];
 
-	private JPanel patternSettingsPanel[] = new JPanel[8];
+	private JPanel patternSettingsPanel = new JPanel();
 
-	private JLabel nrOfStepsText = new JLabel("Nr of Steps:");
-	private SpinnerModel nrOfStepsModel[] = new SpinnerNumberModel[8]; // {(8, 1, 16, 1)};
-	private JSpinner nrOfStepsChooser[] = new JSpinner[8]; // (nrOfStepsModel)
+	private JLabel nrOfStepsText = new JLabel("Nr of steps:");
+	private SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
+	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
 
 	private String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
-	private SpinnerModel partNotesModel[] = new SpinnerListModel[8]; // (partNotes)
-	private JSpinner partNotesChooser[] = new JSpinner[8]; // (partNotesModel)
+	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
+	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
 	private JLabel partNotesText = new JLabel("Partnotes:");
+
+	private JButton renamePat = new JButton("Rename");
 
 	// Konstruktor
 	public SequencerGui(Info[] infos, String title) {
@@ -165,7 +171,7 @@ public class SequencerGui extends JFrame {
 		// Set BackgroundColor for frame
 		getContentPane().setBackground(backGroundColor);
 
-		// Add stuff to masterPanel
+		// Add stuff to channelPanel
 
 		availibleDevices = new String[infos.length + 1];
 		availibleDevices[0] = "Choose a device...";
@@ -180,19 +186,11 @@ public class SequencerGui extends JFrame {
 		soloMuteBar.setPreferredSize(soloMuteBarDim);
 		soloMuteBar.setOpaque(true);
 		soloMuteBar.setHorizontalAlignment(SwingConstants.CENTER);
+		refresh.setPreferredSize(buttonDimLarge);
+		channelPanel.add(refresh);
 		channelPanel.add(soloMuteBar);
 
-		// Add stuff to generatorpanel
-		// generatorPanel.setLayout(new GridBagLayout());
-		GridBagConstraints generatorPanelGbc = new GridBagConstraints();
-
-		//generatePanel.add(generateButton);
-		// generatePanel.add(partNotesText);
-		// generatePanel.add(partNotesChooser);
-
-		generatorPanelGbc.gridx = 0;
-		generatorPanelGbc.gridy = 0;
-		generatorPanel.add(generateButton, generatorPanelGbc);
+		generatePanel.add(generateButton);
 
 		octaveLowChooser.setEditor(new JSpinner.DefaultEditor(octaveLowChooser));
 		octaveHighChooser.setEditor(new JSpinner.DefaultEditor(octaveHighChooser));
@@ -205,9 +203,7 @@ public class SequencerGui extends JFrame {
 		octaveRangePanel.add(octaveRangeToText);
 		octaveRangePanel.add(octaveHighChooser);
 
-		generatorPanelGbc.gridx = 1;
-		generatorPanelGbc.gridy = 0;
-		generatorPanel.add(octaveRangePanel, generatorPanelGbc);
+		generatePanel.add(octaveRangePanel);
 
 		veloLowChooser.setEditor(new JSpinner.DefaultEditor(veloLowChooser));
 		veloHighChooser.setEditor(new JSpinner.DefaultEditor(veloHighChooser));
@@ -224,15 +220,8 @@ public class SequencerGui extends JFrame {
 		veloHighPanel.add(veloHighChooser);
 		rndVeloPanel.add(veloHighPanel);
 
-		generatorPanelGbc.gridx = 0;
-		generatorPanelGbc.gridy = 1;
-		generatorPanel.add(rndVeloPanel, generatorPanelGbc);
-
 		generatorAlgorithmPanel.add(generatorAlgorithmText);
 		generatorAlgorithmPanel.add(generatorAlgorithmChooser);
-		generatorPanelGbc.gridx = 0;
-		generatorPanelGbc.gridy = 2;
-		generatorPanel.add(generatorAlgorithmPanel, generatorPanelGbc);
 
 		// Add stuff to and configure nudgeSequencePanel
 		guiDelaySlider.setMajorTickSpacing(10);
@@ -309,7 +298,7 @@ public class SequencerGui extends JFrame {
 		patternPanel.setLayout(new GridBagLayout());
 		GridBagConstraints patternPanelGbc = new GridBagConstraints();
 		for (int i = 0; i < patternChoosers.length; i++) {
-			patternChoosers[i] = new JButton("pat" + (i + 1));
+			patternChoosers[i] = new JButton("pat" + " " + (i + 1));
 			patternChoosers[i].setPreferredSize(patternChooserDim);
 		}
 
@@ -318,6 +307,7 @@ public class SequencerGui extends JFrame {
 		k = 0;
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 4; j++) {
+				patternChoosers[k].setForeground(disabledText);
 				patternPanel.add(patternChoosers[k], patternPanelGbc);
 				patternPanelGbc.gridx++;
 				k++;
@@ -325,16 +315,20 @@ public class SequencerGui extends JFrame {
 			patternPanelGbc.gridy++;
 			patternPanelGbc.gridx = 0;
 		}
+		patternChoosers[0].setForeground(enabledText);
 
-		// nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
-		// nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
-		//
-		// nrOfStepsPanel.add(nrOfStepsText);
-		// nrOfStepsPanel.add(nrOfStepsChooser);
-		//
-		// partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
-		// partNotesChooser.setValue("1/8");
-		// partNotesChooser.setPreferredSize(new Dimension(60, 25));
+		patternSettingsPanel.setBackground(backGroundColor);
+
+		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
+		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
+		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
+		partNotesChooser.setValue("1/8");
+		partNotesChooser.setPreferredSize(new Dimension(60, 25));
+		patternSettingsPanel.add(nrOfStepsText);
+		patternSettingsPanel.add(nrOfStepsChooser);
+		patternSettingsPanel.add(partNotesText);
+		patternSettingsPanel.add(partNotesChooser);
+		patternSettingsPanel.add(renamePat);
 
 		// configure and add stuff to frame
 		setLayout(new GridBagLayout());
@@ -348,16 +342,22 @@ public class SequencerGui extends JFrame {
 		// add(tempoPanel, frameGbc);
 
 		frameGbc.gridy = 1;
-		add(generatorPanel, frameGbc);
+		add(generatePanel, frameGbc);
 
 		frameGbc.gridy = 2;
-		add(nudgePanel, frameGbc);
+		add(rndVeloPanel, frameGbc);
 
 		frameGbc.gridy = 3;
-		add(stepPanel, frameGbc);
+		add(nudgePanel, frameGbc);
 
 		frameGbc.gridy = 4;
+		add(stepPanel, frameGbc);
+
+		frameGbc.gridy = 5;
 		add(patternPanel, frameGbc);
+
+		frameGbc.gridy = 6;
+		add(patternSettingsPanel, frameGbc);
 
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // hopefully means I can later unhide this(setVisible(true)???
@@ -403,6 +403,14 @@ public class SequencerGui extends JFrame {
 
 	}
 
+	public void enablePatternChooser(int index) {
+		patternChoosers[index].setForeground(enabledText);
+	}
+
+	public void disablePatternChooser(int index) {
+		patternChoosers[index].setForeground(disabledText);
+	}
+
 	public int getChoosenDevice() {
 		return deviceChooser.getSelectedIndex();
 	}
@@ -439,9 +447,25 @@ public class SequencerGui extends JFrame {
 		return noteOnButton[index].getText();
 	}
 
-	// public JSpinner getNrOfStepsChooser() {
-	// return nrOfStepsChooser;
-	// }
+	public JButton[] getPatternChoosers() {
+		return patternChoosers;
+	}
+
+	public JPanel getPatternPanels() {
+		return patternSettingsPanel;
+	}
+
+	public JSpinner getNrOfStepsChooser() {
+		return nrOfStepsChooser;
+	}
+
+	public JSpinner getPartNotesChooser() {
+		return partNotesChooser;
+	}
+
+	public JButton[] getPatterChoosers() {
+		return patternChoosers;
+	}
 
 	public JComboBox<String> getDeviceChooser() {
 		return deviceChooser;
@@ -450,14 +474,6 @@ public class SequencerGui extends JFrame {
 	public JButton getGenerateButton() {
 		return generateButton;
 	}
-
-	// public int getNrOfSteps() {
-	// return (int) nrOfStepsChooser.getValue();
-	// }
-	//
-	// public String getPartnotes() {
-	// return (String) partNotesChooser.getValue();
-	// }
 
 	public void disableGui() {
 		deviceChooser.setEnabled(false);
@@ -565,7 +581,7 @@ public class SequencerGui extends JFrame {
 			soloMuteBar.setBackground(soloColor);
 			soloMuteBar.setText("SOLO");
 			break;
-		case NONE:
+		case AUDIBLE:
 			soloMuteBar.setBackground(backGroundColor);
 			soloMuteBar.setText("");
 			break;
@@ -613,5 +629,13 @@ public class SequencerGui extends JFrame {
 
 	public void close() {
 		setVisible(false);
+	}
+
+	public int getNrOfSteps() {
+		return (int) nrOfStepsChooser.getValue();
+	}
+
+	public String getPartnotes() {
+		return (String) partNotesChooser.getValue();
 	}
 }

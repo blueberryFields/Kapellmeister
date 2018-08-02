@@ -1,4 +1,6 @@
-package note;
+package arrangement;
+
+import note.Note;
 
 public class Sequence {
 

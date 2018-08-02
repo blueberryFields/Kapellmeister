@@ -1,4 +1,4 @@
-package controller;
+package sequencer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,10 +9,8 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import Gui.MstrMoGui;
-import Gui.SequencerGui;
-import model.SequencerModel;
-import model.SoloMute;
+import arrangement.SoloMute;
+import masterModule.MstrMoGui;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;

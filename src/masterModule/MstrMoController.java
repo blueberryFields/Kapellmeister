@@ -1,10 +1,5 @@
-package controller;
+package masterModule;
 
-import javax.swing.JOptionPane;
-
-import Gui.MstrMoGui;
-import model.MstrMoModel;
-import model.SoloMute;
 import note.KeyConverter;
 
 public class MstrMoController {

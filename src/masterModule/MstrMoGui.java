@@ -1,4 +1,4 @@
-package Gui;
+package masterModule;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,8 +24,8 @@ import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SwingConstants;
 
-import controller.SequencerController;
-import model.SoloMute;
+import arrangement.SoloMute;
+import sequencer.SequencerController;
 
 public class MstrMoGui extends JFrame {
 
@@ -161,7 +161,7 @@ public class MstrMoGui extends JFrame {
 		titles[index].setHorizontalAlignment(JTextField.RIGHT);
 		titles[index].setBackground(backGroundColor);
 		colon[index] = new JLabel(":");
-		openClose[index] = new JButton("Close");
+		openClose[index] = new JButton("Open");
 		remove[index] = new JButton("Remove");
 		mute[index] = new JButton("Mute");
 		solo[index] = new JButton("Solo");

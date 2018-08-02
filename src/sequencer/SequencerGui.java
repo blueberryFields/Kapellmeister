@@ -1,4 +1,4 @@
-package Gui;
+package sequencer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,9 +22,9 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
-import model.SoloMute;
+import arrangement.Sequence;
+import arrangement.SoloMute;
 import note.Note;
-import note.Sequence;
 
 public class SequencerGui extends JFrame {
 

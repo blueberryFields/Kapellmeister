@@ -1,7 +1,8 @@
 package main;
 
 import javax.swing.SwingUtilities;
-import controller.MstrMoController;
+
+import masterModule.MstrMoController;
 
 public class KapellMeisterMain {
 

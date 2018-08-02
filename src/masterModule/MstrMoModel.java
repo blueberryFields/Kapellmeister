@@ -1,14 +1,14 @@
-package model;
+package masterModule;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import controller.SequencerController;
+import arrangement.Scene;
+import arrangement.SoloMute;
 import note.NoteGenerator;
+import sequencer.SequencerController;
 
 public class MstrMoModel {
 
 	private SequencerController[] seqArr = new SequencerController[8];
+	private Scene[] scenes = new Scene[8];
 
 	public void createStandardSequencer(NoteGenerator key, int bpm, int index, String title) {
 		seqArr[index] = new SequencerController(key, bpm, title);

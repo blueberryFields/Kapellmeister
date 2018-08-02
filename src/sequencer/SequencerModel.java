@@ -1,4 +1,4 @@
-package model;
+package sequencer;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
@@ -7,10 +7,11 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
+import arrangement.Sequence;
+import arrangement.SoloMute;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
-import note.Sequence;
 
 public class SequencerModel {
 

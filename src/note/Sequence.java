@@ -2,11 +2,13 @@ package note;
 
 public class Sequence {
 
+	private String name;
 	private Note[] sequence;
 	private String partNotes = "1/8";
 
 	// Konstruktor 1
-	public Sequence() {
+	public Sequence(String name) {
+		this.name = name;
 		sequence = new Note[8];
 		for (int i = 0; i < sequence.length; i++) {
 			sequence[i] = new Note();
@@ -14,7 +16,8 @@ public class Sequence {
 	}
 
 	// Konstruktor 2
-	public Sequence(int nrOfSteps) {
+	public Sequence(String name, int nrOfSteps) {
+		this.name = name;
 		sequence = new Note[nrOfSteps];
 		for (int i = 0; i < sequence.length; i++) {
 			sequence[i] = new Note();
@@ -87,5 +90,13 @@ public class Sequence {
 		}
 		sequence = tempArray;
 
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

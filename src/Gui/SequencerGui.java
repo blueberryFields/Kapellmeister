@@ -13,6 +13,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -23,6 +24,7 @@ import javax.swing.SwingConstants;
 
 import model.SoloMute;
 import note.Note;
+import note.Sequence;
 
 public class SequencerGui extends JFrame {
 
@@ -39,7 +41,7 @@ public class SequencerGui extends JFrame {
 	private Color muteColor = Color.BLUE;
 	private Color soloColor = Color.YELLOW;
 	private Color enabledText = Color.BLACK;
-	private Color disabledText = Color.LIGHT_GRAY;
+	private Color disabledText = Color.GRAY;
 	// private Color buttonColor = Color.LIGHT_GRAY;
 	// private Color textColor = Color.BLACK;
 	// private Color stepPanelColor = new Color(77, 108, 137);
@@ -81,8 +83,7 @@ public class SequencerGui extends JFrame {
 
 	// Create components for tempopanel
 	private JPanel tempoPanel = new JPanel();
-	// private JButton mute = new JButton("Mute");
-	// private JButton solo = new JButton("Solo");
+
 	private JLabel soloMuteBar = new JLabel();
 
 	// Create components for generatorpanel
@@ -146,7 +147,7 @@ public class SequencerGui extends JFrame {
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
 	private JLabel partNotesText = new JLabel("Partnotes:");
 
-	private JButton renamePat = new JButton("Rename");
+	private JButton renamePattern = new JButton("Rename");
 
 	// Konstruktor
 	public SequencerGui(Info[] infos, String title) {
@@ -298,7 +299,7 @@ public class SequencerGui extends JFrame {
 		patternPanel.setLayout(new GridBagLayout());
 		GridBagConstraints patternPanelGbc = new GridBagConstraints();
 		for (int i = 0; i < patternChoosers.length; i++) {
-			patternChoosers[i] = new JButton("pat" + " " + (i + 1));
+			patternChoosers[i] = new JButton();
 			patternChoosers[i].setPreferredSize(patternChooserDim);
 		}
 
@@ -328,7 +329,7 @@ public class SequencerGui extends JFrame {
 		patternSettingsPanel.add(nrOfStepsChooser);
 		patternSettingsPanel.add(partNotesText);
 		patternSettingsPanel.add(partNotesChooser);
-		patternSettingsPanel.add(renamePat);
+		patternSettingsPanel.add(renamePattern);
 
 		// configure and add stuff to frame
 		setLayout(new GridBagLayout());
@@ -348,19 +349,22 @@ public class SequencerGui extends JFrame {
 		add(rndVeloPanel, frameGbc);
 
 		frameGbc.gridy = 3;
-		add(nudgePanel, frameGbc);
+		add(generatorAlgorithmPanel, frameGbc);
 
 		frameGbc.gridy = 4;
-		add(stepPanel, frameGbc);
+		add(nudgePanel, frameGbc);
 
 		frameGbc.gridy = 5;
-		add(patternPanel, frameGbc);
+		add(stepPanel, frameGbc);
 
 		frameGbc.gridy = 6;
+		add(patternPanel, frameGbc);
+
+		frameGbc.gridy = 7;
 		add(patternSettingsPanel, frameGbc);
 
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // hopefully means I can later unhide this(setVisible(true)???
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
@@ -400,7 +404,18 @@ public class SequencerGui extends JFrame {
 			noteOnButton[i].setText("Off");
 			singleSteps[i].setBackground(disabledStepColor);
 		}
+	}
 
+	public String renameSequence(int activeSequence) {
+		String newName = JOptionPane.showInputDialog(this, "New name:");
+		patternChoosers[activeSequence].setText(newName);
+		return newName;
+	}
+
+	public void setPatternNames(Sequence[] sequences) {
+		for (int i = 0; i < sequences.length; i++) {
+			patternChoosers[i].setText(sequences[i].getName());
+		}
 	}
 
 	public void enablePatternChooser(int index) {
@@ -627,15 +642,15 @@ public class SequencerGui extends JFrame {
 		setVisible(true);
 	}
 
-	public void close() {
-		setVisible(false);
-	}
-
 	public int getNrOfSteps() {
 		return (int) nrOfStepsChooser.getValue();
 	}
 
 	public String getPartnotes() {
 		return (String) partNotesChooser.getValue();
+	}
+
+	public JButton getRenamePattern() {
+		return renamePattern;
 	}
 }

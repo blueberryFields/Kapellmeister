@@ -8,8 +8,6 @@ import note.NoteGenerator;
 
 public class MstrMoModel {
 
-	// private List<SequencerController> seqList = new
-	// LinkedList<SequencerController>();
 	private SequencerController[] seqArr = new SequencerController[8];
 
 	public void createStandardSequencer(NoteGenerator key, int bpm, int index, String title) {
@@ -81,10 +79,6 @@ public class MstrMoModel {
 
 	public void open(int index) {
 		seqArr[index].open();
-	}
-	
-	public void close(int index) {
-		seqArr[index].close();
 	}
 
 	public void mute(int index) {

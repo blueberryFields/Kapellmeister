@@ -62,13 +62,7 @@ public class MstrMoController {
 	}
 
 	private void open(int index) {
-		if (mstrMoGui.getOpen()[index].getText().equals("Close")) {
-			mstrMoModel.close(index);
-			mstrMoGui.getOpen()[index].setText("Open");
-		} else {
-			mstrMoModel.open(index);
-			mstrMoGui.getOpen()[index].setText("Close");
-		}
+		mstrMoModel.open(index);
 	}
 
 	private void rename(int index) {

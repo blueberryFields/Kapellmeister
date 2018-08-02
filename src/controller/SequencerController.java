@@ -23,6 +23,7 @@ public class SequencerController implements ActionListener {
 	private SequencerGui gui;
 	private Timer clock;
 	private long guiDelay;
+	@SuppressWarnings("unused")
 	private String title;
 	private int bpm;
 	private int activeSequence = 0;
@@ -46,10 +47,11 @@ public class SequencerController implements ActionListener {
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
+		gui.getRenamePattern().addActionListener(e -> renameSequence());
 
 		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
-		addActionListenersToPatterChoosers();
+		addActionListenersToSequenceChoosers();
 		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
@@ -65,23 +67,32 @@ public class SequencerController implements ActionListener {
 		gui.getGuiDelaySLider().addChangeListener(e -> changeGuiDelay());
 
 		gui.repaintSequencer(seq.getSequence(activeSequence));
+		gui.setPatternNames(seq.getSequences());
+	}
+
+	private void renameSequence() {
+		seq.setSequenceName(activeSequence, gui.renameSequence(activeSequence));
 	}
 
 	private void changePartNotes(String partNotes) {
 		seq.setPartNotes(partNotes, activeSequence);
 	}
 
-	private void addActionListenersToPatterChoosers() {
+	private void addActionListenersToSequenceChoosers() {
 		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
 			int index = i;
-			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
+			gui.getPatternChoosers()[i].addActionListener(e -> chooseSequence(index));
 		}
 
 	}
 
-	private void choosePattern(int index) {
+	private void chooseSequence(int index) {
 		gui.disablePatternChooser(activeSequence);
+		if (seq.getRunning()) {
+			seq.killLastNote(activeSequence);
+		}
 		activeSequence = index;
+		setTempo();
 		gui.enablePatternChooser(index);
 		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(index));
 		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(index));
@@ -91,10 +102,6 @@ public class SequencerController implements ActionListener {
 
 	public void open() {
 		gui.open();
-	}
-
-	public void close() {
-		gui.close();
 	}
 
 	public void setTitle(String title) {
@@ -371,8 +378,6 @@ public class SequencerController implements ActionListener {
 		this.bpm = bpm;
 	}
 
-	// temp solution, solve this later, get partNotes from active sequence instead
-	// of manually putting value 8 there: gui.getPartnotes()
 	public void setTempo() {
 		int tempo = 60000 / bpm;
 		switch (seq.getPartNotes(activeSequence)) {

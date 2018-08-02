@@ -50,8 +50,12 @@ public class SequencerModel {
 		sequences = new Sequence[8];
 		soloMute = SoloMute.AUDIBLE;
 		for (int i = 0; i < sequences.length; i++) {
-			sequences[i] = new Sequence();
+			sequences[i] = new Sequence("pat " + (i + 1));
 		}
+	}
+
+	public void setSequenceName(int activeSequence, String newName) {
+		sequences[activeSequence].setName(newName);
 	}
 
 	public void chooseMidiDevice(int index) {
@@ -109,7 +113,8 @@ public class SequencerModel {
 
 	public void generateSequence(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
 			int veloLow, int veloHigh, int octaveLow, int octaveHigh, int activeSequence) {
-		sequences[activeSequence] = new Sequence(nrOfSteps);
+		String tempName = sequences[activeSequence].getName();
+		sequences[activeSequence] = new Sequence(tempName, nrOfSteps);
 		switch (generatorAlgorithm) {
 		case "Rnd notes":
 			sequences[activeSequence].setSequence(key.getRndSequence(sequences[activeSequence].getSequence(),
@@ -141,6 +146,10 @@ public class SequencerModel {
 
 	public Note[] getSequence(int activeSequence) {
 		return sequences[activeSequence].getSequence();
+	}
+
+	public Sequence[] getSequences() {
+		return sequences;
 	}
 
 	public Note getSingleStep(int activeSequence, int index) {
@@ -373,19 +382,19 @@ public class SequencerModel {
 	public String getPartNotesChoice(int index) {
 		return sequences[index].getPartNotesChoise();
 	}
-	
+
 	public int getNrOfSteps(int index) {
 		return sequences[index].getNrOfSteps();
 	}
-	
+
 	public String getPartNotes(int index) {
 		return sequences[index].getPartNotesChoise();
 	}
-	
+
 	public void changeNrOfSteps(int nrOfSteps, int activeSequence) {
 		sequences[activeSequence].changeNrOfSteps(nrOfSteps);
 	}
-	
+
 	public void setPartNotes(String partNotes, int activeSequence) {
 		sequences[activeSequence].setpartNotesChoise(partNotes);
 	}

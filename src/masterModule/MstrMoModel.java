@@ -10,6 +10,20 @@ public class MstrMoModel {
 	private SequencerController[] seqArr = new SequencerController[8];
 	private Scene[] scenes = new Scene[8];
 
+	public MstrMoModel() {
+		for (int i = 0; i < scenes.length; i++) {
+			scenes[i] = new Scene();
+		}
+	}
+
+	public Scene[] getScenes() {
+		return scenes;
+	}
+
+	public String[] getSequenceNames(int index) {
+		return seqArr[index].getSequenceNames();
+	}
+
 	public void createStandardSequencer(NoteGenerator key, int bpm, int index, String title) {
 		seqArr[index] = new SequencerController(key, bpm, title);
 	}

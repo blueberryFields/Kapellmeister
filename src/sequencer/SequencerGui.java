@@ -56,7 +56,7 @@ public class SequencerGui extends JFrame {
 
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
-	private JPanel singleSteps[] = new JPanel[16];
+	private JPanel[] singleSteps = new JPanel[16];
 	private String[] notes = new String[] { "C-1", "C#-1", "D-1", "D#-1", "E-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1",
 			"B-1", "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0", "C1", "C#1", "D1",
 			"D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2",
@@ -67,7 +67,7 @@ public class SequencerGui extends JFrame {
 			"D#8", "E8", "F8", "F#8", "G8", "G#8", "A8", "A#8", "B8", "C9", "C#9", "D9", "D#9", "E9", "F9", "F#9",
 			"G9", };
 	private SpinnerListModel[] noteModel = new SpinnerListModel[16];
-	private JSpinner noteChooser[] = new JSpinner[16];
+	private JSpinner[] noteChooser = new JSpinner[16];
 	private SpinnerModel[] velocityModel = new SpinnerNumberModel[16];
 	private JSpinner velocityChooser[] = new JSpinner[16];
 	private JButton[] noteOnButton = new JButton[16];

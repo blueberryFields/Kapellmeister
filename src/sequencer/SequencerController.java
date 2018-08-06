@@ -72,6 +72,10 @@ public class SequencerController implements ActionListener {
 		seq.setSequenceName(activeSequence, gui.renameSequence(activeSequence));
 	}
 
+	public String[] getSequenceNames() {
+		return seq.getSequenceNames();
+	}
+
 	private void changePartNotes(String partNotes) {
 		seq.setPartNotes(partNotes, activeSequence);
 	}

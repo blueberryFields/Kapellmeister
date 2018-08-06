@@ -1,5 +1,6 @@
 package masterModule;
 
+import arrangement.ArrangementWindow;
 import note.KeyConverter;
 
 public class MstrMoController {
@@ -7,6 +8,7 @@ public class MstrMoController {
 	private KeyConverter keyConv;
 	private MstrMoGui mstrMoGui;
 	private MstrMoModel mstrMoModel;
+	private ArrangementWindow arrWin;
 
 	private int nextIndex = 0;
 
@@ -15,13 +17,36 @@ public class MstrMoController {
 		mstrMoGui = new MstrMoGui();
 		mstrMoModel = new MstrMoModel();
 		keyConv = new KeyConverter();
+		arrWin = new ArrangementWindow();
 
-		// Add actionListeners
+		// Add actionListeners to masterModuleGui
 		mstrMoGui.getStandardSequencer().addActionListener(e -> createStandardSequencer());
 		mstrMoGui.getPlayStopButtons()[0].addActionListener(e -> start());
 		mstrMoGui.getPlayStopButtons()[1].addActionListener(e -> stop());
 		mstrMoGui.getKeyChooser().addChangeListener(e -> changeKey());
+		mstrMoGui.getOpenArr().addActionListener(e -> openArr());
 		// mstrMoGui.getBpmChooser().addActionListener(e -> changeBpm());
+
+		// Add actionListeners to arrangeWindow
+		for (int i = 0; i < arrWin.getSceneButtons().length; i++) {
+			arrWin.getSceneButtons()[i].addActionListener(e -> clickSceneButton());
+		}
+		for (int i = 0; i < arrWin.getLengthChoosers().length; i++) {
+			arrWin.getLengthChoosers()[i].addChangeListener(e -> changeSceneLength());
+		}
+	}
+
+	private void openArr() {
+		arrWin.setVisible(true);
+	}
+
+	private void changeSceneLength() {
+		// TODO Auto-generated method stub
+	}
+
+	private void clickSceneButton() {
+		// TODO Auto-generated method stub
+
 	}
 
 	private void changeBpm() {
@@ -37,6 +62,7 @@ public class MstrMoController {
 				"Stnd Sequencer");
 		mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
 		addActionListenersToSeqStrip(nextIndex);
+		arrWin.addInstrument(nextIndex, mstrMoModel.getTitle(nextIndex), mstrMoModel.getSequenceNames(nextIndex));
 		setNextIndex();
 	}
 

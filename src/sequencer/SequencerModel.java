@@ -21,18 +21,14 @@ public class SequencerModel {
 	private MidiDevice.Info[] infos;
 	private Receiver rcvr;
 	private long timeStamp = -1;
-	private Note[] sequence;
-	// private Note[][] sequences;
+	//private Note[] sequence;
 	private Sequence[] sequences;
 	private int currentStep = 0;
 	private ShortMessage noteOn = new ShortMessage();
 	private ShortMessage noteOff = new ShortMessage();
 	private ShortMessage midiNote = new ShortMessage();
-	// private NoteGenerator key;
 	private boolean firstNote;
 	private SoloMute soloMute;
-	// private boolean mute = false;
-	// private boolean solo = false;
 	private int midiChannel = 0;
 	private long tempoWait;
 
@@ -137,9 +133,9 @@ public class SequencerModel {
 		}
 	}
 
-	public void setStep(int index) {
-		sequence[index] = new Note();
-	}
+//	public void setStep(int index) {
+//		sequence[index] = new Note();
+//	}
 
 	public void setSequence(Note[] sequence, int activeSequence) {
 		sequences[activeSequence].setSequence(sequence);
@@ -151,6 +147,14 @@ public class SequencerModel {
 
 	public Sequence[] getSequences() {
 		return sequences;
+	}
+	
+	public String[] getSequenceNames() {
+		String[] sequenceNames = new String[8];
+		for(int i = 0; i < sequences.length; i++) {
+			sequenceNames[i] = sequences[i].getName();
+		}
+		return sequenceNames;
 	}
 
 	public Note getSingleStep(int activeSequence, int index) {
@@ -244,45 +248,47 @@ public class SequencerModel {
 		}
 	}
 
-	public void playStep2() {
-		if (soloMute != SoloMute.MUTE) {
-			// Set midiOn message
-			try {
-				midiNote.setMessage(ShortMessage.NOTE_ON, midiChannel, sequence[currentStep].getMidiNote(),
-						sequence[currentStep].getVelo());
-			} catch (InvalidMidiDataException e1) {
-				e1.printStackTrace();
-			}
-			// Send midiNote
-			if (sequence[currentStep].getNoteOn() == NoteOn.ON) {
-				try {
-					rcvr.send(midiNote, timeStamp);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			// Wait a little
-			try {
-				Thread.sleep(tempoWait);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			// set NoteOff message
-			try {
-				midiNote.setMessage(ShortMessage.NOTE_OFF, midiNote.getChannel(), midiNote.getData1(),
-						midiNote.getData2());
-			} catch (InvalidMidiDataException e1) {
-				e1.printStackTrace();
-			}
-			// Send noteOffmessage
-			try {
-				rcvr.send(midiNote, timeStamp);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
+	// public void playStep2() {
+	// if (soloMute != SoloMute.MUTE) {
+	// // Set midiOn message
+	// try {
+	// midiNote.setMessage(ShortMessage.NOTE_ON, midiChannel,
+	// sequence[currentStep].getMidiNote(),
+	// sequence[currentStep].getVelo());
+	// } catch (InvalidMidiDataException e1) {
+	// e1.printStackTrace();
+	// }
+	// // Send midiNote
+	// if (sequence[currentStep].getNoteOn() == NoteOn.ON) {
+	// try {
+	// rcvr.send(midiNote, timeStamp);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// // Wait a little
+	// try {
+	// Thread.sleep(tempoWait);
+	// } catch (InterruptedException e) {
+	// e.printStackTrace();
+	// }
+	// // set NoteOff message
+	// try {
+	// midiNote.setMessage(ShortMessage.NOTE_OFF, midiNote.getChannel(),
+	// midiNote.getData1(),
+	// midiNote.getData2());
+	// } catch (InvalidMidiDataException e1) {
+	// e1.printStackTrace();
+	// }
+	// // Send noteOffmessage
+	// try {
+	// rcvr.send(midiNote, timeStamp);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	//
+	// }
+	// }
 
 	public void setTempo(int tempo) {
 		this.tempoWait = (long) tempo;

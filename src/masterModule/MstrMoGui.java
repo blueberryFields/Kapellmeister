@@ -42,20 +42,18 @@ public class MstrMoGui extends JFrame {
 	// Create components for masterpanel
 	private JPanel masterPanel = new JPanel();
 	private JButton[] playStopButtons = new JButton[] { new JButton("Play"), new JButton("Stop") };
-
 	private JLabel bpmText = new JLabel("Bpm:");
 	private JTextField bpmChooser = new JTextField("120", 2);
-
 	private JLabel keyText = new JLabel("Key:");
 	private String[] keyArr = new String[] { "Am", "C" };
 	private SpinnerModel keyChooserModel = new SpinnerListModel(keyArr);
 	private JSpinner keyChooser = new JSpinner(keyChooserModel);
-
 	private JMenuBar saveLoadBar = new JMenuBar();
 	private JMenu saveLoadMenu = new JMenu("Save & Load");
 	private JMenuItem save = new JMenuItem("Save");
 	private JMenuItem saveAs = new JMenuItem("Save As");
 	private JMenuItem load = new JMenuItem("Load");
+	private JButton openArr = new JButton("Arrange");
 
 	private JSeparator sep = new JSeparator();
 
@@ -83,13 +81,12 @@ public class MstrMoGui extends JFrame {
 	// Create font for menus
 	private Font menuFont = playStopButtons[0].getFont();
 
-	//Konstruktor
+	// Konstruktor
 	public MstrMoGui() {
 		super("Master Module");
 
 		// Set colors and fonts
 		getContentPane().setBackground(backGroundColor);
-		// setBackground(backGroundColor);
 		masterPanel.setBackground(backGroundColor);
 		createPanel.setBackground(backGroundColor);
 		stripPanel.setBackground(backGroundColor);
@@ -102,10 +99,7 @@ public class MstrMoGui extends JFrame {
 		sep.setForeground(sepColor);
 
 		// Add stuff to and confugure masterPanel
-		// masterPanel.setLayout(new GridBagLayout());
-		// GridBagConstraints masterGbc = new GridBagConstraints();
 		masterPanel.setPreferredSize(stripDim);
-
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
 		}
@@ -123,6 +117,7 @@ public class MstrMoGui extends JFrame {
 		saveLoadMenu.add(load);
 		saveLoadBar.add(saveLoadMenu);
 		masterPanel.add(saveLoadBar);
+		masterPanel.add(openArr);
 
 		// Add stuff to and configure create panel
 		createPanel.setPreferredSize(stripDim);
@@ -345,6 +340,10 @@ public class MstrMoGui extends JFrame {
 
 	public JTextField getBpmChooser() {
 		return bpmChooser;
+	}
+
+	public JButton getOpenArr() {
+		return openArr;
 	}
 
 	public JPanel[] getSeqPanels() {

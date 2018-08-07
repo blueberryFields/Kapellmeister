@@ -10,4 +10,29 @@ public class Scene {
 			sequenceChoice[i] = i;
 		}
 	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	public int getLength() {
+		return length;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setSequenceChoice(int instrument, int sequenceChoice) {
+		this.sequenceChoice[instrument] = sequenceChoice;
+	}
+
+	public int getSequenceChoice(int index) {
+		return sequenceChoice[index];
+	}
+
 }

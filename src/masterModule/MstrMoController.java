@@ -1,14 +1,22 @@
 package masterModule;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
 import arrangement.ArrangementWindow;
 import note.KeyConverter;
 
-public class MstrMoController {
+public class MstrMoController implements ActionListener {
 
 	private KeyConverter keyConv;
 	private MstrMoGui mstrMoGui;
 	private MstrMoModel mstrMoModel;
 	private ArrangementWindow arrWin;
+	private Timer mainClock;
+	private int beatCounter = 0;
+	private int currentScene = 0;
 
 	private int nextIndex = 0;
 
@@ -18,6 +26,7 @@ public class MstrMoController {
 		mstrMoModel = new MstrMoModel();
 		keyConv = new KeyConverter();
 		arrWin = new ArrangementWindow();
+		setMainClock(new Timer(500, this));
 
 		// Add actionListeners to masterModuleGui
 		mstrMoGui.getStandardSequencer().addActionListener(e -> createStandardSequencer());
@@ -25,14 +34,27 @@ public class MstrMoController {
 		mstrMoGui.getPlayStopButtons()[1].addActionListener(e -> stop());
 		mstrMoGui.getKeyChooser().addChangeListener(e -> changeKey());
 		mstrMoGui.getOpenArr().addActionListener(e -> openArr());
-		// mstrMoGui.getBpmChooser().addActionListener(e -> changeBpm());
 
 		// Add actionListeners to arrangeWindow
 		for (int i = 0; i < arrWin.getSceneButtons().length; i++) {
-			arrWin.getSceneButtons()[i].addActionListener(e -> clickSceneButton());
+			int index = i;
+			arrWin.getSceneButtons()[i].addActionListener(e -> clickSceneButton(index));
 		}
 		for (int i = 0; i < arrWin.getLengthChoosers().length; i++) {
-			arrWin.getLengthChoosers()[i].addChangeListener(e -> changeSceneLength());
+			int index = i;
+			arrWin.getLengthChoosers()[i].addChangeListener(e -> changeSceneLength(index));
+		}
+
+		clickSceneButton(0);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {	
+		beatCounter++;
+		if (beatCounter == mstrMoModel.getSceneLength(currentScene)) {
+			currentScene = mstrMoModel.getNextActiveScene(currentScene);
+			mstrMoModel.setActiveSequences(currentScene);
+			beatCounter = 0;
 		}
 	}
 
@@ -40,13 +62,18 @@ public class MstrMoController {
 		arrWin.setVisible(true);
 	}
 
-	private void changeSceneLength() {
-		// TODO Auto-generated method stub
+	private void changeSceneLength(int scene) {
+		mstrMoModel.setSceneLength(scene, (int) arrWin.getLengthChoosers()[scene].getValue());
 	}
 
-	private void clickSceneButton() {
-		// TODO Auto-generated method stub
-
+	private void clickSceneButton(int scene) {
+		if (!mstrMoModel.isSceneActive(scene)) {
+			mstrMoModel.setSceneActive(scene, true);
+			arrWin.markActiveScene(scene);
+		} else {
+			mstrMoModel.setSceneActive(scene, false);
+			arrWin.unmarkAciveScene(scene);
+		}
 	}
 
 	private void changeBpm() {
@@ -58,12 +85,26 @@ public class MstrMoController {
 	}
 
 	private void createStandardSequencer() {
-		mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm(), nextIndex,
-				"Stnd Sequencer");
-		mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
-		addActionListenersToSeqStrip(nextIndex);
-		arrWin.addInstrument(nextIndex, mstrMoModel.getTitle(nextIndex), mstrMoModel.getSequenceNames(nextIndex));
-		setNextIndex();
+		if (nextIndex < 8) {
+			mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), mstrMoGui.getBpm(), nextIndex,
+					"Stnd Sequencer");
+			mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
+			addActionListenersToSeqStrip(nextIndex);
+			arrWin.addInstrument(nextIndex, mstrMoModel.getTitle(nextIndex), mstrMoModel.getSequenceNames(nextIndex));
+			addActionListenersToArrWin(nextIndex);
+			setNextIndex();
+		}
+	}
+
+	private void addActionListenersToArrWin(int instrument) {
+		for (int i = 0; i < 8; i++) {
+			int scene = i;
+			arrWin.getSequenceChoosers()[instrument][i].addActionListener(e -> setSequenceChoice(instrument, scene));
+		}
+	}
+
+	private void setSequenceChoice(int instrument, int scene) {
+		mstrMoModel.setSequenceChoice(scene, instrument, arrWin.getSequenceChoice(instrument, scene));
 	}
 
 	private void addActionListenersToSeqStrip(int index) {
@@ -96,6 +137,7 @@ public class MstrMoController {
 		mstrMoGui.removeAllSeqStrips();
 		addStripsToGui(mstrMoModel.lastUsedIndex());
 		mstrMoGui.paintAndPack();
+		setNextIndex();
 	}
 
 	private void addStripsToGui(int lastUsedIndex) {
@@ -133,16 +175,28 @@ public class MstrMoController {
 
 	private void start() {
 		changeBpm();
+		currentScene = mstrMoModel.getFirstActiveScene();
+		mstrMoModel.setActiveSequences(currentScene);
+		mainClock.start();
 		mstrMoModel.start();
 		mstrMoGui.disableGui(mstrMoModel.lastUsedIndex());
 	}
 
 	private void stop() {
+		mainClock.stop();
 		mstrMoModel.stop();
 		mstrMoGui.enableGui(mstrMoModel.lastUsedIndex());
 	}
 
 	private void setNextIndex() {
 		nextIndex = mstrMoModel.nextIndex();
+	}
+
+	public Timer getMainClock() {
+		return mainClock;
+	}
+
+	public void setMainClock(Timer mainClock) {
+		this.mainClock = mainClock;
 	}
 }

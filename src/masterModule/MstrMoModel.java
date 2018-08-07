@@ -16,12 +16,56 @@ public class MstrMoModel {
 		}
 	}
 
+	public void setActiveSequences(int currentScene) {
+		for (int i = 0; i <= lastUsedIndex(); i++) {
+			seqArr[i].chooseSequence(scenes[currentScene].getSequenceChoice(i));
+		}
+	}
+
 	public Scene[] getScenes() {
 		return scenes;
 	}
 
 	public String[] getSequenceNames(int index) {
 		return seqArr[index].getSequenceNames();
+	}
+
+	public int getSceneLength(int sceneNr) {
+		return scenes[sceneNr].getLength();
+	}
+
+	public int getNextActiveScene(int currentScene) {
+		for (int i = currentScene + 1; i < scenes.length; i++) {
+			if (scenes[i].isActive()) {
+				return i;
+			}
+		}
+		return getFirstActiveScene();
+	}
+
+	public int getFirstActiveScene() {
+		for (int i = 0; i < scenes.length; i++) {
+			if (scenes[i].isActive()) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public void setSceneLength(int scene, int length) {
+		scenes[scene].setLength(length);
+	}
+
+	public void setSceneActive(int scene, boolean active) {
+		scenes[scene].setActive(active);
+	}
+
+	public boolean isSceneActive(int scene) {
+		return scenes[scene].isActive();
+	}
+
+	public void setSequenceChoice(int scene, int instrument, int sequenceChoice) {
+		scenes[scene].setSequenceChoice(instrument, sequenceChoice);
 	}
 
 	public void createStandardSequencer(NoteGenerator key, int bpm, int index, String title) {
@@ -54,7 +98,7 @@ public class MstrMoModel {
 
 	public int nextIndex() {
 		int i = 0;
-		while (true) {
+		while (i < 8) {
 			if (seqArr[i] == null) {
 				break;
 			}
@@ -132,4 +176,5 @@ public class MstrMoModel {
 	public SequencerController[] getSeqArr() {
 		return seqArr;
 	}
+
 }

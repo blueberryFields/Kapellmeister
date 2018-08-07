@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -28,6 +29,7 @@ public class ArrangementWindow extends JFrame {
 	private Color enabledText = Color.BLACK;
 	private Color disabledText = Color.GRAY;
 	private Color sepColor = new Color(95, 125, 153);
+	private Color activeSceneColor = new Color(193, 218, 242);
 
 	// Create dimensions
 	private Dimension buttonDimSmall = new Dimension(55, 25);
@@ -50,7 +52,8 @@ public class ArrangementWindow extends JFrame {
 
 	private JPanel[] scenePanels = new JPanel[8];
 
-	private JSeparator[] separators = new JSeparator[8];
+	private JSeparator[][] rowSeps = new JSeparator[9][8];
+	private JSeparator[] instrSeps = new JSeparator[8];
 
 	GridBagConstraints gbc = new GridBagConstraints();
 	GridBagConstraints sepGbc = new GridBagConstraints();
@@ -67,6 +70,8 @@ public class ArrangementWindow extends JFrame {
 		// GridBagConstraints sepGbc = new GridBagConstraints();
 		sepGbc.gridx = 0;
 		sepGbc.gridy = 0;
+		sepGbc.weightx = 1;
+		sepGbc.weighty = 1;
 		sepGbc.fill = SwingConstants.VERTICAL;
 		titles[0] = new JLabel("  Instruments");
 		// titles[0].setBackground(backGroundColor);
@@ -75,15 +80,22 @@ public class ArrangementWindow extends JFrame {
 		titlePanel.add(titles[0], gbc);
 		add(titlePanel, gbc);
 
+		// create separators
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				rowSeps[i][j] = new JSeparator(SwingConstants.VERTICAL);
+				rowSeps[i][j].setForeground(sepColor);
+				// rowSeps[i][j].setPreferredSize(new Dimension(1, 25));
+			}
+		}
+
 		for (int i = 0; i < scenePanels.length; i++) {
 			scenePanels[i] = new JPanel();
 			scenePanels[i].setBackground(backGroundColor);
 			scenePanels[i].setLayout(new GridBagLayout());
 			sceneButtons[i] = new JButton("Scene " + (i + 1));
 			sceneButtons[i].setPreferredSize(buttonDimLarge);
-			separators[i] = new JSeparator(SwingConstants.VERTICAL);
-			separators[i].setForeground(sepColor);
-			scenePanels[i].add(separators[i], sepGbc);
+			scenePanels[i].add(rowSeps[0][i], sepGbc);
 			gbc.gridx = 1;
 			gbc.gridy = 0;
 			scenePanels[i].add(sceneButtons[i], gbc);
@@ -110,11 +122,16 @@ public class ArrangementWindow extends JFrame {
 		gbc.gridwidth = 1;
 		gbc.gridx = 0;
 		gbc.gridy = nextIndex + 1;
+		gbc.insets = new Insets(5, 5, 5, 5);
 		titlePanel.add(titles[nextIndex + 1], gbc);
 		gbc.gridx = 1;
 		gbc.gridy = nextIndex + 1;
 		gbc.gridwidth = 2;
+		gbc.insets = new Insets(0, 0, 0, 0);
 		for (int i = 0; i < scenePanels.length; i++) {
+			sepGbc.gridx = 0;
+			sepGbc.gridy = 0;
+			scenePanels[i].add(rowSeps[nextIndex][i], sepGbc);
 			scenePanels[i].add(sequenceChoosers[nextIndex][i] = new JComboBox<String>(sequenceNames), gbc);
 			sequenceChoosers[nextIndex][i].setPreferredSize(new Dimension(120, 25));
 			sequenceChoosers[nextIndex][i].setSelectedIndex(i);
@@ -123,12 +140,24 @@ public class ArrangementWindow extends JFrame {
 		pack();
 	}
 
+	public void markActiveScene(int scene) {
+		scenePanels[scene].setBackground(activeSceneColor);
+	}
+
+	public void unmarkAciveScene(int scene) {
+		scenePanels[scene].setBackground(backGroundColor);
+	}
+
 	public JButton[] getSceneButtons() {
 		return sceneButtons;
 	}
 
-	public JComboBox<String>[][] getPatternChoosers() {
+	public JComboBox<String>[][] getSequenceChoosers() {
 		return sequenceChoosers;
+	}
+	
+	public int getSequenceChoice(int instrument, int scene) {
+		return sequenceChoosers[instrument][scene].getSelectedIndex();
 	}
 
 	public JSpinner[] getLengthChoosers() {

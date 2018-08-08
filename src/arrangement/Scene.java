@@ -1,14 +1,16 @@
 package arrangement;
 
 public class Scene {
+	private String name;
 	private int length = 4;
 	private int[] sequenceChoice = new int[8];
 	private boolean active = false;
 
-	public Scene() {
+	public Scene(String name, int choiceOfSequence) {
 		for (int i = 0; i < sequenceChoice.length; i++) {
-			sequenceChoice[i] = i;
+			sequenceChoice[i] = choiceOfSequence;
 		}
+		this.name = name;
 	}
 
 	public void setLength(int length) {
@@ -33,6 +35,14 @@ public class Scene {
 
 	public int getSequenceChoice(int index) {
 		return sequenceChoice[index];
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

@@ -54,6 +54,7 @@ public class MstrMoGui extends JFrame {
 	private JMenuItem saveAs = new JMenuItem("Save As");
 	private JMenuItem load = new JMenuItem("Load");
 	private JButton openArr = new JButton("Arrange");
+	private JLabel beatCounter = new JLabel("00");
 
 	private JSeparator sep = new JSeparator();
 
@@ -75,7 +76,7 @@ public class MstrMoGui extends JFrame {
 	private JMenuItem standardSequencer = new JMenuItem("Standard Sequencer");
 
 	// Size for masterPanel and seqStrips and more
-	private Dimension stripDim = new Dimension(555, 35);
+	private Dimension stripDim = new Dimension(575, 35);
 	private Dimension soloMuteBarColor = new Dimension(55, 20);
 
 	// Create font for menus
@@ -103,6 +104,10 @@ public class MstrMoGui extends JFrame {
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
 		}
+		
+		beatCounter.setPreferredSize(new Dimension(25, 25));
+		beatCounter.setFont(new Font("Helvetica", Font.BOLD, 18));
+		masterPanel.add(beatCounter);
 
 		masterPanel.add(bpmText);
 		masterPanel.add(bpmChooser);
@@ -203,6 +208,16 @@ public class MstrMoGui extends JFrame {
 
 	public String getTitle(int index) {
 		return titles[index].getText();
+	}
+	
+	public void setBeatCounter(int beat) {
+		String tempString;
+		if(beat < 10) {
+			tempString = "0" + Integer.toString(beat); 
+		} else {
+			tempString = Integer.toString(beat);
+		}
+		beatCounter.setText(tempString);
 	}
 
 	public void setSoloMuteBar(SoloMute soloMute, int index) {

@@ -140,6 +140,10 @@ public class ArrangementWindow extends JFrame {
 		pack();
 	}
 
+	public void changeTitle(String title, int index) {
+		titles[index + 1].setText(title);
+	}
+
 	public void markActiveScene(int scene) {
 		scenePanels[scene].setBackground(activeSceneColor);
 	}
@@ -155,7 +159,7 @@ public class ArrangementWindow extends JFrame {
 	public JComboBox<String>[][] getSequenceChoosers() {
 		return sequenceChoosers;
 	}
-	
+
 	public int getSequenceChoice(int instrument, int scene) {
 		return sequenceChoosers[instrument][scene].getSelectedIndex();
 	}

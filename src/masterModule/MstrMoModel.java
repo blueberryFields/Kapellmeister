@@ -1,5 +1,8 @@
 package masterModule;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import arrangement.Scene;
 import arrangement.SoloMute;
 import note.NoteGenerator;
@@ -9,29 +12,12 @@ public class MstrMoModel {
 
 	private SequencerController[] seqArr = new SequencerController[8];
 	private Scene[] scenes = new Scene[8];
+	//private List<Scene> activeScenes = new LinkedList<Scene>();
 
 	public MstrMoModel() {
 		for (int i = 0; i < scenes.length; i++) {
-			scenes[i] = new Scene();
+			scenes[i] = new Scene("Scene " + (i +1), i);
 		}
-	}
-
-	public void setActiveSequences(int currentScene) {
-		for (int i = 0; i <= lastUsedIndex(); i++) {
-			seqArr[i].chooseSequence(scenes[currentScene].getSequenceChoice(i));
-		}
-	}
-
-	public Scene[] getScenes() {
-		return scenes;
-	}
-
-	public String[] getSequenceNames(int index) {
-		return seqArr[index].getSequenceNames();
-	}
-
-	public int getSceneLength(int sceneNr) {
-		return scenes[sceneNr].getLength();
 	}
 
 	public int getNextActiveScene(int currentScene) {
@@ -52,6 +38,30 @@ public class MstrMoModel {
 		return -1;
 	}
 
+	public void setActiveSequences(int currentScene) {
+		for (int i = 0; i <= lastUsedIndex(); i++) {
+			seqArr[i].chooseSequence(scenes[currentScene].getSequenceChoice(i));
+		}
+	}
+	
+	public void killLastNote(int lastScene) {
+		for (int i = 0; i <= lastUsedIndex(); i++) {
+		seqArr[i].killLastNote(scenes[lastScene].getSequenceChoice(i));
+		}
+	}
+
+	public Scene[] getScenes() {
+		return scenes;
+	}
+
+	public String[] getSequenceNames(int index) {
+		return seqArr[index].getSequenceNames();
+	}
+
+	public int getSceneLength(int sceneNr) {
+		return scenes[sceneNr].getLength();
+	}
+
 	public void setSceneLength(int scene, int length) {
 		scenes[scene].setLength(length);
 	}
@@ -68,8 +78,8 @@ public class MstrMoModel {
 		scenes[scene].setSequenceChoice(instrument, sequenceChoice);
 	}
 
-	public void createStandardSequencer(NoteGenerator key, int bpm, int index, String title) {
-		seqArr[index] = new SequencerController(key, bpm, title);
+	public void createStandardSequencer(NoteGenerator key, int clockDelay, int index, String title) {
+		seqArr[index] = new SequencerController(key, clockDelay, title);
 	}
 
 	public void start() {

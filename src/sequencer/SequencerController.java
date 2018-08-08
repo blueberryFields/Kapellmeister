@@ -93,6 +93,7 @@ public class SequencerController implements ActionListener {
 	}
 
 	public void chooseSequence(int activeSequence) {
+
 		if (this.activeSequence != activeSequence) {
 			gui.disablePatternChooser(this.activeSequence);
 			gui.enablePatternChooser(activeSequence);
@@ -101,11 +102,15 @@ public class SequencerController implements ActionListener {
 			seq.killLastNote(this.activeSequence);
 		}
 		this.activeSequence = activeSequence;
-		setTempo();	
+		setTempo();
 		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activeSequence));
 		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(activeSequence));
 		gui.repaintSequencer(seq.getSequence(activeSequence));
 		gui.repaint();
+	}
+
+	public void killLastNote(int sequence) {
+		seq.killLastNote(sequence);
 	}
 
 	public void open() {

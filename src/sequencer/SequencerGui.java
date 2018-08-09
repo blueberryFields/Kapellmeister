@@ -501,6 +501,7 @@ public class SequencerGui extends JFrame {
 		veloLowChooser.setEnabled(false);
 		veloHighChooser.setEnabled(false);
 		generatorAlgorithmChooser.setEnabled(false);
+		refresh.setEnabled(false);
 	}
 
 	public void enableGui() {
@@ -514,6 +515,7 @@ public class SequencerGui extends JFrame {
 		veloLowChooser.setEnabled(true);
 		veloHighChooser.setEnabled(true);
 		generatorAlgorithmChooser.setEnabled(true);
+		refresh.setEnabled(true);
 	}
 
 	public String[] getAvailibleDevices() {

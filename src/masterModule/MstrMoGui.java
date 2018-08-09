@@ -104,7 +104,7 @@ public class MstrMoGui extends JFrame {
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
 		}
-		
+
 		beatCounter.setPreferredSize(new Dimension(25, 25));
 		beatCounter.setFont(new Font("Helvetica", Font.BOLD, 18));
 		masterPanel.add(beatCounter);
@@ -209,11 +209,11 @@ public class MstrMoGui extends JFrame {
 	public String getTitle(int index) {
 		return titles[index].getText();
 	}
-	
+
 	public void setBeatCounter(int beat) {
 		String tempString;
-		if(beat < 10) {
-			tempString = "0" + Integer.toString(beat); 
+		if (beat < 10) {
+			tempString = "0" + Integer.toString(beat);
 		} else {
 			tempString = Integer.toString(beat);
 		}
@@ -278,6 +278,7 @@ public class MstrMoGui extends JFrame {
 		keyChooser.setEnabled(false);
 		createNewMenu.setEnabled(false);
 		saveLoadMenu.setEnabled(false);
+		//playStopButtons[0].setEnabled(false);
 		for (int i = 0; i <= lastUsedIndex; i++) {
 			remove[i].setEnabled(false);
 		}
@@ -288,6 +289,7 @@ public class MstrMoGui extends JFrame {
 		keyChooser.setEnabled(true);
 		saveLoadMenu.setEnabled(true);
 		createNewMenu.setEnabled(true);
+		//playStopButtons[0].setEnabled(true);
 		for (int i = 0; i <= lastUsedIndex; i++) {
 			remove[i].setEnabled(true);
 		}

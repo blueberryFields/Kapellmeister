@@ -15,16 +15,18 @@ import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
 
-public class SequencerController implements ActionListener {
+public class SequencerController {
 
 	private SequencerModel seq;
 	private SequencerGui gui;
-	private Timer clock;
+
 	private long guiDelay;
 	@SuppressWarnings("unused")
 	private String title;
-	private int bpm;
+
 	private int activeSequence = 0;
+	private int tickCounter = 0;
+	private int partNotesThreshhold = 4;
 
 	// Konstruktor
 	public SequencerController(NoteGenerator key, int bpm, String title) {
@@ -34,10 +36,10 @@ public class SequencerController implements ActionListener {
 
 		gui = new SequencerGui(seq.getAvailibleMidiDevices(), title);
 
-		clock = new Timer(500, this);
-
-		setBpm(bpm);
-		setTempo();
+		// clock = new Timer(500, this);
+		//
+		// setBpm(bpm);
+		setPartNotes();
 
 		// Add actionListeners to buttons
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
@@ -67,10 +69,6 @@ public class SequencerController implements ActionListener {
 		gui.repaintSequencer(seq.getSequence(activeSequence));
 		gui.setPatternNames(seq.getSequences());
 	}
-
-	// public void setActiveSequence(int activeSequence) {
-	// this.activeSequence = activeSequence;
-	// }
 
 	private void renameSequence() {
 		seq.setSequenceName(activeSequence, gui.renameSequence(activeSequence));
@@ -102,7 +100,7 @@ public class SequencerController implements ActionListener {
 			seq.killLastNote(this.activeSequence);
 		}
 		this.activeSequence = activeSequence;
-		setTempo();
+		setPartNotes();
 		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activeSequence));
 		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(activeSequence));
 		gui.repaintSequencer(seq.getSequence(activeSequence));
@@ -374,43 +372,23 @@ public class SequencerController implements ActionListener {
 	}
 
 	public void playSequence() {
-		setTempo();
+		setPartNotes();
 		seq.initPlayVaribles();
-		clock.start();
+		// clock.start();
 		gui.disableGui();
 	}
 
 	public void stopSequence() {
 		gui.enableGui();
 		seq.stopSequence(activeSequence);
-		clock.stop();
+		// clock.stop();
+		tickCounter = 0;
 		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
 	}
 
-	public void setBpm(int bpm) {
-		this.bpm = bpm;
-	}
-
-	public void setTempo() {
-		int tempo = 60000 / bpm;
-		switch (seq.getPartNotes(activeSequence)) {
-		case "1 bar":
-			tempo *= 4;
-			break;
-		case "1/2":
-			tempo *= 2;
-			break;
-		case "1/4":
-			break;
-		case "1/8":
-			tempo /= 2;
-			break;
-		case "1/16":
-			tempo /= 4;
-			break;
-		}
-		clock.setDelay(tempo);
-	}
+	// public void setBpm(int bpm) {
+	// this.bpm = bpm;
+	// }
 
 	public void setKey(NoteGenerator key) {
 		seq.setKey(key);
@@ -420,8 +398,38 @@ public class SequencerController implements ActionListener {
 		return seq.getAvailibleMidiDevices();
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void setPartNotes() {
+
+		switch (seq.getPartNotes(activeSequence)) {
+		case "1 bar":
+			partNotesThreshhold = 16;
+			break;
+		case "1/2":
+			partNotesThreshhold = 8;
+			break;
+		case "1/4":
+			partNotesThreshhold = 4;
+			break;
+		case "1/8":
+			partNotesThreshhold = 2;
+			break;
+		case "1/16":
+			partNotesThreshhold = 1;
+			break;
+		}
+	}
+
+	public void tick() {
+		tickCounter++;
+		if(tickCounter == 1) {
+			playNote();
+		}
+		if (tickCounter == partNotesThreshhold) {	
+			tickCounter = 0;
+		}
+	}
+
+	public void playNote() {
 		seq.playStep(activeSequence);
 		try {
 			Thread.sleep(guiDelay);

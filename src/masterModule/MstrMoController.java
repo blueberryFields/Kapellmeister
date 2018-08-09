@@ -14,10 +14,10 @@ public class MstrMoController implements ActionListener {
 	private MstrMoGui mstrMoGui;
 	private MstrMoModel mstrMoModel;
 	private ArrangementWindow arrWin;
-	private Timer mainClock;
+	private Timer masterClock;
 	private int beatCounter = 0;
+	private int tickCounter = 0;
 	private int currentScene = 0;
-	// private int lastScene;
 
 	private int nextIndex = 0;
 
@@ -50,33 +50,48 @@ public class MstrMoController implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		beatCounter++;
-		mstrMoGui.setBeatCounter(beatCounter);
-		if (beatCounter > mstrMoModel.getSceneLength(currentScene)) {
-			// lastScene = currentScene;
-			currentScene = mstrMoModel.getNextActiveScene(currentScene);
-			mstrMoModel.setActiveSequences(currentScene);
-			beatCounter = 1;
-			// mstrMoModel.killLastNote(lastScene);
+		tickCounter++;
+		if (tickCounter == 1) {
+			beatCounter++;
+			mstrMoGui.setBeatCounter(beatCounter);
 		}
-		mstrMoGui.setBeatCounter(beatCounter);
+		mstrMoModel.tick();
+		if (beatCounter == mstrMoModel.getSceneLength(currentScene)) {
+			if (tickCounter == 4) {
+
+				currentScene = mstrMoModel.getNextActiveScene(currentScene);
+				mstrMoModel.setActiveSequences(currentScene);
+				beatCounter = 0;
+				// mstrMoGui.setBeatCounter(beatCounter);
+			}
+		}
+		if (tickCounter == 4) {
+			tickCounter = 0;
+		}
 	}
 
 	private void start() {
-		changeBpm();
-		currentScene = mstrMoModel.getFirstActiveScene();
-		mstrMoModel.setActiveSequences(currentScene);
-		mainClock.start();
-		mstrMoModel.start();
-		mstrMoGui.disableGui(mstrMoModel.lastUsedIndex());
+		if (!mstrMoModel.isRunning()) {
+			mstrMoModel.setRunning(true);
+			changeBpm();
+			currentScene = mstrMoModel.getFirstActiveScene();
+			mstrMoModel.setActiveSequences(currentScene);
+			masterClock.start();
+			mstrMoModel.start();
+			mstrMoGui.disableGui(mstrMoModel.lastUsedIndex());
+		}
 	}
 
 	private void stop() {
-		mainClock.stop();
-		beatCounter = 0;
-		mstrMoGui.setBeatCounter(beatCounter);
-		mstrMoModel.stop();
-		mstrMoGui.enableGui(mstrMoModel.lastUsedIndex());
+		if (mstrMoModel.isRunning()) {
+			mstrMoModel.setRunning(false);
+			masterClock.stop();
+			beatCounter = 0;
+			tickCounter = 0;
+			mstrMoGui.setBeatCounter(beatCounter);
+			mstrMoModel.stop();
+			mstrMoGui.enableGui(mstrMoModel.lastUsedIndex());
+		}
 	}
 
 	private void openArrWin() {
@@ -98,8 +113,7 @@ public class MstrMoController implements ActionListener {
 	}
 
 	private void changeBpm() {
-		mstrMoModel.changeBpm(getBpm());
-		mainClock.setDelay(60000 / getBpm());
+		masterClock.setDelay(60000 / getBpm() / 4);
 	}
 
 	private int getBpm() {
@@ -205,10 +219,10 @@ public class MstrMoController implements ActionListener {
 	}
 
 	public Timer getMainClock() {
-		return mainClock;
+		return masterClock;
 	}
 
 	public void setMainClock(Timer mainClock) {
-		this.mainClock = mainClock;
+		this.masterClock = mainClock;
 	}
 }

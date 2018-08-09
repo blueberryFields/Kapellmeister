@@ -12,6 +12,7 @@ public class MstrMoModel {
 
 	private SequencerController[] seqArr = new SequencerController[8];
 	private Scene[] scenes = new Scene[8];
+	private boolean running = false;
 	//private List<Scene> activeScenes = new LinkedList<Scene>();
 
 	public MstrMoModel() {
@@ -82,6 +83,12 @@ public class MstrMoModel {
 		seqArr[index] = new SequencerController(key, clockDelay, title);
 	}
 
+	public void tick() {
+		for (int i = 0; i <= lastUsedIndex(); i++) {
+			seqArr[i].tick();
+		}
+	}
+	
 	public void start() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
 			seqArr[i].playSequence();
@@ -97,12 +104,6 @@ public class MstrMoModel {
 	public void changeKey(NoteGenerator key) {
 		for (int i = 0; i < seqArr.length; i++) {
 			seqArr[i].setKey(key);
-		}
-	}
-
-	public void changeBpm(int bpm) {
-		for (int i = 0; i <= lastUsedIndex(); i++) {
-			seqArr[i].setBpm(bpm);
 		}
 	}
 
@@ -187,4 +188,13 @@ public class MstrMoModel {
 		return seqArr;
 	}
 
+	
+	public boolean isRunning() {
+		return running;
+	}
+
+	
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
 }

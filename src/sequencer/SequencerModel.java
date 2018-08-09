@@ -26,11 +26,11 @@ public class SequencerModel {
 	private int currentStep = 0;
 	private ShortMessage noteOn = new ShortMessage();
 	private ShortMessage noteOff = new ShortMessage();
-	private ShortMessage midiNote = new ShortMessage();
+	//private ShortMessage midiNote = new ShortMessage();
 	private boolean firstNote;
 	private SoloMute soloMute;
 	private int midiChannel = 0;
-	private long tempoWait;
+	//private long tempoWait;
 
 	private NoteGenerator key;
 	// private int bpm;
@@ -132,10 +132,6 @@ public class SequencerModel {
 			break;
 		}
 	}
-
-//	public void setStep(int index) {
-//		sequence[index] = new Note();
-//	}
 
 	public void setSequence(Note[] sequence, int activeSequence) {
 		sequences[activeSequence].setSequence(sequence);
@@ -248,51 +244,9 @@ public class SequencerModel {
 		}
 	}
 
-	// public void playStep2() {
-	// if (soloMute != SoloMute.MUTE) {
-	// // Set midiOn message
-	// try {
-	// midiNote.setMessage(ShortMessage.NOTE_ON, midiChannel,
-	// sequence[currentStep].getMidiNote(),
-	// sequence[currentStep].getVelo());
-	// } catch (InvalidMidiDataException e1) {
-	// e1.printStackTrace();
-	// }
-	// // Send midiNote
-	// if (sequence[currentStep].getNoteOn() == NoteOn.ON) {
-	// try {
-	// rcvr.send(midiNote, timeStamp);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// // Wait a little
-	// try {
-	// Thread.sleep(tempoWait);
-	// } catch (InterruptedException e) {
-	// e.printStackTrace();
-	// }
-	// // set NoteOff message
-	// try {
-	// midiNote.setMessage(ShortMessage.NOTE_OFF, midiNote.getChannel(),
-	// midiNote.getData1(),
-	// midiNote.getData2());
-	// } catch (InvalidMidiDataException e1) {
-	// e1.printStackTrace();
-	// }
-	// // Send noteOffmessage
-	// try {
-	// rcvr.send(midiNote, timeStamp);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	//
-	// }
-	// }
-
-	public void setTempo(int tempo) {
-		this.tempoWait = (long) tempo;
-	}
+//	public void setTempo(int tempo) {
+//		this.tempoWait = (long) tempo;
+//	}
 
 	public void setCurrentStep(int step) {
 		currentStep = step;

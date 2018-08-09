@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,7 +24,7 @@ public class ArrangementWindow extends JFrame {
 	private Color backGroundColor = new Color(142, 175, 206);
 	private Color disabledStepColor = new Color(76, 94, 112);
 	private Color enabledStepColor = new Color(193, 218, 242);
-	private Color activeStepColor = Color.RED;
+	private Color currentSceneColor = Color.RED;
 	private Color muteColor = Color.BLUE;
 	private Color soloColor = Color.YELLOW;
 	private Color enabledText = Color.BLACK;
@@ -39,7 +40,10 @@ public class ArrangementWindow extends JFrame {
 	private Dimension soloMuteBarDim = new Dimension(55, 20);
 	private Dimension patternChooserDim = new Dimension(110, 25);
 
-	private JLabel[] titles = new JLabel[9];
+	private JPanel loopPanel = new JPanel();
+	private JLabel loopLabel = new JLabel("Loop: ");
+	private JCheckBox loopCheck = new JCheckBox();
+	private JLabel[] titles = new JLabel[8];
 	private JButton[] sceneButtons = new JButton[8];
 
 	private SpinnerModel[] lengthModel = new SpinnerNumberModel[8];
@@ -55,8 +59,11 @@ public class ArrangementWindow extends JFrame {
 	private JSeparator[][] rowSeps = new JSeparator[9][8];
 	private JSeparator[] instrSeps = new JSeparator[8];
 
-	GridBagConstraints gbc = new GridBagConstraints();
-	GridBagConstraints sepGbc = new GridBagConstraints();
+	private GridBagConstraints gbc = new GridBagConstraints();
+	private GridBagConstraints sepGbc = new GridBagConstraints();
+
+	private Insets scenePanelInsets = new Insets(0, 8, 0, 8);
+	private Insets normalInsets = new Insets(0, 5, 0, 5);
 
 	public ArrangementWindow() {
 		super("Arrangement Window");
@@ -65,19 +72,19 @@ public class ArrangementWindow extends JFrame {
 
 		titlePanel.setLayout(new GridBagLayout());
 		titlePanel.setBackground(backGroundColor);
-		// titlePanel.setOpaque(false);
-		// GridBagConstraints gbc = new GridBagConstraints();
-		// GridBagConstraints sepGbc = new GridBagConstraints();
 		sepGbc.gridx = 0;
 		sepGbc.gridy = 0;
 		sepGbc.weightx = 1;
 		sepGbc.weighty = 1;
 		sepGbc.fill = SwingConstants.VERTICAL;
-		titles[0] = new JLabel("  Instruments");
-		// titles[0].setBackground(backGroundColor);
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		titlePanel.add(titles[0], gbc);
+		loopPanel.setBackground(backGroundColor);
+		loopPanel.setPreferredSize(new Dimension(120, 30));
+		loopPanel.add(loopLabel);
+		loopPanel.add(loopCheck);
+		loopCheck.setSelected(true);
+		titlePanel.add(loopPanel, gbc);
 		add(titlePanel, gbc);
 
 		// create separators
@@ -85,7 +92,6 @@ public class ArrangementWindow extends JFrame {
 			for (int j = 0; j < 8; j++) {
 				rowSeps[i][j] = new JSeparator(SwingConstants.VERTICAL);
 				rowSeps[i][j].setForeground(sepColor);
-				// rowSeps[i][j].setPreferredSize(new Dimension(1, 25));
 			}
 		}
 
@@ -95,7 +101,7 @@ public class ArrangementWindow extends JFrame {
 			scenePanels[i].setLayout(new GridBagLayout());
 			sceneButtons[i] = new JButton("Scene " + (i + 1));
 			sceneButtons[i].setPreferredSize(buttonDimLarge);
-			scenePanels[i].add(rowSeps[0][i], sepGbc);
+			// scenePanels[i].add(rowSeps[0][i], sepGbc);
 			gbc.gridx = 1;
 			gbc.gridy = 0;
 			scenePanels[i].add(sceneButtons[i], gbc);
@@ -106,7 +112,9 @@ public class ArrangementWindow extends JFrame {
 			gbc.gridx = 2;
 			scenePanels[i].add(lengthChoosers[i], gbc);
 			gbc.gridx = (i + 1);
-			add(scenePanels[i], gbc);
+			GridBagConstraints scenePanelGbc = new GridBagConstraints();
+			scenePanelGbc.insets = scenePanelInsets;
+			add(scenePanels[i], scenePanelGbc);
 		}
 
 		getContentPane().setBackground(backGroundColor);
@@ -118,12 +126,12 @@ public class ArrangementWindow extends JFrame {
 	}
 
 	public void addInstrument(int nextIndex, String title, String[] sequenceNames) {
-		titles[nextIndex + 1] = new JLabel(title);
+		titles[nextIndex] = new JLabel(title);
 		gbc.gridwidth = 1;
 		gbc.gridx = 0;
 		gbc.gridy = nextIndex + 1;
 		gbc.insets = new Insets(5, 5, 5, 5);
-		titlePanel.add(titles[nextIndex + 1], gbc);
+		titlePanel.add(titles[nextIndex], gbc);
 		gbc.gridx = 1;
 		gbc.gridy = nextIndex + 1;
 		gbc.gridwidth = 2;
@@ -131,7 +139,7 @@ public class ArrangementWindow extends JFrame {
 		for (int i = 0; i < scenePanels.length; i++) {
 			sepGbc.gridx = 0;
 			sepGbc.gridy = 0;
-			scenePanels[i].add(rowSeps[nextIndex][i], sepGbc);
+			// scenePanels[i].add(rowSeps[nextIndex][i], sepGbc);
 			scenePanels[i].add(sequenceChoosers[nextIndex][i] = new JComboBox<String>(sequenceNames), gbc);
 			sequenceChoosers[nextIndex][i].setPreferredSize(new Dimension(120, 25));
 			sequenceChoosers[nextIndex][i].setSelectedIndex(i);
@@ -152,6 +160,14 @@ public class ArrangementWindow extends JFrame {
 		scenePanels[scene].setBackground(backGroundColor);
 	}
 
+	public void markCurrentScene(int currentScene) {
+		scenePanels[currentScene].setBackground(currentSceneColor);
+	}
+
+	public void unMarkCurrentScene(int currentScene) {
+		scenePanels[currentScene].setBackground(activeSceneColor);
+	}
+
 	public JButton[] getSceneButtons() {
 		return sceneButtons;
 	}
@@ -166,5 +182,9 @@ public class ArrangementWindow extends JFrame {
 
 	public JSpinner[] getLengthChoosers() {
 		return lengthChoosers;
+	}
+
+	public boolean loopIsSelected() {
+		return loopCheck.isSelected();
 	}
 }

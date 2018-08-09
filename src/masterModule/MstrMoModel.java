@@ -13,25 +13,38 @@ public class MstrMoModel {
 	private SequencerController[] seqArr = new SequencerController[8];
 	private Scene[] scenes = new Scene[8];
 	private boolean running = false;
-	//private List<Scene> activeScenes = new LinkedList<Scene>();
+	// private List<Scene> activeScenes = new LinkedList<Scene>();
 
 	public MstrMoModel() {
 		for (int i = 0; i < scenes.length; i++) {
-			scenes[i] = new Scene("Scene " + (i +1), i);
+			scenes[i] = new Scene("Scene " + (i + 1), i);
 		}
 	}
 
-	public int getNextActiveScene(int currentScene) {
+	public int getNextActiveScene(int currentScene, boolean loop) {
 		for (int i = currentScene + 1; i < scenes.length; i++) {
 			if (scenes[i].isActive()) {
 				return i;
 			}
 		}
-		return getFirstActiveScene();
+		if (loop) {
+			return getFirstActiveScene();
+		} else {
+			return -1;
+		}
 	}
 
 	public int getFirstActiveScene() {
 		for (int i = 0; i < scenes.length; i++) {
+			if (scenes[i].isActive()) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public int getLastActiveScene() {
+		for (int i = scenes.length-1; i >= 0; i--) {
 			if (scenes[i].isActive()) {
 				return i;
 			}
@@ -44,10 +57,10 @@ public class MstrMoModel {
 			seqArr[i].chooseSequence(scenes[currentScene].getSequenceChoice(i));
 		}
 	}
-	
+
 	public void killLastNote(int lastScene) {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
-		seqArr[i].killLastNote(scenes[lastScene].getSequenceChoice(i));
+			seqArr[i].killLastNote(scenes[lastScene].getSequenceChoice(i));
 		}
 	}
 
@@ -88,7 +101,7 @@ public class MstrMoModel {
 			seqArr[i].tick();
 		}
 	}
-	
+
 	public void start() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
 			seqArr[i].playSequence();
@@ -188,12 +201,10 @@ public class MstrMoModel {
 		return seqArr;
 	}
 
-	
 	public boolean isRunning() {
 		return running;
 	}
 
-	
 	public void setRunning(boolean running) {
 		this.running = running;
 	}

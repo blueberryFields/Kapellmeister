@@ -52,16 +52,22 @@ public class MstrMoController implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		tickCounter++;
 		if (tickCounter == 1) {
+			arrWin.markCurrentScene(currentScene);
 			beatCounter++;
 			mstrMoGui.setBeatCounter(beatCounter);
 		}
 		mstrMoModel.tick();
 		if (beatCounter == mstrMoModel.getSceneLength(currentScene)) {
 			if (tickCounter == 4) {
-
-				currentScene = mstrMoModel.getNextActiveScene(currentScene);
-				mstrMoModel.setActiveSequences(currentScene);
-				beatCounter = 0;
+				arrWin.unMarkCurrentScene(currentScene);
+				currentScene = mstrMoModel.getNextActiveScene(currentScene, arrWin.loopIsSelected());
+				if (currentScene > -1) {
+					mstrMoModel.setActiveSequences(currentScene);
+					beatCounter = 0;
+				} else {
+					stop();
+					// arrWin.unMarkCurrentScene(currentScene - 1);
+				}
 				// mstrMoGui.setBeatCounter(beatCounter);
 			}
 		}
@@ -91,6 +97,11 @@ public class MstrMoController implements ActionListener {
 			mstrMoGui.setBeatCounter(beatCounter);
 			mstrMoModel.stop();
 			mstrMoGui.enableGui(mstrMoModel.lastUsedIndex());
+			if (currentScene > -1) {
+				arrWin.unMarkCurrentScene(currentScene);
+			} else {
+				arrWin.unMarkCurrentScene(mstrMoModel.getLastActiveScene());
+			}
 		}
 	}
 

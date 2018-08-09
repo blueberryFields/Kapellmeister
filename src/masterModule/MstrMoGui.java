@@ -295,10 +295,6 @@ public class MstrMoGui extends JFrame {
 		}
 	}
 
-	// public void setSoloMuteColor(SoloMute soloMute) {
-	//
-	// }
-
 	public JTextField[] getTitles() {
 		return titles;
 	}

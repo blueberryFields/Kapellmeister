@@ -16,30 +16,23 @@ import note.NoteOn;
 public class SequencerModel {
 
 	boolean running = false;
-	// private Timer clock = new Timer(500, this);
 	private MidiDevice device;
 	private MidiDevice.Info[] infos;
 	private Receiver rcvr;
 	private long timeStamp = -1;
-	//private Note[] sequence;
 	private Sequence[] sequences;
 	private int currentStep = 0;
 	private ShortMessage noteOn = new ShortMessage();
 	private ShortMessage noteOff = new ShortMessage();
-	//private ShortMessage midiNote = new ShortMessage();
 	private boolean firstNote;
 	private SoloMute soloMute;
 	private int midiChannel = 0;
-	//private long tempoWait;
-
 	private NoteGenerator key;
-	// private int bpm;
 
 	// Konstruktor
 	public SequencerModel(NoteGenerator key, int bpm) {
 		infos = MidiSystem.getMidiDeviceInfo();
 		this.key = key;
-		// this.bpm = bpm;
 		initSeq();
 	}
 
@@ -81,6 +74,10 @@ public class SequencerModel {
 
 	public MidiDevice.Info[] getAvailibleMidiDevices() {
 		return infos;
+	}
+	
+	public void refreshMidiDeviceList() {
+		infos = MidiSystem.getMidiDeviceInfo();
 	}
 
 	public void playTestNote() {
@@ -144,10 +141,10 @@ public class SequencerModel {
 	public Sequence[] getSequences() {
 		return sequences;
 	}
-	
+
 	public String[] getSequenceNames() {
 		String[] sequenceNames = new String[8];
-		for(int i = 0; i < sequences.length; i++) {
+		for (int i = 0; i < sequences.length; i++) {
 			sequenceNames[i] = sequences[i].getName();
 		}
 		return sequenceNames;
@@ -243,10 +240,6 @@ public class SequencerModel {
 			}
 		}
 	}
-
-//	public void setTempo(int tempo) {
-//		this.tempoWait = (long) tempo;
-//	}
 
 	public void setCurrentStep(int step) {
 		currentStep = step;

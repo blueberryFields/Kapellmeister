@@ -33,8 +33,6 @@ public class MstrMoGui extends JFrame {
 	private Color backGroundColor = new Color(142, 175, 206);
 	private Color muteColor = Color.BLUE;
 	private Color soloColor = Color.YELLOW;
-	// private Color disabledStepColor = new Color(76, 94, 112);
-	// private Color enabledStepColor = new Color(193, 218, 242);
 	private Color sepColor = new Color(95, 125, 153);
 
 	private GridBagConstraints gbc = new GridBagConstraints();
@@ -246,8 +244,6 @@ public class MstrMoGui extends JFrame {
 				removeSeqStrip(i);
 			}
 		}
-		// repaint();
-		// pack();
 	}
 
 	public void removeSeqStrip(int index) {
@@ -278,7 +274,7 @@ public class MstrMoGui extends JFrame {
 		keyChooser.setEnabled(false);
 		createNewMenu.setEnabled(false);
 		saveLoadMenu.setEnabled(false);
-		//playStopButtons[0].setEnabled(false);
+		// playStopButtons[0].setEnabled(false);
 		for (int i = 0; i <= lastUsedIndex; i++) {
 			remove[i].setEnabled(false);
 		}
@@ -289,7 +285,7 @@ public class MstrMoGui extends JFrame {
 		keyChooser.setEnabled(true);
 		saveLoadMenu.setEnabled(true);
 		createNewMenu.setEnabled(true);
-		//playStopButtons[0].setEnabled(true);
+		// playStopButtons[0].setEnabled(true);
 		for (int i = 0; i <= lastUsedIndex; i++) {
 			remove[i].setEnabled(true);
 		}

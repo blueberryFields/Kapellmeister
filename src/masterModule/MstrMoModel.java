@@ -13,7 +13,6 @@ public class MstrMoModel {
 	private SequencerController[] seqArr = new SequencerController[8];
 	private Scene[] scenes = new Scene[8];
 	private boolean running = false;
-	// private List<Scene> activeScenes = new LinkedList<Scene>();
 
 	public MstrMoModel() {
 		for (int i = 0; i < scenes.length; i++) {

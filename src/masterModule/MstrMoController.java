@@ -66,9 +66,7 @@ public class MstrMoController implements ActionListener {
 					beatCounter = 0;
 				} else {
 					stop();
-					// arrWin.unMarkCurrentScene(currentScene - 1);
 				}
-				// mstrMoGui.setBeatCounter(beatCounter);
 			}
 		}
 		if (tickCounter == 4) {
@@ -142,12 +140,12 @@ public class MstrMoController implements ActionListener {
 			mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
 			addActionListenersToSeqStrip(nextIndex);
 			arrWin.addInstrument(nextIndex, mstrMoModel.getTitle(nextIndex), mstrMoModel.getSequenceNames(nextIndex));
-			addActionListenersToArrWin(nextIndex);
+			addActionListenersToArrWinInstr(nextIndex);
 			setNextIndex();
 		}
 	}
 
-	private void addActionListenersToArrWin(int instrument) {
+	private void addActionListenersToArrWinInstr(int instrument) {
 		for (int i = 0; i < 8; i++) {
 			int scene = i;
 			arrWin.getSequenceChoosers()[instrument][i].addActionListener(e -> setSequenceChoice(instrument, scene));
@@ -166,12 +164,19 @@ public class MstrMoController implements ActionListener {
 		mstrMoGui.getSolo()[index].addActionListener(e -> solo(index));
 	}
 
-	private void removeActionListenderFromStrip(int index) {
+	private void removeActionListenerFromStrip(int index) {
 		mstrMoGui.getTitles()[index].removeActionListener(e -> rename(index));
 		mstrMoGui.getOpen()[index].removeActionListener(e -> open(index));
 		mstrMoGui.getRemove()[index].removeActionListener(e -> remove(index));
 		mstrMoGui.getMute()[index].removeActionListener(e -> mute(index));
 		mstrMoGui.getSolo()[index].removeActionListener(e -> solo(index));
+	}
+
+	private void removeActionListenersFromArrWinInstr(int instrument) {
+		for (int i = 0; i < 8; i++) {
+			int scene = i;
+			arrWin.getSequenceChoosers()[instrument][i].removeActionListener(e -> setSequenceChoice(instrument, scene));
+		}
 	}
 
 	private void open(int index) {
@@ -184,12 +189,23 @@ public class MstrMoController implements ActionListener {
 	}
 
 	private void remove(int index) {
+		// removeActionListenersFromArrWinInstr(index);
+		arrWin.removeAllInstruments(mstrMoModel.lastUsedIndex());
 		mstrMoModel.removeSequencer(index);
-		removeActionListenderFromStrip(index);
+		//removeActionListenerFromStrip(index);
 		mstrMoGui.removeAllSeqStrips();
 		addStripsToGui(mstrMoModel.lastUsedIndex());
 		mstrMoGui.paintAndPack();
 		setNextIndex();
+		addInstrumentsToArrWin(mstrMoModel.lastUsedIndex());
+		arrWin.repaintAndPack();
+	}
+
+	private void addInstrumentsToArrWin(int lastUsedIndex) {
+		for (int i = 0; i <= lastUsedIndex; i++) {
+			arrWin.addInstrument(i, mstrMoModel.getTitle(i), mstrMoModel.getSequenceNames(i));
+			addActionListenersToArrWinInstr(i);
+		}
 	}
 
 	private void addStripsToGui(int lastUsedIndex) {

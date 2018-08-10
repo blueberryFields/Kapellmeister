@@ -39,6 +39,7 @@ public class ArrangementWindow extends JFrame {
 	private Dimension noteChooserDim = new Dimension(50, 25);
 	private Dimension soloMuteBarDim = new Dimension(55, 20);
 	private Dimension patternChooserDim = new Dimension(110, 25);
+	private Dimension titleLabelDim = new Dimension(100, 13);
 
 	private JPanel loopPanel = new JPanel();
 	private JLabel loopLabel = new JLabel("Loop: ");
@@ -63,7 +64,6 @@ public class ArrangementWindow extends JFrame {
 	private GridBagConstraints sepGbc = new GridBagConstraints();
 
 	private Insets scenePanelInsets = new Insets(0, 8, 0, 8);
-	private Insets normalInsets = new Insets(0, 5, 0, 5);
 
 	public ArrangementWindow() {
 		super("Arrangement Window");
@@ -87,21 +87,12 @@ public class ArrangementWindow extends JFrame {
 		titlePanel.add(loopPanel, gbc);
 		add(titlePanel, gbc);
 
-		// create separators
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
-				rowSeps[i][j] = new JSeparator(SwingConstants.VERTICAL);
-				rowSeps[i][j].setForeground(sepColor);
-			}
-		}
-
 		for (int i = 0; i < scenePanels.length; i++) {
 			scenePanels[i] = new JPanel();
 			scenePanels[i].setBackground(backGroundColor);
 			scenePanels[i].setLayout(new GridBagLayout());
 			sceneButtons[i] = new JButton("Scene " + (i + 1));
 			sceneButtons[i].setPreferredSize(buttonDimLarge);
-			// scenePanels[i].add(rowSeps[0][i], sepGbc);
 			gbc.gridx = 1;
 			gbc.gridy = 0;
 			scenePanels[i].add(sceneButtons[i], gbc);
@@ -126,7 +117,9 @@ public class ArrangementWindow extends JFrame {
 	}
 
 	public void addInstrument(int nextIndex, String title, String[] sequenceNames) {
-		titles[nextIndex] = new JLabel(title);
+		titles[nextIndex] = new JLabel(title + ":");
+		titles[nextIndex].setPreferredSize(titleLabelDim);
+		titles[nextIndex].setHorizontalAlignment(SwingConstants.RIGHT);
 		gbc.gridwidth = 1;
 		gbc.gridx = 0;
 		gbc.gridy = nextIndex + 1;
@@ -148,8 +141,26 @@ public class ArrangementWindow extends JFrame {
 		pack();
 	}
 
+	public void removeInstrument(int index) {
+		titlePanel.remove(titles[index]);
+		for (int i = 0; i < scenePanels.length; i++) {
+			scenePanels[i].remove(sequenceChoosers[index][i]);
+		}
+	}
+
+	public void removeAllInstruments(int lastUsedIndex) {
+		for (int i = 0; i <= lastUsedIndex; i++) {
+			removeInstrument(i);
+		}
+	}
+
+	public void repaintAndPack() {
+		repaint();
+		pack();
+	}
+
 	public void changeTitle(String title, int index) {
-		titles[index + 1].setText(title);
+		titles[index].setText(title + ":");
 	}
 
 	public void markActiveScene(int scene) {

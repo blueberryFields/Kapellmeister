@@ -42,12 +42,13 @@ public class SequencerController {
 		setPartNotes();
 
 		// Add actionListeners to buttons
-		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
+		addActionListenerToDeviceChooser();
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 		gui.getGenerateButton().addActionListener(e -> generateSequence());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
 		gui.getRenamePattern().addActionListener(e -> renameSequence());
+		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
 
 		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
@@ -68,6 +69,22 @@ public class SequencerController {
 
 		gui.repaintSequencer(seq.getSequence(activeSequence));
 		gui.setPatternNames(seq.getSequences());
+	}
+	
+	private void addActionListenerToDeviceChooser() {
+		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
+	}
+	
+	private void removeActionListenerFromDeviceChooser() {
+		gui.getDeviceChooser().removeActionListener(e -> chooseMidiDevice());
+	}
+
+	//WORK IN PROGRESS!!!
+	private void refreshMidiDeviceList() {
+		removeActionListenerFromDeviceChooser();
+		seq.refreshMidiDeviceList();
+		gui.setAvailibleDevices(seq.getAvailibleMidiDevices());
+		addActionListenerToDeviceChooser();
 	}
 
 	private void renameSequence() {
@@ -385,10 +402,6 @@ public class SequencerController {
 		tickCounter = 0;
 		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
 	}
-
-	// public void setBpm(int bpm) {
-	// this.bpm = bpm;
-	// }
 
 	public void setKey(NoteGenerator key) {
 		seq.setKey(key);

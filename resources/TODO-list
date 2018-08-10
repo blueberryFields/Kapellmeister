@@ -1,0 +1,15 @@
+Kapellmeister TODO-list:
+
+Rename sequencers/instruments fucks up in ArrWin ✓
+
+Remove instrument from ArrWin  ✓
+
+set constant size on title-panel in ArrWin 
+
+Refresh mididevices
+
+Rename scenes
+
+Set tick-grid to 1/64(?) and killLastNote on tick 64when changing scenes
+
+If partnotesChooser is set to !1/8 when generating new sequence sometimes it jumps back to 1/8???

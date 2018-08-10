@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.sound.midi.MidiDevice.Info;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -42,9 +43,6 @@ public class SequencerGui extends JFrame {
 	private Color soloColor = Color.YELLOW;
 	private Color enabledText = Color.BLACK;
 	private Color disabledText = Color.GRAY;
-	// private Color buttonColor = Color.LIGHT_GRAY;
-	// private Color textColor = Color.BLACK;
-	// private Color stepPanelColor = new Color(77, 108, 137);
 
 	// Create dimensions
 	private Dimension buttonDimSmall = new Dimension(55, 25);
@@ -76,10 +74,11 @@ public class SequencerGui extends JFrame {
 	private JPanel channelPanel = new JPanel();
 	private String[] availibleDevices;
 	private JComboBox<String> deviceChooser;
+	private DefaultComboBoxModel<String> deviceChooserModel;
 	private JLabel channelText = new JLabel("ch:");
 	private Integer[] midiChannels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 	private JComboBox<Integer> midiChannelChooser = new JComboBox<Integer>(midiChannels);
-	private JButton refresh = new JButton("Refresh");
+	private JButton refreshButton = new JButton("Refresh");
 
 	// Create components for tempopanel
 	private JPanel tempoPanel = new JPanel();
@@ -124,6 +123,7 @@ public class SequencerGui extends JFrame {
 	private JButton nudgeLeft = new JButton("<-");
 	private JButton nudgeRight = new JButton("->");
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
+
 	// Create stuff for guiDelaySLider
 	private JPanel sliderPanel = new JPanel();
 	private JLabel sliderText = new JLabel("    Gui delay:");
@@ -162,7 +162,6 @@ public class SequencerGui extends JFrame {
 		generatePanel.setBackground(backGroundColor);
 		generatorAlgorithmPanel.setBackground(backGroundColor);
 		nudgePanel.setBackground(backGroundColor);
-		// nrOfStepsPanel.setBackground(backGroundColor);
 		channelPanel.setBackground(backGroundColor);
 		tempoPanel.setBackground(backGroundColor);
 		stepPanel.setBackground(backGroundColor);
@@ -179,7 +178,8 @@ public class SequencerGui extends JFrame {
 		for (int i = 1; i < availibleDevices.length; i++) {
 			availibleDevices[i] = infos[i - 1].toString();
 		}
-		channelPanel.add(deviceChooser = new JComboBox<String>(availibleDevices));
+		deviceChooserModel = new DefaultComboBoxModel<String>(availibleDevices);
+		channelPanel.add(deviceChooser = new JComboBox<String>(deviceChooserModel));
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
 		midiChannelChooser.setPreferredSize(new Dimension(70, 25));
 		channelPanel.add(channelText);
@@ -187,8 +187,8 @@ public class SequencerGui extends JFrame {
 		soloMuteBar.setPreferredSize(soloMuteBarDim);
 		soloMuteBar.setOpaque(true);
 		soloMuteBar.setHorizontalAlignment(SwingConstants.CENTER);
-		refresh.setPreferredSize(buttonDimLarge);
-		channelPanel.add(refresh);
+		refreshButton.setPreferredSize(buttonDimLarge);
+		channelPanel.add(refreshButton);
 		channelPanel.add(soloMuteBar);
 
 		generatePanel.add(generateButton);
@@ -493,7 +493,6 @@ public class SequencerGui extends JFrame {
 	public void disableGui() {
 		deviceChooser.setEnabled(false);
 		midiChannelChooser.setEnabled(false);
-		// partNotesChooser.setEnabled(false);
 		generateButton.setEnabled(false);
 		octaveLowChooser.setEnabled(false);
 		octaveHighChooser.setEnabled(false);
@@ -501,13 +500,12 @@ public class SequencerGui extends JFrame {
 		veloLowChooser.setEnabled(false);
 		veloHighChooser.setEnabled(false);
 		generatorAlgorithmChooser.setEnabled(false);
-		refresh.setEnabled(false);
+		refreshButton.setEnabled(false);
 	}
 
 	public void enableGui() {
 		deviceChooser.setEnabled(true);
 		midiChannelChooser.setEnabled(true);
-		// partNotesChooser.setEnabled(true);
 		generateButton.setEnabled(true);
 		octaveLowChooser.setEnabled(true);
 		octaveHighChooser.setEnabled(true);
@@ -515,15 +513,22 @@ public class SequencerGui extends JFrame {
 		veloLowChooser.setEnabled(true);
 		veloHighChooser.setEnabled(true);
 		generatorAlgorithmChooser.setEnabled(true);
-		refresh.setEnabled(true);
+		refreshButton.setEnabled(true);
 	}
 
 	public String[] getAvailibleDevices() {
 		return availibleDevices;
 	}
 
-	public void setAvailibleDevices(String[] availibleDevices) {
-		this.availibleDevices = availibleDevices;
+	public void setAvailibleDevices(Info[] infos) {
+		availibleDevices = new String[infos.length + 1];
+		availibleDevices[0] = "Choose a device...";
+		for (int i = 1; i < availibleDevices.length; i++) {
+			availibleDevices[i] = infos[i - 1].toString();
+		}
+		deviceChooserModel = new DefaultComboBoxModel<String>(getAvailibleDevices());
+		deviceChooser.removeAllItems();
+		deviceChooser.setModel(deviceChooserModel);
 	}
 
 	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
@@ -654,5 +659,10 @@ public class SequencerGui extends JFrame {
 
 	public JButton getRenamePattern() {
 		return renamePattern;
+	}
+
+	public JButton getRefreshButton() {
+		return refreshButton;
+
 	}
 }

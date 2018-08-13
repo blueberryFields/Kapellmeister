@@ -1,17 +1,10 @@
 package sequencer;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.sound.midi.MidiDevice.Info;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import arrangement.SoloMute;
-import masterModule.MstrMoGui;
-import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
 
@@ -20,13 +13,13 @@ public class SequencerController {
 	private SequencerModel seq;
 	private SequencerGui gui;
 
-	private long guiDelay;
+	// private long guiDelay;
 	@SuppressWarnings("unused")
 	private String title;
 
 	private int activeSequence = 0;
 	private int tickCounter = 0;
-	private int partNotesThreshhold = 4;
+	private int partNotesThreshhold = 8;
 
 	// Konstruktor
 	public SequencerController(NoteGenerator key, int bpm, String title) {
@@ -65,21 +58,21 @@ public class SequencerController {
 		addActionListenersToNoteOnButton();
 
 		// Add changeListeners to Sliders
-		gui.getGuiDelaySLider().addChangeListener(e -> changeGuiDelay());
+		// gui.getGuiDelaySLider().addChangeListener(e -> changeGuiDelay());
 
 		gui.repaintSequencer(seq.getSequence(activeSequence));
 		gui.setPatternNames(seq.getSequences());
 	}
-	
+
 	private void addActionListenerToDeviceChooser() {
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 	}
-	
+
 	private void removeActionListenerFromDeviceChooser() {
 		gui.getDeviceChooser().removeActionListener(e -> chooseMidiDevice());
 	}
 
-	//WORK IN PROGRESS!!!
+	// WORK IN PROGRESS!!!
 	private void refreshMidiDeviceList() {
 		removeActionListenerFromDeviceChooser();
 		seq.refreshMidiDeviceList();
@@ -145,11 +138,11 @@ public class SequencerController {
 		seq.setMidiChannel((int) gui.getMidiChannelChooser().getSelectedItem() - 1);
 	}
 
-	private void changeGuiDelay() {
-		if (!gui.getGuiDelaySLider().getValueIsAdjusting()) {
-			guiDelay = gui.getGuiDelaySLider().getValue();
-		}
-	}
+	// private void changeGuiDelay() {
+	// if (!gui.getGuiDelaySLider().getValueIsAdjusting()) {
+	// guiDelay = gui.getGuiDelaySLider().getValue();
+	// }
+	// }
 
 	private void changeOctaveHigh() {
 		if (gui.getOctaveHigh() < gui.getOctaveLow()) {
@@ -391,14 +384,12 @@ public class SequencerController {
 	public void playSequence() {
 		setPartNotes();
 		seq.initPlayVaribles();
-		// clock.start();
 		gui.disableGui();
 	}
 
 	public void stopSequence() {
 		gui.enableGui();
 		seq.stopSequence(activeSequence);
-		// clock.stop();
 		tickCounter = 0;
 		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
 	}
@@ -415,40 +406,40 @@ public class SequencerController {
 
 		switch (seq.getPartNotes(activeSequence)) {
 		case "1 bar":
-			partNotesThreshhold = 16;
+			partNotesThreshhold = 64;
 			break;
 		case "1/2":
-			partNotesThreshhold = 8;
+			partNotesThreshhold = 32;
 			break;
 		case "1/4":
-			partNotesThreshhold = 4;
+			partNotesThreshhold = 16;
 			break;
 		case "1/8":
-			partNotesThreshhold = 2;
+			partNotesThreshhold = 8;
 			break;
 		case "1/16":
-			partNotesThreshhold = 1;
+			partNotesThreshhold = 4;
 			break;
 		}
 	}
 
 	public void tick() {
 		tickCounter++;
-		if(tickCounter == 1) {
-			playNote();
+		if (tickCounter == 1) {
+			playStep();
 		}
-		if (tickCounter == partNotesThreshhold) {	
+		if (tickCounter == partNotesThreshhold) {
 			tickCounter = 0;
 		}
 	}
 
-	public void playNote() {
+	public void playStep() {
 		seq.playStep(activeSequence);
-		try {
-			Thread.sleep(guiDelay);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+		// try {
+		// Thread.sleep(guiDelay);
+		// } catch (InterruptedException e1) {
+		// e1.printStackTrace();
+		// }
 		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
 		int tempStep = seq.getCurrentStep();
 		tempStep++;

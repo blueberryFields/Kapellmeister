@@ -52,7 +52,9 @@ public class MstrMoGui extends JFrame {
 	private JMenuItem saveAs = new JMenuItem("Save As");
 	private JMenuItem load = new JMenuItem("Load");
 	private JButton openArr = new JButton("Arrange");
-	private JLabel beatCounter = new JLabel("00");
+	private JLabel barCounter = new JLabel("0");
+	private JLabel barCntrColon = new JLabel(":");
+	private JLabel beatCounter = new JLabel("0");
 
 	private JSeparator sep = new JSeparator();
 
@@ -74,7 +76,7 @@ public class MstrMoGui extends JFrame {
 	private JMenuItem standardSequencer = new JMenuItem("Standard Sequencer");
 
 	// Size for masterPanel and seqStrips and more
-	private Dimension stripDim = new Dimension(575, 35);
+	private Dimension stripDim = new Dimension(600, 35);
 	private Dimension soloMuteBarColor = new Dimension(55, 20);
 
 	// Create font for menus
@@ -102,6 +104,15 @@ public class MstrMoGui extends JFrame {
 		for (int i = 0; i < playStopButtons.length; i++) {
 			masterPanel.add(playStopButtons[i]);
 		}
+
+		barCounter.setPreferredSize(new Dimension(25, 25));
+		barCounter.setFont(new Font("Helvetica", Font.BOLD, 18));
+		barCounter.setHorizontalAlignment(SwingConstants.RIGHT);
+		masterPanel.add(barCounter);
+
+		// barCntrColon.setPreferredSize(new Dimension(25, 25));
+		barCntrColon.setFont(new Font("Helvetica", Font.BOLD, 18));
+		masterPanel.add(barCntrColon);
 
 		beatCounter.setPreferredSize(new Dimension(25, 25));
 		beatCounter.setFont(new Font("Helvetica", Font.BOLD, 18));
@@ -209,13 +220,14 @@ public class MstrMoGui extends JFrame {
 	}
 
 	public void setBeatCounter(int beat) {
-		String tempString;
-		if (beat < 10) {
-			tempString = "0" + Integer.toString(beat);
-		} else {
-			tempString = Integer.toString(beat);
-		}
-		beatCounter.setText(tempString);
+		// String tempString;
+		// if (beat < 10) {
+		// tempString = "0" + Integer.toString(beat);
+		// } else {
+		// tempString = Integer.toString(beat);
+		// }
+		// beatCounter.setText(tempString);
+		beatCounter.setText(Integer.toString(beat));
 	}
 
 	public void setSoloMuteBar(SoloMute soloMute, int index) {
@@ -358,4 +370,13 @@ public class MstrMoGui extends JFrame {
 	public JPanel[] getSeqPanels() {
 		return seqPanels;
 	}
+
+	public String getBarCounter() {
+		return barCounter.getText();
+	}
+
+	public void setBarCounter(int bar) {
+		barCounter.setText(Integer.toString(bar));
+	}
+
 }

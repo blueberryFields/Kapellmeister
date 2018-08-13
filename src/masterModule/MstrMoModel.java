@@ -184,7 +184,7 @@ public class MstrMoModel {
 		}
 	}
 
-	public void rename(String title, int index) {
+	public void renameSequencer(String title, int index) {
 		seqArr[index].setTitle(title);
 	}
 
@@ -206,5 +206,11 @@ public class MstrMoModel {
 
 	public void setRunning(boolean running) {
 		this.running = running;
+	}
+
+	
+	public void renameScene(int sceneNr, String newName) {
+		scenes[sceneNr].setName(newName);
+		
 	}
 }

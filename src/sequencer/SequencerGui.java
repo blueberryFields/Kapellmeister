@@ -125,12 +125,12 @@ public class SequencerGui extends JFrame {
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
 
 	// Create stuff for guiDelaySLider
-	private JPanel sliderPanel = new JPanel();
-	private JLabel sliderText = new JLabel("    Gui delay:");
-	private final int minDelay = 0;
-	private final int maxDelay = 100;
-	private final int initDelay = 0;
-	private JSlider guiDelaySlider = new JSlider(JSlider.HORIZONTAL, minDelay, maxDelay, initDelay);
+//	private JPanel sliderPanel = new JPanel();
+//	private JLabel sliderText = new JLabel("    Gui delay:");
+//	private final int minDelay = 0;
+//	private final int maxDelay = 100;
+//	private final int initDelay = 0;
+//	private JSlider guiDelaySlider = new JSlider(JSlider.HORIZONTAL, minDelay, maxDelay, initDelay);
 
 	// Create components for patternsPanel
 	private JPanel patternPanel = new JPanel();
@@ -225,18 +225,18 @@ public class SequencerGui extends JFrame {
 		generatorAlgorithmPanel.add(generatorAlgorithmChooser);
 
 		// Add stuff to and configure nudgeSequencePanel
-		guiDelaySlider.setMajorTickSpacing(10);
-		guiDelaySlider.setMinorTickSpacing(5);
-		guiDelaySlider.setPaintTicks(true);
-		guiDelaySlider.setPaintLabels(true);
-		sliderPanel.setLayout(new BorderLayout());
-		sliderPanel.add(sliderText, BorderLayout.NORTH);
-		sliderPanel.add(guiDelaySlider, BorderLayout.SOUTH);
-		sliderPanel.setOpaque(false);
+//		guiDelaySlider.setMajorTickSpacing(10);
+//		guiDelaySlider.setMinorTickSpacing(5);
+//		guiDelaySlider.setPaintTicks(true);
+//		guiDelaySlider.setPaintLabels(true);
+//		sliderPanel.setLayout(new BorderLayout());
+//		sliderPanel.add(sliderText, BorderLayout.NORTH);
+//		sliderPanel.add(guiDelaySlider, BorderLayout.SOUTH);
+//		sliderPanel.setOpaque(false);
 
 		nudgeLeft.setPreferredSize(buttonDimSmall);
 		nudgeRight.setPreferredSize(buttonDimSmall);
-		nudgePanel.add(sliderPanel);
+		//nudgePanel.add(sliderPanel);
 		nudgePanel.add(nudgeLeft);
 		nudgePanel.add(nudgeText);
 		nudgePanel.add(nudgeRight);
@@ -501,6 +501,9 @@ public class SequencerGui extends JFrame {
 		veloHighChooser.setEnabled(false);
 		generatorAlgorithmChooser.setEnabled(false);
 		refreshButton.setEnabled(false);
+		for (int i = 0; i < patternChoosers.length; i++) {
+			patternChoosers[i].setEnabled(false);
+		}
 	}
 
 	public void enableGui() {
@@ -514,6 +517,9 @@ public class SequencerGui extends JFrame {
 		veloHighChooser.setEnabled(true);
 		generatorAlgorithmChooser.setEnabled(true);
 		refreshButton.setEnabled(true);
+		for (int i = 0; i < patternChoosers.length; i++) {
+			patternChoosers[i].setEnabled(true);
+		}
 	}
 
 	public String[] getAvailibleDevices() {
@@ -641,9 +647,9 @@ public class SequencerGui extends JFrame {
 		return midiChannelChooser;
 	}
 
-	public JSlider getGuiDelaySLider() {
-		return guiDelaySlider;
-	}
+//	public JSlider getGuiDelaySLider() {
+//		return guiDelaySlider;
+//	}
 
 	public void open() {
 		setVisible(true);

@@ -11,6 +11,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
@@ -197,5 +198,15 @@ public class ArrangementWindow extends JFrame {
 
 	public boolean loopIsSelected() {
 		return loopCheck.isSelected();
+	}
+
+	public String renameScene(int sceneNr) {
+		String newName = JOptionPane.showInputDialog("New scene name:");
+		if(newName != null) {
+		sceneButtons[sceneNr].setText(newName);
+		return newName;
+		} else {
+			return sceneButtons[sceneNr].getText();
+		}
 	}
 }

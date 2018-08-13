@@ -2,7 +2,10 @@ package masterModule;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import arrangement.ArrangementWindow;
@@ -15,6 +18,7 @@ public class MstrMoController implements ActionListener {
 	private MstrMoModel mstrMoModel;
 	private ArrangementWindow arrWin;
 	private Timer masterClock;
+	private int barCounter = 0;
 	private int beatCounter = 0;
 	private int tickCounter = 0;
 	private int currentScene = 0;
@@ -41,6 +45,37 @@ public class MstrMoController implements ActionListener {
 			int index = i;
 			arrWin.getSceneButtons()[i].addActionListener(e -> clickSceneButton(index));
 		}
+		for (int i = 0; i < arrWin.getSceneButtons().length; i++) {
+			int index = i;
+			arrWin.getSceneButtons()[i].addMouseListener(new MouseListener() {
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					if (SwingUtilities.isRightMouseButton(e)) {
+						renameScene(index);
+					}
+				}
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// TODO Auto-generated method stub
+				}
+			});
+		}
 		for (int i = 0; i < arrWin.getLengthChoosers().length; i++) {
 			int index = i;
 			arrWin.getLengthChoosers()[i].addChangeListener(e -> changeSceneLength(index));
@@ -55,21 +90,28 @@ public class MstrMoController implements ActionListener {
 			arrWin.markCurrentScene(currentScene);
 			beatCounter++;
 			mstrMoGui.setBeatCounter(beatCounter);
+			if (beatCounter == 1) {
+				barCounter++;
+				mstrMoGui.setBarCounter(barCounter);
+			}
 		}
 		mstrMoModel.tick();
-		if (beatCounter == mstrMoModel.getSceneLength(currentScene)) {
-			if (tickCounter == 4) {
+		if (barCounter == mstrMoModel.getSceneLength(currentScene)) {
+			if (beatCounter == 4 && tickCounter == 16) {
 				arrWin.unMarkCurrentScene(currentScene);
 				currentScene = mstrMoModel.getNextActiveScene(currentScene, arrWin.loopIsSelected());
 				if (currentScene > -1) {
 					mstrMoModel.setActiveSequences(currentScene);
-					beatCounter = 0;
+					barCounter = 0;
 				} else {
 					stop();
 				}
 			}
 		}
-		if (tickCounter == 4) {
+		if (beatCounter == 4 && tickCounter == 16) {
+			beatCounter = 0;
+		}
+		if (tickCounter == 16) {
 			tickCounter = 0;
 		}
 	}
@@ -90,8 +132,10 @@ public class MstrMoController implements ActionListener {
 		if (mstrMoModel.isRunning()) {
 			mstrMoModel.setRunning(false);
 			masterClock.stop();
+			barCounter = 0;
 			beatCounter = 0;
 			tickCounter = 0;
+			mstrMoGui.setBarCounter(barCounter);
 			mstrMoGui.setBeatCounter(beatCounter);
 			mstrMoModel.stop();
 			mstrMoGui.enableGui(mstrMoModel.lastUsedIndex());
@@ -105,6 +149,11 @@ public class MstrMoController implements ActionListener {
 
 	private void openArrWin() {
 		arrWin.setVisible(true);
+	}
+
+	private void renameScene(int sceneNr) {
+		mstrMoModel.renameScene(sceneNr, arrWin.renameScene(sceneNr));
+
 	}
 
 	private void changeSceneLength(int scene) {
@@ -122,7 +171,7 @@ public class MstrMoController implements ActionListener {
 	}
 
 	private void changeBpm() {
-		masterClock.setDelay(60000 / getBpm() / 4);
+		masterClock.setDelay(60000 / getBpm() / 16);
 	}
 
 	private int getBpm() {
@@ -184,7 +233,7 @@ public class MstrMoController implements ActionListener {
 	}
 
 	private void rename(int index) {
-		mstrMoModel.rename(mstrMoGui.getTitle(index), index);
+		mstrMoModel.renameSequencer(mstrMoGui.getTitle(index), index);
 		arrWin.changeTitle(mstrMoGui.getTitle(index), index);
 	}
 
@@ -192,7 +241,7 @@ public class MstrMoController implements ActionListener {
 		// removeActionListenersFromArrWinInstr(index);
 		arrWin.removeAllInstruments(mstrMoModel.lastUsedIndex());
 		mstrMoModel.removeSequencer(index);
-		//removeActionListenerFromStrip(index);
+		// removeActionListenerFromStrip(index);
 		mstrMoGui.removeAllSeqStrips();
 		addStripsToGui(mstrMoModel.lastUsedIndex());
 		mstrMoGui.paintAndPack();

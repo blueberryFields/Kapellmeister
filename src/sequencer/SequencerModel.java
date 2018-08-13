@@ -108,7 +108,8 @@ public class SequencerModel {
 	public void generateSequence(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
 			int veloLow, int veloHigh, int octaveLow, int octaveHigh, int activeSequence) {
 		String tempName = sequences[activeSequence].getName();
-		sequences[activeSequence] = new Sequence(tempName, nrOfSteps);
+		String tempPartNotes = sequences[activeSequence].getPartNotesChoise();
+		sequences[activeSequence] = new Sequence(tempName, nrOfSteps, tempPartNotes);
 		switch (generatorAlgorithm) {
 		case "Rnd notes":
 			sequences[activeSequence].setSequence(key.getRndSequence(sequences[activeSequence].getSequence(),
@@ -279,7 +280,7 @@ public class SequencerModel {
 					.getNoteOn() != NoteOn.HOLD) {
 				try {
 					noteOff.setMessage(
-							ShortMessage.NOTE_OFF, 0, sequences[activeSequence]
+							ShortMessage.NOTE_OFF, midiChannel, sequences[activeSequence]
 									.getSingleStep(sequences[activeSequence].getSequence().length - 1).getMidiNote(),
 							sequences[activeSequence].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
@@ -290,7 +291,7 @@ public class SequencerModel {
 		} else if (currentStep != 0) {
 			if (sequences[activeSequence].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
 				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, 0,
+					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
 							sequences[activeSequence].getSingleStep(currentStep - 1).getMidiNote(),
 							sequences[activeSequence].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
@@ -298,7 +299,7 @@ public class SequencerModel {
 				}
 			} else {
 				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, 0,
+					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
 							sequences[activeSequence].getSingleStep(currentStep - 1).getHoldNote(),
 							sequences[activeSequence].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {

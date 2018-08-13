@@ -25,6 +25,16 @@ public class Sequence {
 			sequence[i] = new Note();
 		}
 	}
+	
+	// Konstruktor 3
+		public Sequence(String name, int nrOfSteps, String partNotes) {
+			this.name = name;
+			this.partNotes = partNotes;
+			sequence = new Note[nrOfSteps];
+			for (int i = 0; i < sequence.length; i++) {
+				sequence[i] = new Note();
+			}
+		}
 
 	public Note[] getSequence() {
 		return sequence;

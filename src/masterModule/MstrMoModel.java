@@ -1,9 +1,9 @@
 package masterModule;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.swing.JButton;
 
 import arrangement.Scene;
+import arrangement.Sequence;
 import arrangement.SoloMute;
 import note.NoteGenerator;
 import sequencer.SequencerController;
@@ -13,6 +13,7 @@ public class MstrMoModel {
 	private SequencerController[] seqArr = new SequencerController[8];
 	private Scene[] scenes = new Scene[8];
 	private boolean running = false;
+	private Sequence clipBoard;
 
 	public MstrMoModel() {
 		for (int i = 0; i < scenes.length; i++) {
@@ -41,9 +42,9 @@ public class MstrMoModel {
 		}
 		return -1;
 	}
-	
+
 	public int getLastActiveScene() {
-		for (int i = scenes.length-1; i >= 0; i--) {
+		for (int i = scenes.length - 1; i >= 0; i--) {
 			if (scenes[i].isActive()) {
 				return i;
 			}
@@ -95,6 +96,22 @@ public class MstrMoModel {
 		seqArr[index] = new SequencerController(key, clockDelay, title);
 	}
 
+	public void copySequence(int index) {
+		clipBoard = seqArr[index].copySequence();
+	}
+
+	public void pasteSequence(int index) {
+		seqArr[index].pasteSequence(clipBoard);
+	}
+
+	public JButton getCopyButton(int index) {
+		return seqArr[index].getCopyButton();
+	}
+	
+	public JButton getPasteButton(int index) {
+		return seqArr[index].getPasteButton();
+	}
+	
 	public void tick() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
 			seqArr[i].tick();
@@ -208,9 +225,8 @@ public class MstrMoModel {
 		this.running = running;
 	}
 
-	
 	public void renameScene(int sceneNr, String newName) {
 		scenes[sceneNr].setName(newName);
-		
+
 	}
 }

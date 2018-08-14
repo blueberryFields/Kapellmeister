@@ -25,16 +25,16 @@ public class Sequence {
 			sequence[i] = new Note();
 		}
 	}
-	
+
 	// Konstruktor 3
-		public Sequence(String name, int nrOfSteps, String partNotes) {
-			this.name = name;
-			this.partNotes = partNotes;
-			sequence = new Note[nrOfSteps];
-			for (int i = 0; i < sequence.length; i++) {
-				sequence[i] = new Note();
-			}
+	public Sequence(String name, int nrOfSteps, String partNotes) {
+		this.name = name;
+		this.partNotes = partNotes;
+		sequence = new Note[nrOfSteps];
+		for (int i = 0; i < sequence.length; i++) {
+			sequence[i] = new Note();
 		}
+	}
 
 	public Note[] getSequence() {
 		return sequence;
@@ -110,5 +110,14 @@ public class Sequence {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Sequence copy() {
+		Sequence tempSequence = new Sequence(name, getNrOfSteps(), partNotes);
+		for (int i = 0; i < tempSequence.getSequence().length; i++) {
+			tempSequence.getSequence()[i] = new Note(this.sequence[i].getVelo(), this.sequence[i].getNote(),
+					this.sequence[i].getNoteOn());
+		}
+		return tempSequence;
 	}
 }

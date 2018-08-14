@@ -6,8 +6,6 @@ Remove instrument from ArrWin  ✓
 
 set constant size on title-panel in ArrWin  ✓
 
-Refresh mididevices
-
 Rename scenes  ✓
 
 Set tick-grid to 1/64(?) and killLastNote on tick 64 when changing scenes  ✓
@@ -15,3 +13,11 @@ Set tick-grid to 1/64(?) and killLastNote on tick 64 when changing scenes  ✓
 If partnotesChooser is set to !1/8 when generating new sequence sometimes it jumps back to 1/8???  ✓
 
 Change from beatCounter to barCounter ✓
+
+check solo/mute-function, seems to cause error if somethings is muted/soloed before pressing start ✓
+
+Save & Load
+
+Copy & paste sequences ✓
+
+Refresh mididevices

@@ -125,12 +125,13 @@ public class SequencerGui extends JFrame {
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
 
 	// Create stuff for guiDelaySLider
-//	private JPanel sliderPanel = new JPanel();
-//	private JLabel sliderText = new JLabel("    Gui delay:");
-//	private final int minDelay = 0;
-//	private final int maxDelay = 100;
-//	private final int initDelay = 0;
-//	private JSlider guiDelaySlider = new JSlider(JSlider.HORIZONTAL, minDelay, maxDelay, initDelay);
+	// private JPanel sliderPanel = new JPanel();
+	// private JLabel sliderText = new JLabel(" Gui delay:");
+	// private final int minDelay = 0;
+	// private final int maxDelay = 100;
+	// private final int initDelay = 0;
+	// private JSlider guiDelaySlider = new JSlider(JSlider.HORIZONTAL, minDelay,
+	// maxDelay, initDelay);
 
 	// Create components for patternsPanel
 	private JPanel patternPanel = new JPanel();
@@ -148,6 +149,8 @@ public class SequencerGui extends JFrame {
 	private JLabel partNotesText = new JLabel("Partnotes:");
 
 	private JButton renamePattern = new JButton("Rename");
+
+	private JButton[] copyPaste = new JButton[2];
 
 	// Konstruktor
 	public SequencerGui(Info[] infos, String title) {
@@ -225,21 +228,29 @@ public class SequencerGui extends JFrame {
 		generatorAlgorithmPanel.add(generatorAlgorithmChooser);
 
 		// Add stuff to and configure nudgeSequencePanel
-//		guiDelaySlider.setMajorTickSpacing(10);
-//		guiDelaySlider.setMinorTickSpacing(5);
-//		guiDelaySlider.setPaintTicks(true);
-//		guiDelaySlider.setPaintLabels(true);
-//		sliderPanel.setLayout(new BorderLayout());
-//		sliderPanel.add(sliderText, BorderLayout.NORTH);
-//		sliderPanel.add(guiDelaySlider, BorderLayout.SOUTH);
-//		sliderPanel.setOpaque(false);
+
+		// guiDelaySlider.setMajorTickSpacing(10);
+		// guiDelaySlider.setMinorTickSpacing(5);
+		// guiDelaySlider.setPaintTicks(true);
+		// guiDelaySlider.setPaintLabels(true);
+		// sliderPanel.setLayout(new BorderLayout());
+		// sliderPanel.add(sliderText, BorderLayout.NORTH);
+		// sliderPanel.add(guiDelaySlider, BorderLayout.SOUTH);
+		// sliderPanel.setOpaque(false);
 
 		nudgeLeft.setPreferredSize(buttonDimSmall);
 		nudgeRight.setPreferredSize(buttonDimSmall);
-		//nudgePanel.add(sliderPanel);
+		// nudgePanel.add(sliderPanel);
 		nudgePanel.add(nudgeLeft);
 		nudgePanel.add(nudgeText);
 		nudgePanel.add(nudgeRight);
+
+		copyPaste[0] = new JButton("Copy");
+		copyPaste[1] = new JButton("Paste");
+		for (int i = 0; i < copyPaste.length; i++) {
+			copyPaste[i].setPreferredSize(buttonDimLarge);
+			nudgePanel.add(copyPaste[i]);
+		}
 
 		// Add stuff to and configure stepPanel
 		for (int i = 0; i < noteChooser.length; i++) {
@@ -504,6 +515,10 @@ public class SequencerGui extends JFrame {
 		for (int i = 0; i < patternChoosers.length; i++) {
 			patternChoosers[i].setEnabled(false);
 		}
+		copyPaste[0].setEnabled(false);
+		copyPaste[1].setEnabled(false);
+		nudgeLeft.setEnabled(false);
+		nudgeRight.setEnabled(false);
 	}
 
 	public void enableGui() {
@@ -520,6 +535,10 @@ public class SequencerGui extends JFrame {
 		for (int i = 0; i < patternChoosers.length; i++) {
 			patternChoosers[i].setEnabled(true);
 		}
+		copyPaste[0].setEnabled(true);
+		copyPaste[1].setEnabled(true);
+		nudgeLeft.setEnabled(true);
+		nudgeRight.setEnabled(true);
 	}
 
 	public String[] getAvailibleDevices() {
@@ -539,24 +558,44 @@ public class SequencerGui extends JFrame {
 
 	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
 		if (isFirstNote) {
-			singleSteps[currentStep - 1].setBackground(activeStepColor);
+			singleSteps[currentStep].setBackground(activeStepColor);
+			disableStep(currentStep);
 		} else if (currentStep == 0 && !isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
+			disableStep(currentStep);
+			enableStep(sequence.length - 1);
 		} else {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			singleSteps[currentStep - 1].setBackground(enabledStepColor);
+			disableStep(currentStep);
+			enableStep(currentStep - 1);
 		}
 	}
 
 	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
 		if (isFirstNote) {
-			singleSteps[currentStep - 1].setBackground(enabledStepColor);
+			singleSteps[currentStep].setBackground(enabledStepColor);
+			enableStep(currentStep);
 		} else if (currentStep == 0 && !isFirstNote) {
 			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
+			enableStep(sequence.length - 1);
 		} else {
 			singleSteps[currentStep - 1].setBackground(enabledStepColor);
+			enableStep(currentStep - 1);
 		}
+	}
+
+	public void enableStep(int stepIndex) {
+		noteChooser[stepIndex].setEnabled(true);
+		velocityChooser[stepIndex].setEnabled(true);
+		noteOnButton[stepIndex].setEnabled(true);
+	}
+
+	public void disableStep(int stepIndex) {
+		noteChooser[stepIndex].setEnabled(false);
+		velocityChooser[stepIndex].setEnabled(false);
+		noteOnButton[stepIndex].setEnabled(false);
 	}
 
 	public String getGeneratorAlgoRithmChooser() {
@@ -647,9 +686,9 @@ public class SequencerGui extends JFrame {
 		return midiChannelChooser;
 	}
 
-//	public JSlider getGuiDelaySLider() {
-//		return guiDelaySlider;
-//	}
+	// public JSlider getGuiDelaySLider() {
+	// return guiDelaySlider;
+	// }
 
 	public void open() {
 		setVisible(true);
@@ -670,5 +709,13 @@ public class SequencerGui extends JFrame {
 	public JButton getRefreshButton() {
 		return refreshButton;
 
+	}
+
+	public JButton getCopyButton() {
+		return copyPaste[0];
+	}
+
+	public JButton getPasteButton() {
+		return copyPaste[1];
 	}
 }

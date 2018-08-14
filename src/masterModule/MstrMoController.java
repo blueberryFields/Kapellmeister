@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import arrangement.ArrangementWindow;
+import arrangement.Sequence;
 import note.KeyConverter;
 
 public class MstrMoController implements ActionListener {
@@ -186,12 +187,23 @@ public class MstrMoController implements ActionListener {
 		if (nextIndex < 8) {
 			mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), getBpm(), nextIndex,
 					"Stnd Sequencer");
+			int index = nextIndex;
+			mstrMoModel.getCopyButton(index).addActionListener(e -> copy(index));
+			mstrMoModel.getPasteButton(index).addActionListener(e -> paste(index));
 			mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
 			addActionListenersToSeqStrip(nextIndex);
 			arrWin.addInstrument(nextIndex, mstrMoModel.getTitle(nextIndex), mstrMoModel.getSequenceNames(nextIndex));
 			addActionListenersToArrWinInstr(nextIndex);
 			setNextIndex();
 		}
+	}
+
+	public void copy(int index) {
+		mstrMoModel.copySequence(index);
+	}
+
+	public void paste(int index) {
+		mstrMoModel.pasteSequence(index);
 	}
 
 	private void addActionListenersToArrWinInstr(int instrument) {

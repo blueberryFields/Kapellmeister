@@ -1,10 +1,13 @@
 package sequencer;
 
 import javax.sound.midi.MidiDevice.Info;
+import javax.swing.JButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import arrangement.Sequence;
 import arrangement.SoloMute;
+import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
 
@@ -12,11 +15,8 @@ public class SequencerController {
 
 	private SequencerModel seq;
 	private SequencerGui gui;
-
-	// private long guiDelay;
 	@SuppressWarnings("unused")
 	private String title;
-
 	private int activeSequence = 0;
 	private int tickCounter = 0;
 	private int partNotesThreshhold = 8;
@@ -342,6 +342,7 @@ public class SequencerController {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					seq.getSingleStep(activeSequence, index).changeNote((String) gui.getNoteChooser(index).getValue());
+					checkHold(index);
 				}
 			});
 		}
@@ -388,8 +389,8 @@ public class SequencerController {
 	}
 
 	public void stopSequence() {
-		gui.enableGui();
 		seq.stopSequence(activeSequence);
+		gui.enableGui();
 		tickCounter = 0;
 		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
 	}
@@ -455,5 +456,34 @@ public class SequencerController {
 			s += seq.getSingleStep(activeSequence, i).toString();
 		}
 		System.out.println(s);
+	}
+
+	public Note[] getSequence() {
+		return seq.getSequence(activeSequence);
+	}
+
+	public void setSequence(Note[] sequence) {
+		seq.setSequence(sequence, activeSequence);
+	}
+
+	public Sequence copySequence() {
+		return seq.copySequence(activeSequence);
+	}
+	
+	public void pasteSequence(Sequence sequence) {
+		seq.pasteSequence(activeSequence, sequence);
+		gui.repaintSequencer(seq.getSequence(activeSequence));
+		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activeSequence));
+		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(activeSequence));
+		gui.getPatterChoosers()[activeSequence].setText(seq.getSequenceName(activeSequence));
+		checkHold();
+	}
+
+	public JButton getCopyButton() {
+		return gui.getCopyButton();
+	}
+
+	public JButton getPasteButton() {
+		return gui.getPasteButton();
 	}
 }

@@ -75,7 +75,7 @@ public class SequencerModel {
 	public MidiDevice.Info[] getAvailibleMidiDevices() {
 		return infos;
 	}
-	
+
 	public void refreshMidiDeviceList() {
 		infos = MidiSystem.getMidiDeviceInfo();
 	}
@@ -129,6 +129,14 @@ public class SequencerModel {
 							rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		}
+	}
+
+	public Sequence copySequence(int activeSequence) {
+		return sequences[activeSequence].copy();
+	}
+
+	public void pasteSequence(int activeSequence, Sequence sequence) {
+		sequences[activeSequence] = sequence;
 	}
 
 	public void setSequence(Note[] sequence, int activeSequence) {
@@ -222,9 +230,10 @@ public class SequencerModel {
 						e.printStackTrace();
 					}
 				}
-			} else {
-				firstNote = false;
 			}
+			// else {
+			// firstNote = false;
+			// }
 			try {
 				noteOn.setMessage(ShortMessage.NOTE_ON, midiChannel,
 						sequences[activeSequence].getSingleStep(currentStep).getMidiNote(),
@@ -239,6 +248,9 @@ public class SequencerModel {
 					e.printStackTrace();
 				}
 			}
+		}
+		if (firstNote == true) {
+			firstNote = false;
 		}
 	}
 
@@ -340,6 +352,10 @@ public class SequencerModel {
 
 	public int getNrOfSteps(int index) {
 		return sequences[index].getNrOfSteps();
+	}
+
+	public String getSequenceName(int index) {
+		return sequences[index].getName();
 	}
 
 	public String getPartNotes(int index) {

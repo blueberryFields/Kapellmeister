@@ -16,8 +16,14 @@ Change from beatCounter to barCounter ✓
 
 check solo/mute-function, seems to cause error if somethings is muted/soloed before pressing start ✓
 
-Save & Load
-
 Copy & paste sequences ✓
 
+solo mute works a little wierd, if you solo an instrument and then unmute annother, maybe it should also be soloed otherwise the first one should be unsoloed ✓
+
+Save & Load
+
 Refresh mididevices
+
+comments
+
+refactoring

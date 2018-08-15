@@ -120,13 +120,13 @@ public class MstrMoModel {
 
 	public void start() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
-			seqArr[i].playSequence();
+			seqArr[i].playMode();
 		}
 	}
 
 	public void stop() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
-			seqArr[i].stopSequence();
+			seqArr[i].stopMode();
 		}
 	}
 
@@ -185,7 +185,7 @@ public class MstrMoModel {
 				seqArr[i].unSoloMute();
 			}
 		}
-		seqArr[index].dynamicMute();
+		seqArr[index].muteUnmute();
 	}
 
 	public void solo(int index) {

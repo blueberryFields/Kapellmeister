@@ -166,7 +166,7 @@ public class SequencerGui extends JFrame {
 		getContentPane().setBackground(backGroundColor);
 
 		// Add stuff to channelPanel
-
+		// setAvailibleDevices(infos);
 		availibleDevices = new String[infos.length + 1];
 		availibleDevices[0] = "Choose a device...";
 		for (int i = 1; i < availibleDevices.length; i++) {
@@ -175,6 +175,7 @@ public class SequencerGui extends JFrame {
 		deviceChooserModel = new DefaultComboBoxModel<String>(availibleDevices);
 		channelPanel.add(deviceChooser = new JComboBox<String>(deviceChooserModel));
 		deviceChooser.setPreferredSize(new Dimension(175, 25));
+
 		midiChannelChooser.setPreferredSize(new Dimension(70, 25));
 		channelPanel.add(channelText);
 		channelPanel.add(midiChannelChooser);
@@ -219,19 +220,8 @@ public class SequencerGui extends JFrame {
 		generatorAlgorithmPanel.add(generatorAlgorithmChooser);
 
 		// Add stuff to and configure nudgeSequencePanel
-
-		// guiDelaySlider.setMajorTickSpacing(10);
-		// guiDelaySlider.setMinorTickSpacing(5);
-		// guiDelaySlider.setPaintTicks(true);
-		// guiDelaySlider.setPaintLabels(true);
-		// sliderPanel.setLayout(new BorderLayout());
-		// sliderPanel.add(sliderText, BorderLayout.NORTH);
-		// sliderPanel.add(guiDelaySlider, BorderLayout.SOUTH);
-		// sliderPanel.setOpaque(false);
-
 		nudgeLeft.setPreferredSize(buttonDimSmall);
 		nudgeRight.setPreferredSize(buttonDimSmall);
-		// nudgePanel.add(sliderPanel);
 		nudgePanel.add(nudgeLeft);
 		nudgePanel.add(nudgeText);
 		nudgePanel.add(nudgeRight);
@@ -341,9 +331,6 @@ public class SequencerGui extends JFrame {
 		frameGbc.gridy = 0;
 		add(channelPanel, frameGbc);
 
-		// frameGbc.gridy = 1;
-		// add(tempoPanel, frameGbc);
-
 		frameGbc.gridy = 1;
 		add(generatePanel, frameGbc);
 
@@ -371,6 +358,12 @@ public class SequencerGui extends JFrame {
 		setVisible(true);
 	}
 
+	/**
+	 * Checks the passed sequence and repaints the stepSequqncer accordingly
+	 * 
+	 * @param sequence
+	 *            the sequence to be the model for the stepSequencer view
+	 */
 	public void repaintSequencer(Note[] sequence) {
 
 		// Enable steps wich is included in sequence
@@ -381,7 +374,7 @@ public class SequencerGui extends JFrame {
 			singleSteps[i].setBackground(enabledStepColor);
 		}
 
-		// set note and velocity on steps
+		// set note, NoteOn and velocity on steps
 		for (int i = 0; i < sequence.length; i++) {
 			velocityChooser[i].setValue(sequence[i].getVelo());
 			noteChooser[i].setValue(sequence[i].getNote());
@@ -408,28 +401,135 @@ public class SequencerGui extends JFrame {
 		}
 	}
 
+	/**
+	 * Makes a popup appear where you can type in a new name for the active sequence
+	 */
 	public String renameSequence(int activeSequence) {
 		String newName = JOptionPane.showInputDialog(this, "New name:");
 		patternChoosers[activeSequence].setText(newName);
 		return newName;
 	}
 
+	/**
+	 * Updates the text on the patternChooserButtons according to the passed array
+	 * of sequences
+	 * 
+	 * @param sequences
+	 *            an array containing sequences from wich the names to be written on
+	 *            the patternChooserButtons will be retrieved
+	 */
 	public void setPatternNames(Sequence[] sequences) {
 		for (int i = 0; i < sequences.length; i++) {
 			patternChoosers[i].setText(sequences[i].getName());
 		}
 	}
 
+	/**
+	 * Sets the choosen patternChooserButtons text to indicate it is enabled/active
+	 * 
+	 * @param index
+	 *            the index of the patternChooserButton to be marked as
+	 *            enabled/active
+	 */
 	public void enablePatternChooser(int index) {
 		patternChoosers[index].setForeground(enabledText);
 	}
 
+	/**
+	 * Sets the choosen patternChooserButtons text to indicate it is
+	 * disabled/inactive
+	 * 
+	 * @param index
+	 *            the index of the patternChooserButton to be marked as
+	 *            disabled/inactive
+	 */
 	public void disablePatternChooser(int index) {
 		patternChoosers[index].setForeground(disabledText);
 	}
 
-	public int getChoosenDevice() {
-		return deviceChooser.getSelectedIndex();
+	/**
+	 * Removes all items from the deviceChooser
+	 */
+	public void emptyDeviceChooser() {
+		deviceChooser.removeAllItems();
+	}
+
+	/**
+	 * Marks the currently playing note in the stepSequencer
+	 * 
+	 * @param currentStep
+	 *            the currently playing step
+	 * @param isFirstNote
+	 *            boolean indicating if this is the first note since pressing start
+	 * @param sequence
+	 *            the sequence playing
+	 */
+	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
+		if (isFirstNote) {
+			singleSteps[currentStep].setBackground(activeStepColor);
+			disableStep(currentStep);
+		} else if (currentStep == 0 && !isFirstNote) {
+			singleSteps[currentStep].setBackground(activeStepColor);
+			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
+			disableStep(currentStep);
+			enableStep(sequence.length - 1);
+		} else {
+			singleSteps[currentStep].setBackground(activeStepColor);
+			singleSteps[currentStep - 1].setBackground(enabledStepColor);
+			disableStep(currentStep);
+			enableStep(currentStep - 1);
+		}
+	}
+
+	public void disableGui() {
+		deviceChooser.setEnabled(false);
+		midiChannelChooser.setEnabled(false);
+		generateButton.setEnabled(false);
+		octaveLowChooser.setEnabled(false);
+		octaveHighChooser.setEnabled(false);
+		rndVeloCheckBox.setEnabled(false);
+		veloLowChooser.setEnabled(false);
+		veloHighChooser.setEnabled(false);
+		generatorAlgorithmChooser.setEnabled(false);
+		refreshButton.setEnabled(false);
+		for (int i = 0; i < patternChoosers.length; i++) {
+			patternChoosers[i].setEnabled(false);
+		}
+		copyPaste[0].setEnabled(false);
+		copyPaste[1].setEnabled(false);
+		nudgeLeft.setEnabled(false);
+		nudgeRight.setEnabled(false);
+	}
+
+	public void enableGui() {
+		deviceChooser.setEnabled(true);
+		midiChannelChooser.setEnabled(true);
+		generateButton.setEnabled(true);
+		octaveLowChooser.setEnabled(true);
+		octaveHighChooser.setEnabled(true);
+		rndVeloCheckBox.setEnabled(true);
+		veloLowChooser.setEnabled(true);
+		veloHighChooser.setEnabled(true);
+		generatorAlgorithmChooser.setEnabled(true);
+		refreshButton.setEnabled(true);
+		for (int i = 0; i < patternChoosers.length; i++) {
+			patternChoosers[i].setEnabled(true);
+		}
+		copyPaste[0].setEnabled(true);
+		copyPaste[1].setEnabled(true);
+		nudgeLeft.setEnabled(true);
+		nudgeRight.setEnabled(true);
+	}
+
+	// WORK IN PROGRESS!!!
+	public void setAvailibleDevices(Info[] infos) {
+		availibleDevices = new String[infos.length + 1];
+		availibleDevices[0] = "Choose a device...";
+		for (int i = 1; i < availibleDevices.length; i++) {
+			availibleDevices[i] = infos[i - 1].toString();
+		}
+		deviceChooserModel = new DefaultComboBoxModel<String>(getAvailibleDevices());
+		deviceChooser.setModel(deviceChooserModel);
 	}
 
 	public JSpinner[] getNoteChooserArray() {
@@ -492,76 +592,8 @@ public class SequencerGui extends JFrame {
 		return generateButton;
 	}
 
-	public void disableGui() {
-		deviceChooser.setEnabled(false);
-		midiChannelChooser.setEnabled(false);
-		generateButton.setEnabled(false);
-		octaveLowChooser.setEnabled(false);
-		octaveHighChooser.setEnabled(false);
-		rndVeloCheckBox.setEnabled(false);
-		veloLowChooser.setEnabled(false);
-		veloHighChooser.setEnabled(false);
-		generatorAlgorithmChooser.setEnabled(false);
-		refreshButton.setEnabled(false);
-		for (int i = 0; i < patternChoosers.length; i++) {
-			patternChoosers[i].setEnabled(false);
-		}
-		copyPaste[0].setEnabled(false);
-		copyPaste[1].setEnabled(false);
-		nudgeLeft.setEnabled(false);
-		nudgeRight.setEnabled(false);
-	}
-
-	public void enableGui() {
-		deviceChooser.setEnabled(true);
-		midiChannelChooser.setEnabled(true);
-		generateButton.setEnabled(true);
-		octaveLowChooser.setEnabled(true);
-		octaveHighChooser.setEnabled(true);
-		rndVeloCheckBox.setEnabled(true);
-		veloLowChooser.setEnabled(true);
-		veloHighChooser.setEnabled(true);
-		generatorAlgorithmChooser.setEnabled(true);
-		refreshButton.setEnabled(true);
-		for (int i = 0; i < patternChoosers.length; i++) {
-			patternChoosers[i].setEnabled(true);
-		}
-		copyPaste[0].setEnabled(true);
-		copyPaste[1].setEnabled(true);
-		nudgeLeft.setEnabled(true);
-		nudgeRight.setEnabled(true);
-	}
-
 	public String[] getAvailibleDevices() {
 		return availibleDevices;
-	}
-
-	public void setAvailibleDevices(Info[] infos) {
-		availibleDevices = new String[infos.length + 1];
-		availibleDevices[0] = "Choose a device...";
-		for (int i = 1; i < availibleDevices.length; i++) {
-			availibleDevices[i] = infos[i - 1].toString();
-		}
-		deviceChooserModel = new DefaultComboBoxModel<String>(getAvailibleDevices());
-		deviceChooser.removeAllItems();
-		deviceChooser.setModel(deviceChooserModel);
-	}
-
-	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
-		if (isFirstNote) {
-			singleSteps[currentStep].setBackground(activeStepColor);
-			disableStep(currentStep);
-		} else if (currentStep == 0 && !isFirstNote) {
-			singleSteps[currentStep].setBackground(activeStepColor);
-			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
-			disableStep(currentStep);
-			enableStep(sequence.length - 1);
-		} else {
-			singleSteps[currentStep].setBackground(activeStepColor);
-			singleSteps[currentStep - 1].setBackground(enabledStepColor);
-			disableStep(currentStep);
-			enableStep(currentStep - 1);
-		}
 	}
 
 	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
@@ -621,6 +653,10 @@ public class SequencerGui extends JFrame {
 		return veloHighChooser;
 	}
 
+	public int getChoosenDevice() {
+		return deviceChooser.getSelectedIndex();
+	}
+
 	public JButton getNudgeLeft() {
 		return nudgeLeft;
 	}
@@ -676,10 +712,6 @@ public class SequencerGui extends JFrame {
 	public JComboBox<Integer> getMidiChannelChooser() {
 		return midiChannelChooser;
 	}
-
-	// public JSlider getGuiDelaySLider() {
-	// return guiDelaySlider;
-	// }
 
 	public void open() {
 		setVisible(true);

@@ -76,6 +76,7 @@ public class SequencerModel {
 		return infos;
 	}
 
+	//WORK IN PROGRESS!!!
 	public void refreshMidiDeviceList() {
 		infos = MidiSystem.getMidiDeviceInfo();
 	}
@@ -163,7 +164,7 @@ public class SequencerModel {
 		return sequences[activeSequence].getSingleStep(index);
 	}
 
-	public void initPlayVaribles() {
+	public void initPlayVariables() {
 		currentStep = 0;
 		firstNote = true;
 		running = true;

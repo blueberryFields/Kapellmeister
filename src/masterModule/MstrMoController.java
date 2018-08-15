@@ -286,7 +286,7 @@ public class MstrMoController implements ActionListener {
 		return index;
 	}
 
-	private void setSeqStripsColor() {
+	private void setSoloMuteBars() {
 		for (int i = 0; i <= mstrMoModel.lastUsedIndex(); i++) {
 			mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(i), i);
 		}
@@ -294,12 +294,13 @@ public class MstrMoController implements ActionListener {
 
 	private void mute(int index) {
 		mstrMoModel.mute(index);
-		mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(index), index);
+		setSoloMuteBars();
+		//mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(index), index);
 	}
 
 	private void solo(int index) {
 		mstrMoModel.solo(index);
-		setSeqStripsColor();
+		setSoloMuteBars();
 	}
 
 	private void setNextIndex() {

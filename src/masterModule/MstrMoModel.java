@@ -107,11 +107,11 @@ public class MstrMoModel {
 	public JButton getCopyButton(int index) {
 		return seqArr[index].getCopyButton();
 	}
-	
+
 	public JButton getPasteButton(int index) {
 		return seqArr[index].getPasteButton();
 	}
-	
+
 	public void tick() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
 			seqArr[i].tick();
@@ -180,7 +180,12 @@ public class MstrMoModel {
 	}
 
 	public void mute(int index) {
-		seqArr[index].muteButton();
+		for (int i = 0; i <= lastUsedIndex(); i++) {
+			if (seqArr[i].getSoloMute() == SoloMute.SOLO) {
+				seqArr[i].unSoloMute();
+			}
+		}
+		seqArr[index].dynamicMute();
 	}
 
 	public void solo(int index) {

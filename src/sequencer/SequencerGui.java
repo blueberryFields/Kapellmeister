@@ -124,15 +124,6 @@ public class SequencerGui extends JFrame {
 	private JButton nudgeRight = new JButton("->");
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
 
-	// Create stuff for guiDelaySLider
-	// private JPanel sliderPanel = new JPanel();
-	// private JLabel sliderText = new JLabel(" Gui delay:");
-	// private final int minDelay = 0;
-	// private final int maxDelay = 100;
-	// private final int initDelay = 0;
-	// private JSlider guiDelaySlider = new JSlider(JSlider.HORIZONTAL, minDelay,
-	// maxDelay, initDelay);
-
 	// Create components for patternsPanel
 	private JPanel patternPanel = new JPanel();
 	private JButton[] patternChoosers = new JButton[8];

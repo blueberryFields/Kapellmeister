@@ -138,12 +138,6 @@ public class SequencerController {
 		seq.setMidiChannel((int) gui.getMidiChannelChooser().getSelectedItem() - 1);
 	}
 
-	// private void changeGuiDelay() {
-	// if (!gui.getGuiDelaySLider().getValueIsAdjusting()) {
-	// guiDelay = gui.getGuiDelaySLider().getValue();
-	// }
-	// }
-
 	private void changeOctaveHigh() {
 		if (gui.getOctaveHigh() < gui.getOctaveLow()) {
 			gui.setOctaveHigh(gui.getOctaveLow());
@@ -179,14 +173,7 @@ public class SequencerController {
 		}
 	}
 
-	public void unSoloMute() {
-		if (seq.getSoloMute() != SoloMute.AUDIBLE) {
-			seq.unSoloMute();
-			gui.setSoloMuteBar(seq.getSoloMute());
-		}
-	}
-
-	public void muteButton() {
+	public void dynamicMute() {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
@@ -196,6 +183,13 @@ public class SequencerController {
 			seq.unSoloMute();
 		}
 		gui.setSoloMuteBar(seq.getSoloMute());
+	}
+
+	public void unSoloMute() {
+		if (seq.getSoloMute() != SoloMute.AUDIBLE) {
+			seq.unSoloMute();
+			gui.setSoloMuteBar(seq.getSoloMute());
+		}
 	}
 
 	public SoloMute getSoloMute() {
@@ -469,7 +463,7 @@ public class SequencerController {
 	public Sequence copySequence() {
 		return seq.copySequence(activeSequence);
 	}
-	
+
 	public void pasteSequence(Sequence sequence) {
 		seq.pasteSequence(activeSequence, sequence);
 		gui.repaintSequencer(seq.getSequence(activeSequence));

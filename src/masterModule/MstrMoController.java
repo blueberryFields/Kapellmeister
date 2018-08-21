@@ -12,6 +12,13 @@ import arrangement.ArrangementWindow;
 import arrangement.Sequence;
 import note.KeyConverter;
 
+/**
+ * Controller for the Master Module. Contains logic for managing the different
+ * sequencers and scenes in mstrMoModel and Graphical user interfaces in the
+ * mstrMoGui and arrangeMenstWindow(arrWin). Here within is also the masterClock
+ * that drives all of the sequencers
+ */
+
 public class MstrMoController implements ActionListener {
 
 	private KeyConverter keyConv;
@@ -26,6 +33,9 @@ public class MstrMoController implements ActionListener {
 
 	private int nextIndex = 0;
 
+	/**
+	 * Constructor
+	 */
 	public MstrMoController() {
 
 		mstrMoGui = new MstrMoGui();
@@ -84,6 +94,12 @@ public class MstrMoController implements ActionListener {
 		clickSceneButton(0);
 	}
 
+	/**
+	 * When the masterClock generates an event this method will be called. The
+	 * tickcounter will increase and the sequencers contained in this class will be
+	 * notified. Also the Gui will be notified and the barcounter in it will be set
+	 * acoordingly
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		tickCounter++;
@@ -117,6 +133,9 @@ public class MstrMoController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Gets everything ready for playback and then starts playback
+	 */
 	private void start() {
 		if (!mstrMoModel.isRunning()) {
 			mstrMoModel.setRunning(true);
@@ -129,6 +148,10 @@ public class MstrMoController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Stops playback of the sequencers and do some associated stuff like unmark the
+	 * active scene init some variables and the barcounter of the gui
+	 */
 	private void stop() {
 		if (mstrMoModel.isRunning()) {
 			mstrMoModel.setRunning(false);
@@ -148,10 +171,19 @@ public class MstrMoController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Opens the arrangewindow if its closed.
+	 */
 	private void openArrWin() {
 		arrWin.setVisible(true);
 	}
 
+	/**
+	 * Renames the choosen scene
+	 * 
+	 * @param sceneNr
+	 *            the index of the scene to be renamed.
+	 */
 	private void renameScene(int sceneNr) {
 		mstrMoModel.renameScene(sceneNr, arrWin.renameScene(sceneNr));
 
@@ -295,7 +327,7 @@ public class MstrMoController implements ActionListener {
 	private void mute(int index) {
 		mstrMoModel.mute(index);
 		setSoloMuteBars();
-		//mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(index), index);
+		// mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(index), index);
 	}
 
 	private void solo(int index) {

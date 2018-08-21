@@ -13,15 +13,54 @@ import note.NoteOn;
 
 public class SequencerController {
 
+	/**
+	 * Controller for the standard sequencer. Up to 8 instances of this can be
+	 * created. Contains logic in the SequencerModel and graphic user interface in
+	 * the SequencerGui. Is driven by the masterClock in the Master Module
+	 * Controller.
+	 */
+
+	/**
+	 * Contains most of the logic and is the heart of the sequencer
+	 */
 	private SequencerModel seq;
+	/**
+	 * Contains the graphical user interface for the sequencer
+	 */
 	private SequencerGui gui;
+	/**
+	 * Stores the title or name of the sequencer
+	 */
 	@SuppressWarnings("unused")
 	private String title;
+	/**
+	 * Keeps track of which sequence is currently the active one
+	 */
 	private int activeSequence = 0;
+	/**
+	 * Keeps track of which tick in the tickgrid we´re currently at
+	 */
 	private int tickCounter = 0;
+	/**
+	 * The threshhold for where in the tickgrid a note will be played, is used to
+	 * determine how often a note will be played, i.e. setting the partnotes
+	 */
 	private int partNotesThreshhold = 8;
 
-	// Konstruktor
+	/**
+	 * Konstruktor
+	 * 
+	 * @param key
+	 *            the musical key from which the notes in the noteGenerator will be
+	 *            generated, can only be reset from the masterModule
+	 * @param bpm
+	 *            the tempo in which the sequence of notes will be played back, can
+	 *            only be reset from the masterModule
+	 * @param title
+	 *            the title of the Sequencer or Instrument if you will call it so,
+	 *            will be displayed in the top of the frame, the Master Module and
+	 *            the arrangeWindow
+	 */
 	public SequencerController(NoteGenerator key, int bpm, String title) {
 		this.title = title;
 
@@ -587,7 +626,7 @@ public class SequencerController {
 	}
 
 	/**
-	 * Sets the partNoteThreshhold 
+	 * Sets the partNoteThreshhold
 	 */
 	public void setPartNotes() {
 		switch (seq.getPartNotes(activeSequence)) {

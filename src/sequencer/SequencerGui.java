@@ -1,6 +1,5 @@
 package sequencer;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -16,7 +15,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
@@ -28,6 +26,10 @@ import arrangement.SoloMute;
 import note.Note;
 
 public class SequencerGui extends JFrame {
+
+	/**
+	 * The graphic user interface for the standard sequencers.
+	 */
 
 	/**
 	 * 
@@ -79,18 +81,12 @@ public class SequencerGui extends JFrame {
 	private Integer[] midiChannels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 	private JComboBox<Integer> midiChannelChooser = new JComboBox<Integer>(midiChannels);
 	private JButton refreshButton = new JButton("Refresh");
-
-	// Create components for tempopanel
-	private JPanel tempoPanel = new JPanel();
-
 	private JLabel soloMuteBar = new JLabel();
 
 	// Create components for generatorpanel
 	private JPanel generatorPanel = new JPanel();
-
 	private JPanel generatePanel = new JPanel();
 	private JButton generateButton = new JButton("Generate");
-
 	private JPanel octaveRangePanel = new JPanel();
 	private JLabel octaveRangeFromText = new JLabel("Octave-range, from:");
 	private JLabel octaveRangeToText = new JLabel("to:");
@@ -99,6 +95,7 @@ public class SequencerGui extends JFrame {
 	private JSpinner octaveLowChooser = new JSpinner(octaveLowModel);
 	private JSpinner octaveHighChooser = new JSpinner(octaveHighModel);
 
+	// Create components for the random velocity panel
 	private JPanel rndVeloPanel = new JPanel();
 	private JPanel rndVeloCheckPanel = new JPanel();
 	private JPanel veloLowPanel = new JPanel();
@@ -123,27 +120,30 @@ public class SequencerGui extends JFrame {
 	private JButton nudgeLeft = new JButton("<-");
 	private JButton nudgeRight = new JButton("->");
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
+	private JButton[] copyPaste = new JButton[2];
 
 	// Create components for patternsPanel
 	private JPanel patternPanel = new JPanel();
 	private JButton[] patternChoosers = new JButton[8];
-
 	private JPanel patternSettingsPanel = new JPanel();
-
 	private JLabel nrOfStepsText = new JLabel("Nr of steps:");
 	private SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
 	private JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
-
 	private String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
 	private SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
 	private JSpinner partNotesChooser = new JSpinner(partNotesModel);
 	private JLabel partNotesText = new JLabel("Partnotes:");
-
 	private JButton renamePattern = new JButton("Rename");
 
-	private JButton[] copyPaste = new JButton[2];
-
-	// Konstruktor
+	/**
+	 * Constructor
+	 * 
+	 * @param infos
+	 *            the availeble mididevices to be displayed in the deviceChooser
+	 * @param title
+	 *            the title of the sequencer/instrument to be displayed in the top
+	 *            of the frame
+	 */
 	public SequencerGui(Info[] infos, String title) {
 		super(title);
 
@@ -157,7 +157,6 @@ public class SequencerGui extends JFrame {
 		generatorAlgorithmPanel.setBackground(backGroundColor);
 		nudgePanel.setBackground(backGroundColor);
 		channelPanel.setBackground(backGroundColor);
-		tempoPanel.setBackground(backGroundColor);
 		stepPanel.setBackground(backGroundColor);
 		octaveRangePanel.setBackground(backGroundColor);
 		soloMuteBar.setBackground(backGroundColor);
@@ -201,6 +200,7 @@ public class SequencerGui extends JFrame {
 
 		generatePanel.add(octaveRangePanel);
 
+		// Configure and add stuff to the random velocity panel
 		veloLowChooser.setEditor(new JSpinner.DefaultEditor(veloLowChooser));
 		veloHighChooser.setEditor(new JSpinner.DefaultEditor(veloHighChooser));
 
@@ -481,6 +481,10 @@ public class SequencerGui extends JFrame {
 		}
 	}
 
+	/**
+	 * Disables parts of the Gui so the user can´t change settings that shouldnt be
+	 * changed when sequencer is playing
+	 */
 	public void disableGui() {
 		deviceChooser.setEnabled(false);
 		midiChannelChooser.setEnabled(false);
@@ -501,6 +505,9 @@ public class SequencerGui extends JFrame {
 		nudgeRight.setEnabled(false);
 	}
 
+	/**
+	 * Enables the parts of the Gui that the disableGui disables...
+	 */
 	public void enableGui() {
 		deviceChooser.setEnabled(true);
 		midiChannelChooser.setEnabled(true);
@@ -530,6 +537,67 @@ public class SequencerGui extends JFrame {
 		}
 		deviceChooserModel = new DefaultComboBoxModel<String>(getAvailibleDevices());
 		deviceChooser.setModel(deviceChooserModel);
+	}
+
+	/**
+	 * If a sequence is being played the step that is currently playing will be
+	 * marked with red color and disabled. When you stop the playback this method
+	 * can be used to make sure the note is enabled again and the red color will
+	 * disappear
+	 * 
+	 * @param currentStep
+	 *            the step/note currently being played and marked as active and to
+	 *            be unmarked
+	 * @param isFirstNote
+	 *            is the current step the first note of the first repetition of the
+	 *            sequence?
+	 * @param sequence
+	 *            the sequence currently being played
+	 */
+	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
+		if (isFirstNote) {
+			singleSteps[currentStep].setBackground(enabledStepColor);
+			enableStep(currentStep);
+		} else if (currentStep == 0 && !isFirstNote) {
+			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
+			enableStep(sequence.length - 1);
+		} else {
+			singleSteps[currentStep - 1].setBackground(enabledStepColor);
+			enableStep(currentStep - 1);
+		}
+	}
+
+	/**
+	 * Disables a choosen step so the user cannot change it while it is playing
+	 * since this probably will cause some kind of error
+	 * 
+	 * @param stepIndex
+	 *            the step to be disabled
+	 */
+	public void disableStep(int stepIndex) {
+		noteChooser[stepIndex].setEnabled(false);
+		velocityChooser[stepIndex].setEnabled(false);
+		noteOnButton[stepIndex].setEnabled(false);
+	}
+
+	/**
+	 * Enables a step that has been disabled though the method disableStep(int
+	 * stepindex)
+	 * 
+	 * @param stepIndex
+	 *            the disabled step to be enabled
+	 */
+	public void enableStep(int stepIndex) {
+		noteChooser[stepIndex].setEnabled(true);
+		velocityChooser[stepIndex].setEnabled(true);
+		noteOnButton[stepIndex].setEnabled(true);
+	}
+
+	/**
+	 * Sets the frame to visible if its not.
+	 */
+	public void open() {
+		setVisible(true);
 	}
 
 	public JSpinner[] getNoteChooserArray() {
@@ -594,31 +662,6 @@ public class SequencerGui extends JFrame {
 
 	public String[] getAvailibleDevices() {
 		return availibleDevices;
-	}
-
-	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
-		if (isFirstNote) {
-			singleSteps[currentStep].setBackground(enabledStepColor);
-			enableStep(currentStep);
-		} else if (currentStep == 0 && !isFirstNote) {
-			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
-			enableStep(sequence.length - 1);
-		} else {
-			singleSteps[currentStep - 1].setBackground(enabledStepColor);
-			enableStep(currentStep - 1);
-		}
-	}
-
-	public void enableStep(int stepIndex) {
-		noteChooser[stepIndex].setEnabled(true);
-		velocityChooser[stepIndex].setEnabled(true);
-		noteOnButton[stepIndex].setEnabled(true);
-	}
-
-	public void disableStep(int stepIndex) {
-		noteChooser[stepIndex].setEnabled(false);
-		velocityChooser[stepIndex].setEnabled(false);
-		noteOnButton[stepIndex].setEnabled(false);
 	}
 
 	public String getGeneratorAlgoRithmChooser() {
@@ -711,10 +754,6 @@ public class SequencerGui extends JFrame {
 
 	public JComboBox<Integer> getMidiChannelChooser() {
 		return midiChannelChooser;
-	}
-
-	public void open() {
-		setVisible(true);
 	}
 
 	public int getNrOfSteps() {

@@ -5,7 +5,7 @@ import javax.swing.JButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import arrangement.Sequence;
+import arrangement.Pattern;
 import arrangement.SoloMute;
 import note.Note;
 import note.NoteGenerator;
@@ -29,14 +29,14 @@ public class SequencerController {
 	 */
 	private SequencerGui gui;
 	/**
-	 * Stores the title or name of the sequencer
+	 * Stores the title/namename of the sequencer
 	 */
 	@SuppressWarnings("unused")
 	private String title;
 	/**
-	 * Keeps track of which sequence is currently the active one
+	 * Keeps track of which pattern is currently the active one
 	 */
-	private int activeSequence = 0;
+	private int activePattern = 0;
 	/**
 	 * Keeps track of which tick in the tickgrid we´re currently at
 	 */
@@ -61,10 +61,10 @@ public class SequencerController {
 	 *            will be displayed in the top of the frame, the Master Module and
 	 *            the arrangeWindow
 	 */
-	public SequencerController(NoteGenerator key, int bpm, String title) {
+	public SequencerController(NoteGenerator key, String title) {
 		this.title = title;
 
-		seq = new SequencerModel(key, bpm);
+		seq = new SequencerModel(key);
 
 		gui = new SequencerGui(seq.getAvailibleMidiDevices(), title);
 
@@ -75,15 +75,15 @@ public class SequencerController {
 
 		// Add actionListeners to buttons
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
-		gui.getGenerateButton().addActionListener(e -> generateSequence());
+		gui.getGenerateButton().addActionListener(e -> generatePattern());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
-		gui.getRenamePattern().addActionListener(e -> renameSequence());
+		gui.getRenamePattern().addActionListener(e -> renamePattern());
 		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
 
 		// Add ActionListeners to Jspinners
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
-		addActionListenersToSequenceChoosers();
+		addActionListenersToPatternChoosers();
 		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
@@ -98,9 +98,12 @@ public class SequencerController {
 		addActionListenersToVelocityChooser();
 		addActionListenersToNoteOnButton();
 
-		gui.repaintSequencer(seq.getSequence(activeSequence));
-		gui.setPatternNames(seq.getSequences());
+		gui.repaintSequencer(seq.getPattern(activePattern));
+		gui.setPatternNames(seq.getPatterns());
 	}
+
+	// The following methods just add ActionListeners to different buttons n stuff
+	// as their titles says
 
 	private void addActionListenersToNoteChooser() {
 		for (int i = 0; i < gui.getNoteChooserArray().length; i++) {
@@ -108,7 +111,7 @@ public class SequencerController {
 			gui.getNoteChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSingleStep(activeSequence, index).changeNote((String) gui.getNoteChooser(index).getValue());
+					seq.getSingleStep(activePattern, index).changeNote((String) gui.getNoteChooser(index).getValue());
 					checkHold(index);
 				}
 			});
@@ -121,16 +124,16 @@ public class SequencerController {
 			gui.getVelocityChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSingleStep(activeSequence, index).setVelo((int) gui.getVelocityChooser(index).getValue());
+					seq.getSingleStep(activePattern, index).setVelo((int) gui.getVelocityChooser(index).getValue());
 				}
 			});
 		}
 	}
 
-	private void addActionListenersToSequenceChoosers() {
+	private void addActionListenersToPatternChoosers() {
 		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
 			int index = i;
-			gui.getPatternChoosers()[i].addActionListener(e -> chooseSequence(index));
+			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
 		}
 
 	}
@@ -159,17 +162,17 @@ public class SequencerController {
 	}
 
 	/**
-	 * Makes a popup appear where you can type in a new name for the active sequence
+	 * Makes a popup appear where you can type in a new name for the active pattern
 	 */
-	private void renameSequence() {
-		seq.setSequenceName(activeSequence, gui.renameSequence(activeSequence));
+	private void renamePattern() {
+		seq.setPatternName(activePattern, gui.renamePattern(activePattern));
 	}
 
 	/**
-	 * @return an array of Strings containing the names of the different sequences
+	 * @return an array of Strings containing the names of the different patterns
 	 */
-	public String[] getSequenceNames() {
-		return seq.getSequenceNames();
+	public String[] getPatternNames() {
+		return seq.getPatternNames();
 	}
 
 	/**
@@ -180,37 +183,40 @@ public class SequencerController {
 	 *            "1/16"
 	 */
 	private void changePartNotes(String partNotes) {
-		seq.setPartNotes(partNotes, activeSequence);
+		seq.setPartNotes(partNotes, activePattern);
 	}
 
 	/**
-	 * Change active sequence
+	 * Change active pattern
 	 * 
-	 * @param sequence
-	 *            the new sequence to be set to active
+	 * @param pattern
+	 *            the new pattern to be set to active
 	 */
-	public void chooseSequence(int sequence) {
-		if (this.activeSequence != sequence) {
-			gui.disablePatternChooser(activeSequence);
-			gui.enablePatternChooser(sequence);
+	public void choosePattern(int pattern) {
+		if (this.activePattern != pattern) {
+			gui.disablePatternChooser(activePattern);
+			gui.enablePatternChooser(pattern);
 		}
 		if (seq.getRunning()) {
-			seq.killLastNote(activeSequence);
+			seq.killLastNote(activePattern);
 		}
-		this.activeSequence = sequence;
+		this.activePattern = pattern;
 		setPartNotes();
-		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(sequence));
-		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(sequence));
-		gui.repaintSequencer(seq.getSequence(sequence));
+		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(pattern));
+		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(pattern));
+		gui.repaintSequencer(seq.getPattern(pattern));
 		gui.repaint();
 	}
 
 	/**
 	 * Sends a stopMessage adressed to the currently playing note in the choosen
-	 * sequence
+	 * pattern
+	 * 
+	 * @param activePattern
+	 *            the currently playing pattern
 	 */
-	public void killLastNote(int sequence) {
-		seq.killLastNote(sequence);
+	public void killLastNote(int activePattern) {
+		seq.killLastNote(activePattern);
 	}
 
 	/**
@@ -248,7 +254,7 @@ public class SequencerController {
 	}
 
 	/**
-	 * Calls the disposemethod from JFrame and gets disposes all of the components
+	 * Calls the dispose-method from JFrame and gets disposes all of the components
 	 * contained inside
 	 */
 	public void disposeGui() {
@@ -275,7 +281,7 @@ public class SequencerController {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				seq.killLastNote(activeSequence);
+				seq.killLastNote(activePattern);
 			}
 			gui.setSoloMuteBar(seq.getSoloMute());
 		}
@@ -289,7 +295,7 @@ public class SequencerController {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				seq.killLastNote(activeSequence);
+				seq.killLastNote(activePattern);
 			}
 		} else {
 			seq.unSoloMute();
@@ -309,23 +315,23 @@ public class SequencerController {
 	}
 
 	/**
-	 * Moves the active sequence one step to the left, call checkHold and repaints
+	 * Moves the active pattern one step to the left, call checkHold and repaints
 	 * the gui representation of the sequence
 	 */
 	private void nudgeLeft() {
-		seq.nudgeLeft(activeSequence);
+		seq.nudgeLeft(activePattern);
 		checkHold();
-		gui.repaintSequencer(seq.getSequence(activeSequence));
+		gui.repaintSequencer(seq.getPattern(activePattern));
 	}
 
 	/**
-	 * Moves the active sequence one step to the right, call checkHold and repaints
+	 * Moves the active pattern one step to the right, call checkHold and repaints
 	 * the gui representation of the sequence
 	 */
 	private void nudgeRight() {
-		seq.nudgeRight(activeSequence);
+		seq.nudgeRight(activePattern);
 		checkHold();
-		gui.repaintSequencer(seq.getSequence(activeSequence));
+		gui.repaintSequencer(seq.getPattern(activePattern));
 	}
 
 	/**
@@ -350,7 +356,7 @@ public class SequencerController {
 
 	/**
 	 * Click the NoteOnButton, depending on which mode is choosen now a new mode
-	 * will be choosen
+	 * will be choosen, avalible modes are: ON, OFF, HOLD
 	 * 
 	 * @param index
 	 *            the note which is pressed
@@ -370,35 +376,35 @@ public class SequencerController {
 	}
 
 	/**
-	 * Sets a note in the sequence to Off, which means it will not be sent to the
+	 * Sets a note in the pattern to Off, which means it will not be sent to the
 	 * midireciever
 	 * 
 	 * @param index
 	 *            the note to be set to off
 	 */
 	private void Off(int index) {
-		seq.getSingleStep(activeSequence, index).setHoldNote(-1);
-		seq.getSingleStep(activeSequence, index).setNoteOn(NoteOn.OFF);
+		seq.getSingleStep(activePattern, index).setHoldNote(-1);
+		seq.getSingleStep(activePattern, index).setNoteOn(NoteOn.OFF);
 		gui.setNoteOnButtonText(index, "Off");
 		checkHold(index);
 	}
 
 	/**
-	 * Sets a note in the sequence to On, which means it will send the choosen note
+	 * Sets a note in the pattern to On, which means it will send the choosen note
 	 * to the midireciever
 	 * 
 	 * @param index
 	 *            which note to set to On
 	 */
 	private void On(int index) {
-		seq.getSingleStep(activeSequence, index).setNoteOn(NoteOn.ON);
+		seq.getSingleStep(activePattern, index).setNoteOn(NoteOn.ON);
 		gui.setNoteOnButtonText(index, "On");
-		seq.getSingleStep(activeSequence, index).setHoldNote(-1);
+		seq.getSingleStep(activePattern, index).setHoldNote(-1);
 		checkHold(index);
 	}
 
 	/**
-	 * Sets a note in the sequence to Hold, which means it will hold the prievious
+	 * Sets a note in the pattern to Hold, which means it will hold the prievious
 	 * note, show this in the sequencer, then call checkHold to set the
 	 * holdNoteValue in the note before and any other note that may also need this.
 	 * 
@@ -406,42 +412,40 @@ public class SequencerController {
 	 *            the note to be set to Hold
 	 */
 	private void hold(int index) {
-		seq.getSingleStep(activeSequence, index).setNoteOn(NoteOn.HOLD);
+		seq.getSingleStep(activePattern, index).setNoteOn(NoteOn.HOLD);
 		gui.setNoteOnButtonText(index, "Hold");
 		checkHold(index);
 	}
 
 	/**
-	 * Goes through the sequence, checks wich notes are set on Hold and sets the
+	 * Goes through the pattern, checks wich notes are set on Hold and sets the
 	 * HoldNote in each Note accordingly If this isnt done there will be a risk of
 	 * notes never being killed
 	 */
 	private void checkHold() {
 		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < seq.getSequence(activeSequence).length; j++) {
+			for (int j = 0; j < seq.getPattern(activePattern).length; j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
 								.getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq
-											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+							seq.getSingleStep(activePattern, j).setHoldNote(
+									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
 											.getMidiNote());
 						} else {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq
-											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+							seq.getSingleStep(activePattern, j).setHoldNote(
+									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
 											.getHoldNote());
 						}
 					}
 				} else {
-					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activeSequence, j - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getMidiNote());
+					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activePattern, j - 1).getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(activePattern, j)
+									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getMidiNote());
 						} else {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getHoldNote());
+							seq.getSingleStep(activePattern, j)
+									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getHoldNote());
 						}
 					}
 				}
@@ -450,7 +454,7 @@ public class SequencerController {
 	}
 
 	/**
-	 * Same as checkHold() but starts from selected note in sequence, maybe this can
+	 * Same as checkHold() but starts from selected note in pattern, maybe this can
 	 * save some nanoseconds of computing, I dont now...
 	 * 
 	 * @param index
@@ -459,30 +463,28 @@ public class SequencerController {
 	private void checkHold(int index) {
 		int loopStart = index;
 		for (int i = 0; i < 2; i++) {
-			for (int j = loopStart; j < seq.getSequence(activeSequence).length; j++) {
+			for (int j = loopStart; j < seq.getPattern(activePattern).length; j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
 								.getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq
-											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+							seq.getSingleStep(activePattern, j).setHoldNote(
+									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
 											.getMidiNote());
 						} else {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq
-											.getSingleStep(activeSequence, seq.getSequence(activeSequence).length - 1)
+							seq.getSingleStep(activePattern, j).setHoldNote(
+									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
 											.getHoldNote());
 						}
 					}
 				} else {
-					if (seq.getSingleStep(activeSequence, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activeSequence, j - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getMidiNote());
+					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (seq.getSingleStep(activePattern, j - 1).getNoteOn() != NoteOn.HOLD) {
+							seq.getSingleStep(activePattern, j)
+									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getMidiNote());
 						} else {
-							seq.getSingleStep(activeSequence, j)
-									.setHoldNote(seq.getSingleStep(activeSequence, j - 1).getHoldNote());
+							seq.getSingleStep(activePattern, j)
+									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getHoldNote());
 						}
 					}
 				}
@@ -492,26 +494,27 @@ public class SequencerController {
 	}
 
 	/**
-	 * Add or remove steps from sequence the repaint gui sequencer accordingly
+	 * Add or remove steps from the pattern and then repaint sequencerGui
+	 * accordingly
 	 * 
 	 * @param the
 	 *            new number of steps
 	 */
 	private void changeNrOfSteps(int nrOfSteps) {
-		seq.changeNrOfSteps(nrOfSteps, activeSequence);
-		gui.repaintSequencer(seq.getSequence(activeSequence));
+		seq.changeNrOfSteps(nrOfSteps, activePattern);
+		gui.repaintSequencer(seq.getPattern(activePattern));
 	}
 
 	/**
-	 * Tells the sequencer to generate a new sequence based on info and choices
+	 * Tells the sequencer to generate a new pattern based on info and choices
 	 * collected in Gui
 	 */
-	private void generateSequence() {
-		seq.generateSequence(gui.getNrOfSteps(), seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
+	private void generatePattern() {
+		seq.generatePattern(gui.getNrOfSteps(), seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
 				gui.isRndVeloChecked(), gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(),
-				gui.getOctaveHigh(), activeSequence);
+				gui.getOctaveHigh(), activePattern);
 		checkHold();
-		gui.repaintSequencer(seq.getSequence(activeSequence));
+		gui.repaintSequencer(seq.getPattern(activePattern));
 	}
 
 	/**
@@ -522,10 +525,10 @@ public class SequencerController {
 	}
 
 	/**
-	 * @return a unique copy of the active sequence
+	 * @return a unique copy of the active pattern
 	 */
-	public Sequence copySequence() {
-		return seq.copySequence(activeSequence);
+	public Pattern copyPattern() {
+		return seq.copyPattern(activePattern);
 	}
 
 	/**
@@ -535,12 +538,12 @@ public class SequencerController {
 	 * @param the
 	 *            sequence to be pasted into the sequencer
 	 */
-	public void pasteSequence(Sequence sequence) {
-		seq.pasteSequence(activeSequence, sequence);
-		gui.repaintSequencer(seq.getSequence(activeSequence));
-		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activeSequence));
-		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(activeSequence));
-		gui.getPatterChoosers()[activeSequence].setText(seq.getSequenceName(activeSequence));
+	public void pastePattern(Pattern pattern) {
+		seq.pastePattern(activePattern, pattern);
+		gui.repaintSequencer(seq.getPattern(activePattern));
+		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activePattern));
+		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(activePattern));
+		gui.getPatterChoosers()[activePattern].setText(seq.getPatternName(activePattern));
 		checkHold();
 	}
 
@@ -559,10 +562,10 @@ public class SequencerController {
 	 * sequencer for next time it has to go int playMode
 	 */
 	public void stopMode() {
-		seq.stopSequence(activeSequence);
+		seq.stopPlayback(activePattern);
 		gui.enableGui();
 		tickCounter = 0;
-		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
+		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
 	}
 
 	/**
@@ -581,31 +584,31 @@ public class SequencerController {
 
 	/**
 	 * This method tells the model to play a note and the Gui to mark the played
-	 * note in the sequences. If last note in sequencer is reached the sequencer
-	 * will reset and start for beginning after last note is played
+	 * note in the stepsequencer. If last note in the pattern is reached the sequencer
+	 * will reset and start from the beginning after the last note is played
 	 */
 	public void playStep() {
-		seq.playStep(activeSequence);
-		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getSequence(activeSequence));
+		seq.playStep(activePattern);
+		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
 		int tempStep = seq.getCurrentStep();
 		tempStep++;
-		if (tempStep == seq.getSequence(activeSequence).length) {
+		if (tempStep == seq.getPattern(activePattern).length) {
 			tempStep = 0;
 		}
 		seq.setCurrentStep(tempStep++);
 	}
 
 	/**
-	 * Prints choosen sequence to sysout. Good for doubleChecking Gui so it reflects
+	 * Prints choosen pattern to sysout. Good for doubleChecking Gui so it reflects
 	 * what notes there really is for example
 	 * 
 	 * @param the
-	 *            sequence choosen to be printed
+	 *            pattern choosen to be printed
 	 */
-	public void printSequence(int sequence) {
+	public void printPattern(int pattern) {
 		String s = "";
-		for (int i = 0; i < seq.getSequence(sequence).length; i++) {
-			s += seq.getSingleStep(sequence, i).toString();
+		for (int i = 0; i < seq.getPattern(pattern).length; i++) {
+			s += seq.getSingleStep(pattern, i).toString();
 		}
 		System.out.println(s);
 	}
@@ -629,7 +632,7 @@ public class SequencerController {
 	 * Sets the partNoteThreshhold
 	 */
 	public void setPartNotes() {
-		switch (seq.getPartNotes(activeSequence)) {
+		switch (seq.getPartNotes(activePattern)) {
 		case "1 bar":
 			partNotesThreshhold = 64;
 			break;
@@ -648,12 +651,12 @@ public class SequencerController {
 		}
 	}
 
-	public Note[] getSequence() {
-		return seq.getSequence(activeSequence);
+	public Note[] getPattern() {
+		return seq.getPattern(activePattern);
 	}
 
-	public void setSequence(Note[] sequence) {
-		seq.setSequence(sequence, activeSequence);
+	public void setPattern(Note[] pattern) {
+		seq.setPattern(pattern, activePattern);
 	}
 
 	public JButton getCopyButton() {

@@ -117,7 +117,7 @@ public class ArrangementWindow extends JFrame {
 		setVisible(true);
 	}
 
-	public void addInstrument(int nextIndex, String title, String[] sequenceNames) {
+	public void addSequencer(int nextIndex, String title, String[] sequenceNames) {
 		titles[nextIndex] = new JLabel(title + ":");
 		titles[nextIndex].setPreferredSize(titleLabelDim);
 		titles[nextIndex].setHorizontalAlignment(SwingConstants.RIGHT);

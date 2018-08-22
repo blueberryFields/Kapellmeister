@@ -3,12 +3,12 @@ package arrangement;
 public class Scene {
 	private String name;
 	private int length = 4;
-	private int[] sequenceChoice = new int[8];
+	private int[] patternChoice = new int[8];
 	private boolean active = false;
 
-	public Scene(String name, int choiceOfSequence) {
-		for (int i = 0; i < sequenceChoice.length; i++) {
-			sequenceChoice[i] = choiceOfSequence;
+	public Scene(String name, int choiceOfPattern) {
+		for (int i = 0; i < patternChoice.length; i++) {
+			patternChoice[i] = choiceOfPattern;
 		}
 		this.name = name;
 	}
@@ -29,12 +29,12 @@ public class Scene {
 		return active;
 	}
 
-	public void setSequenceChoice(int instrument, int sequenceChoice) {
-		this.sequenceChoice[instrument] = sequenceChoice;
+	public void setPatternChoice(int sequencer, int patternChoice) {
+		this.patternChoice[sequencer] = patternChoice;
 	}
 
-	public int getSequenceChoice(int index) {
-		return sequenceChoice[index];
+	public int getPatternChoice(int index) {
+		return patternChoice[index];
 	}
 
 	public String getName() {

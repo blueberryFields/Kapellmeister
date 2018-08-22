@@ -7,7 +7,7 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
-import arrangement.Sequence;
+import arrangement.Pattern;
 import arrangement.SoloMute;
 import note.Note;
 import note.NoteGenerator;
@@ -15,7 +15,7 @@ import note.NoteOn;
 
 /**
  * The heart, the core and logic of the standard sequencer. This class contains
- * the different sequences, the connection the the mididevice, the methods for
+ * the different patterns, the connection the the mididevice, the methods for
  * playing notes and so on.
  */
 public class SequencerModel {
@@ -37,9 +37,9 @@ public class SequencerModel {
 	 */
 	private long timeStamp = -1;
 	/**
-	 * An array of the sequences the sequencer know and can play back
+	 * An array of the patterns the sequencer know and can play back
 	 */
-	private Sequence[] sequences;
+	private Pattern[] patterns;
 	/**
 	 * This will contain all the noteOn messages
 	 */
@@ -49,8 +49,8 @@ public class SequencerModel {
 	 */
 	private ShortMessage noteOff = new ShortMessage();
 	/**
-	 * Enumeration of hte diferrent states this sequencer can be in, solo, mute,
-	 * audible
+	 * Enumeration of hte diferrent states this sequencer can be in, SOLO, MUTE,
+	 * AUDIBLE
 	 */
 	private SoloMute soloMute;
 	/**
@@ -67,7 +67,7 @@ public class SequencerModel {
 	boolean running = false;
 	/**
 	 * Indicates if the current note is the first note of the first repetition of
-	 * the played sequence. Needed for the playNote method. Hopefully will be
+	 * the played pattern. Needed for the playNote method. Hopefully will be
 	 * outdated whit future updates of playNote
 	 */
 	private boolean firstNote;
@@ -83,10 +83,10 @@ public class SequencerModel {
 	 *            the musical key from which the notes in the noteGenerator will be
 	 *            generated, can only be reset from the masterModule
 	 * @param bpm
-	 *            the tempo in which the sequence of notes will be played back, can
+	 *            the tempo in which the pattern of notes will be played back, can
 	 *            only be reset from the masterModule
 	 */
-	public SequencerModel(NoteGenerator key, int bpm) {
+	public SequencerModel(NoteGenerator key) {
 		infos = MidiSystem.getMidiDeviceInfo();
 		this.key = key;
 		initSeq();
@@ -96,10 +96,10 @@ public class SequencerModel {
 	 * Initialize the sequencer
 	 */
 	public void initSeq() {
-		sequences = new Sequence[8];
+		patterns = new Pattern[8];
 		soloMute = SoloMute.AUDIBLE;
-		for (int i = 0; i < sequences.length; i++) {
-			sequences[i] = new Sequence("pat " + (i + 1));
+		for (int i = 0; i < patterns.length; i++) {
+			patterns[i] = new Pattern("pat " + (i + 1));
 		}
 	}
 
@@ -163,12 +163,12 @@ public class SequencerModel {
 	}
 
 	/**
-	 * Generates a new sequence using the noteGenerator-class
+	 * Generates a new pattern using the noteGenerator-class
 	 * 
 	 * @param nrOfSteps
-	 *            nr of steps in the sequence to be gnerated
+	 *            nr of steps in the pattern to be generated
 	 * @param key
-	 *            the musical key from which the sequence will be generated, this
+	 *            the musical key from which the pattern will be generated, this
 	 *            class inherits from the noteGenerator-class
 	 * @param generatorAlgorithm
 	 *            the choice of generator-algorithm to be used
@@ -186,57 +186,56 @@ public class SequencerModel {
 	 * @param octaveHigh
 	 *            sets the upper confines of the octaveRange from which octavenumber
 	 *            will be generated
-	 * @param activeSequence
-	 *            the sequence the be replaced by the newly generated one
+	 * @param activePattern
+	 *            index of the pattern the be replaced by the newly generated one
 	 */
-	public void generateSequence(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
-			int veloLow, int veloHigh, int octaveLow, int octaveHigh, int activeSequence) {
-		String tempName = sequences[activeSequence].getName();
-		String tempPartNotes = sequences[activeSequence].getPartNotesChoise();
-		sequences[activeSequence] = new Sequence(tempName, nrOfSteps, tempPartNotes);
+	public void generatePattern(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
+			int veloLow, int veloHigh, int octaveLow, int octaveHigh, int activePattern) {
+		String tempName = patterns[activePattern].getName();
+		String tempPartNotes = patterns[activePattern].getPartNotesChoise();
+		patterns[activePattern] = new Pattern(tempName, nrOfSteps, tempPartNotes);
 		switch (generatorAlgorithm) {
 		case "Rnd notes":
-			sequences[activeSequence].setSequence(key.getRndSequence(sequences[activeSequence].getSequence(),
+			patterns[activePattern].setPattern(key.getRndSequence(patterns[activePattern].getPattern(),
 					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row":
-			sequences[activeSequence].setSequence(key.getRndSeqNoDuplInRow(sequences[activeSequence].getSequence(),
+			patterns[activePattern].setPattern(key.getRndSeqNoDuplInRow(patterns[activePattern].getPattern(),
 					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes and On/Hold/Off":
-			sequences[activeSequence].setSequence(key.getRndSequenceOnHoldOff(sequences[activeSequence].getSequence(),
+			patterns[activePattern].setPattern(key.getRndSequenceOnHoldOff(patterns[activePattern].getPattern(),
 					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row, On/Hold/Off":
-			sequences[activeSequence]
-					.setSequence(key.getRndSeqNoDuplInRowOnHoldOff(sequences[activeSequence].getSequence(),
-							rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
+			patterns[activePattern].setPattern(key.getRndSeqNoDuplInRowOnHoldOff(patterns[activePattern].getPattern(),
+					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		}
 	}
 
 	/**
-	 * Makes a copy of the active sequence and returns it
+	 * Makes a copy of the active pattern and returns it
 	 * 
-	 * @param activeSequence
-	 *            the index of the active sequence, or other choosen sequence to
-	 *            make a copy from
-	 * @return a individual copy of the choosen sequence
+	 * @param activePattern
+	 *            the index of the active pattern, or other choosen pattern to make
+	 *            a copy from
+	 * @return a individual copy of the choosen pattern
 	 */
-	public Sequence copySequence(int activeSequence) {
-		return sequences[activeSequence].copy();
+	public Pattern copyPattern(int activePattern) {
+		return patterns[activePattern].copy();
 	}
 
 	/**
-	 * Takes the passed sequence and replaces the active sequence with it
+	 * Takes the passed pattern and replaces the active pattern with it
 	 * 
-	 * @param activeSequence
-	 *            the index of the active sequence or other sequence to be replaced
-	 * @param sequence
-	 *            the sequence you want to replace the choosen sequence whith.
+	 * @param activePattern
+	 *            the index of the active pattern or other pattern to be replaced
+	 * @param pattern
+	 *            the pattern you want to replace the choosen pattern whith.
 	 */
-	public void pasteSequence(int activeSequence, Sequence sequence) {
-		sequences[activeSequence] = sequence;
+	public void pastePattern(int activePattern, Pattern pattern) {
+		patterns[activePattern] = pattern;
 	}
 
 	/**
@@ -254,11 +253,11 @@ public class SequencerModel {
 	 * This method is to be called when the playback stops, kills the playing note
 	 * and sets boolean running to false
 	 * 
-	 * @param activeSequence
-	 *            the currently playing sequence
+	 * @param activePattern
+	 *            the currently playing pattern
 	 */
-	public void stopSequence(int activeSequence) {
-		killLastNote(activeSequence);
+	public void stopPlayback(int activePattern) {
+		killLastNote(activePattern);
 		running = false;
 	}
 
@@ -279,27 +278,27 @@ public class SequencerModel {
 	}
 
 	/**
-	 * plays the current step in the active sequence. Really long, tortuous method,
+	 * plays the current step in the active patterne. Really long, tortuous method,
 	 * to be raplaced sometime in the future
 	 * 
-	 * @param activeSequence
+	 * @param activePattern
 	 *            the index of the sequence currently being played
 	 */
-	public void playStep(int activeSequence) {
+	public void playStep(int activePattern) {
 		if (soloMute != SoloMute.MUTE) {
 			if (currentStep == 0 && !firstNote) {
-				if (sequences[activeSequence].getSingleStep(getSequence(activeSequence).length - 1)
+				if (patterns[activePattern].getSingleStep(getPattern(activePattern).length - 1)
 						.getNoteOn() != NoteOn.HOLD) {
 					try {
 						noteOff.setMessage(
-								ShortMessage.NOTE_OFF, midiChannel, sequences[activeSequence]
-										.getSingleStep(getSequence(activeSequence).length - 1).getMidiNote(),
-								sequences[activeSequence].getSingleStep(currentStep).getVelo());
+								ShortMessage.NOTE_OFF, midiChannel, patterns[activePattern]
+										.getSingleStep(getPattern(activePattern).length - 1).getMidiNote(),
+								patterns[activePattern].getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
-				if (sequences[activeSequence].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
+				if (patterns[activePattern].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
 					try {
 						rcvr.send(noteOff, timeStamp);
 					} catch (Exception e) {
@@ -307,24 +306,24 @@ public class SequencerModel {
 					}
 				}
 			} else if (currentStep != 0) {
-				if (sequences[activeSequence].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
+				if (patterns[activePattern].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								sequences[activeSequence].getSingleStep(currentStep - 1).getMidiNote(),
-								sequences[activeSequence].getSingleStep(currentStep).getVelo());
+								patterns[activePattern].getSingleStep(currentStep - 1).getMidiNote(),
+								patterns[activePattern].getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				} else {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								sequences[activeSequence].getSingleStep(currentStep - 1).getHoldNote(),
-								sequences[activeSequence].getSingleStep(currentStep).getVelo());
+								patterns[activePattern].getSingleStep(currentStep - 1).getHoldNote(),
+								patterns[activePattern].getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
-				if (sequences[activeSequence].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
+				if (patterns[activePattern].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
 					try {
 						rcvr.send(noteOff, timeStamp);
 					} catch (Exception e) {
@@ -334,12 +333,12 @@ public class SequencerModel {
 			}
 			try {
 				noteOn.setMessage(ShortMessage.NOTE_ON, midiChannel,
-						sequences[activeSequence].getSingleStep(currentStep).getMidiNote(),
-						sequences[activeSequence].getSingleStep(currentStep).getVelo());
+						patterns[activePattern].getSingleStep(currentStep).getMidiNote(),
+						patterns[activePattern].getSingleStep(currentStep).getVelo());
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
 			}
-			if (sequences[activeSequence].getSingleStep(currentStep).getNoteOn() == NoteOn.ON) {
+			if (patterns[activePattern].getSingleStep(currentStep).getNoteOn() == NoteOn.ON) {
 				try {
 					rcvr.send(noteOn, timeStamp);
 				} catch (Exception e) {
@@ -353,23 +352,23 @@ public class SequencerModel {
 	}
 
 	/**
-	 * Slides the whole sequence one step to the left
+	 * Slides the whole pattern one step to the left
 	 * 
-	 * @param activeSequence
-	 *            the sequence to be nudged, preferebly the active sequence
+	 * @param activePattern
+	 *            the pattern to be nudged, preferebly the active pattern
 	 */
-	public void nudgeLeft(int activeSequence) {
-		sequences[activeSequence].nudgeLeft();
+	public void nudgeLeft(int activePattern) {
+		patterns[activePattern].nudgeLeft();
 	}
 
 	/**
-	 * Slides the whole sequence one step to the right
+	 * Slides the whole pattern one step to the right
 	 * 
-	 * @param activeSequence
-	 *            the sequence to be nudged, preferebly the active sequence
+	 * @param activePattern
+	 *            the sequence to be nudged, preferebly the active pattern
 	 */
-	public void nudgeRight(int activeSequence) {
-		sequences[activeSequence].nudgeRight();
+	public void nudgeRight(int activePattern) {
+		patterns[activePattern].nudgeRight();
 	}
 
 	/**
@@ -398,37 +397,37 @@ public class SequencerModel {
 	 * shure the last played note will be stopped. Otherwise theres a chance it will
 	 * never stop playing
 	 * 
-	 * @param activeSequence
-	 *            the index of the sequence currently playing
+	 * @param activePattern
+	 *            the index of the pattern currently playing
 	 */
-	public void killLastNote(int activeSequence) {
+	public void killLastNote(int activePattern) {
 		if (currentStep == 0 && !firstNote) {
-			if (sequences[activeSequence].getSingleStep(sequences[activeSequence].getSequence().length - 1)
+			if (patterns[activePattern].getSingleStep(patterns[activePattern].getPattern().length - 1)
 					.getNoteOn() != NoteOn.HOLD) {
 				try {
 					noteOff.setMessage(
-							ShortMessage.NOTE_OFF, midiChannel, sequences[activeSequence]
-									.getSingleStep(sequences[activeSequence].getSequence().length - 1).getMidiNote(),
-							sequences[activeSequence].getSingleStep(currentStep).getVelo());
+							ShortMessage.NOTE_OFF, midiChannel, patterns[activePattern]
+									.getSingleStep(patterns[activePattern].getPattern().length - 1).getMidiNote(),
+							patterns[activePattern].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			}
 			rcvr.send(noteOff, timeStamp);
 		} else if (currentStep != 0) {
-			if (sequences[activeSequence].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
+			if (patterns[activePattern].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-							sequences[activeSequence].getSingleStep(currentStep - 1).getMidiNote(),
-							sequences[activeSequence].getSingleStep(currentStep).getVelo());
+							patterns[activePattern].getSingleStep(currentStep - 1).getMidiNote(),
+							patterns[activePattern].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			} else {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-							sequences[activeSequence].getSingleStep(currentStep - 1).getHoldNote(),
-							sequences[activeSequence].getSingleStep(currentStep).getVelo());
+							patterns[activePattern].getSingleStep(currentStep - 1).getHoldNote(),
+							patterns[activePattern].getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
@@ -438,15 +437,15 @@ public class SequencerModel {
 	}
 
 	/**
-	 * Change number of steps in the choosen sequence
+	 * Change number of steps in the choosen pattern
 	 * 
 	 * @param nrOfSteps
 	 *            the desired new number of steps
-	 * @param activeSequence
-	 *            the sequence to be changed
+	 * @param activePattern
+	 *            the pattern to be changed
 	 */
-	public void changeNrOfSteps(int nrOfSteps, int activeSequence) {
-		sequences[activeSequence].changeNrOfSteps(nrOfSteps);
+	public void changeNrOfSteps(int nrOfSteps, int activePattern) {
+		patterns[activePattern].changeNrOfSteps(nrOfSteps);
 	}
 
 	/**
@@ -459,28 +458,28 @@ public class SequencerModel {
 		this.midiChannel = midiChannel;
 	}
 
-	public void setSequence(Note[] sequence, int activeSequence) {
-		sequences[activeSequence].setSequence(sequence);
+	public void setPattern(Note[] pattern, int activePattern) {
+		patterns[activePattern].setPattern(pattern);
 	}
 
-	public Note[] getSequence(int activeSequence) {
-		return sequences[activeSequence].getSequence();
+	public Note[] getPattern(int activePattern) {
+		return patterns[activePattern].getPattern();
 	}
 
-	public Sequence[] getSequences() {
-		return sequences;
+	public Pattern[] getPatterns() {
+		return patterns;
 	}
 
-	public String[] getSequenceNames() {
-		String[] sequenceNames = new String[8];
-		for (int i = 0; i < sequences.length; i++) {
-			sequenceNames[i] = sequences[i].getName();
+	public String[] getPatternNames() {
+		String[] patternNames = new String[8];
+		for (int i = 0; i < patterns.length; i++) {
+			patternNames[i] = patterns[i].getName();
 		}
-		return sequenceNames;
+		return patternNames;
 	}
 
-	public Note getSingleStep(int activeSequence, int index) {
-		return sequences[activeSequence].getSingleStep(index);
+	public Note getSingleStep(int activePattern, int index) {
+		return patterns[activePattern].getSingleStep(index);
 	}
 
 	public void setCurrentStep(int step) {
@@ -491,12 +490,12 @@ public class SequencerModel {
 		return currentStep;
 	}
 
-	public void setSequenceName(int activeSequence, String newName) {
-		sequences[activeSequence].setName(newName);
+	public void setPatternName(int activePattern, String newName) {
+		patterns[activePattern].setName(newName);
 	}
 
-	public void setPartNotes(String partNotes, int activeSequence) {
-		sequences[activeSequence].setpartNotesChoise(partNotes);
+	public void setPartNotes(String partNotes, int activePattern) {
+		patterns[activePattern].setpartNotesChoise(partNotes);
 	}
 
 	public MidiDevice.Info[] getAvailibleMidiDevices() {
@@ -532,18 +531,18 @@ public class SequencerModel {
 	}
 
 	public String getPartNotesChoice(int index) {
-		return sequences[index].getPartNotesChoise();
+		return patterns[index].getPartNotesChoise();
 	}
 
 	public int getNrOfSteps(int index) {
-		return sequences[index].getNrOfSteps();
+		return patterns[index].getNrOfSteps();
 	}
 
-	public String getSequenceName(int index) {
-		return sequences[index].getName();
+	public String getPatternName(int index) {
+		return patterns[index].getName();
 	}
 
 	public String getPartNotes(int index) {
-		return sequences[index].getPartNotesChoise();
+		return patterns[index].getPartNotesChoise();
 	}
 }

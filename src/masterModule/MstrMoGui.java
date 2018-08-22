@@ -27,6 +27,10 @@ import javax.swing.SwingConstants;
 import arrangement.SoloMute;
 import sequencer.SequencerController;
 
+/**
+ * The graphic user interface for the master module
+ */
+
 public class MstrMoGui extends JFrame {
 
 	// Create colorscheme
@@ -82,7 +86,9 @@ public class MstrMoGui extends JFrame {
 	// Create font for menus
 	private Font menuFont = playStopButtons[0].getFont();
 
-	// Konstruktor
+	/**
+	 * Constructor
+	 */
 	public MstrMoGui() {
 		super("Master Module");
 
@@ -165,6 +171,15 @@ public class MstrMoGui extends JFrame {
 		setVisible(true);
 	}
 
+	/**
+	 * When adding a new sequencer this method will add a representation of this to
+	 * the master module gui
+	 * 
+	 * @param title
+	 *            the title of the new sequencer
+	 * @param index
+	 *            the index of the sequencer in the sequencerArray
+	 */
 	public void addNewSeqStrip(String title, int index) {
 		titles[index] = new JTextField(title, 10);
 		titles[index].setHorizontalAlignment(JTextField.RIGHT);
@@ -215,41 +230,12 @@ public class MstrMoGui extends JFrame {
 		pack();
 	}
 
-	public String getTitle(int index) {
-		return titles[index].getText();
-	}
-
-	public void setBeatCounter(int beat) {
-		// String tempString;
-		// if (beat < 10) {
-		// tempString = "0" + Integer.toString(beat);
-		// } else {
-		// tempString = Integer.toString(beat);
-		// }
-		// beatCounter.setText(tempString);
-		beatCounter.setText(Integer.toString(beat));
-	}
-
-	public void setSoloMuteBar(SoloMute soloMute, int index) {
-		switch (soloMute) {
-		case MUTE:
-			soloMuteBar[index].setBackground(muteColor);
-			soloMuteBar[index].setText("MUTE");
-			break;
-		case SOLO:
-			soloMuteBar[index].setBackground(soloColor);
-			soloMuteBar[index].setText("SOLO");
-			break;
-		case AUDIBLE:
-			soloMuteBar[index].setBackground(backGroundColor);
-			soloMuteBar[index].setText("");
-			break;
-		default:
-			soloMuteBar[index].setBackground(backGroundColor);
-			soloMuteBar[index].setText("");
-		}
-	}
-
+	/**
+	 * Removes all sequenceStrips from the master module gui. Used for when a
+	 * sequencer is removed and the sequencerArray is ordered to remove gaps in the
+	 * array: All the GuiStrips is removed, then the sequencerArray is ordered and
+	 * the strips are painted again to correctly mirror the sequencerArray
+	 */
 	public void removeAllSeqStrips() {
 		for (int i = 0; i < seqPanels.length; i++) {
 			if (seqPanels[i] != null) {
@@ -258,6 +244,12 @@ public class MstrMoGui extends JFrame {
 		}
 	}
 
+	/**
+	 * Removes a given sequencerStrip from hte master module gui.
+	 * 
+	 * @param index
+	 *            index of the strip to be removed
+	 */
 	public void removeSeqStrip(int index) {
 		seqPanels[index].remove(titles[index]);
 		seqPanels[index].remove(colon[index]);
@@ -276,11 +268,22 @@ public class MstrMoGui extends JFrame {
 		// pack();
 	}
 
+	/**
+	 * Repaints and packs the this frame. Call this whenever a change is made in the
+	 * master module gui, i.e. a strip is added or removed
+	 */
 	public void paintAndPack() {
 		repaint();
 		pack();
 	}
 
+	/**
+	 * Disables part of the gui when playing so the user cant do anything stupid
+	 * that will crash the application
+	 * 
+	 * @param lastUsedIndex
+	 *            last used index in the sequencerArray
+	 */
 	public void disableGui(int lastUsedIndex) {
 		bpmChooser.setEnabled(false);
 		keyChooser.setEnabled(false);
@@ -292,6 +295,12 @@ public class MstrMoGui extends JFrame {
 		}
 	}
 
+	/**
+	 * Enables what disableGui() disables.
+	 * 
+	 * @param lastUsedIndex
+	 *            last used index in the sequencerArray
+	 */
 	public void enableGui(int lastUsedIndex) {
 		bpmChooser.setEnabled(true);
 		keyChooser.setEnabled(true);
@@ -302,6 +311,8 @@ public class MstrMoGui extends JFrame {
 			remove[i].setEnabled(true);
 		}
 	}
+
+	// the rest is simple getters and setters
 
 	public JTextField[] getTitles() {
 		return titles;
@@ -377,6 +388,41 @@ public class MstrMoGui extends JFrame {
 
 	public void setBarCounter(int bar) {
 		barCounter.setText(Integer.toString(bar));
+	}
+
+	public String getTitle(int index) {
+		return titles[index].getText();
+	}
+
+	public void setBeatCounter(int beat) {
+		// String tempString;
+		// if (beat < 10) {
+		// tempString = "0" + Integer.toString(beat);
+		// } else {
+		// tempString = Integer.toString(beat);
+		// }
+		// beatCounter.setText(tempString);
+		beatCounter.setText(Integer.toString(beat));
+	}
+
+	public void setSoloMuteBar(SoloMute soloMute, int index) {
+		switch (soloMute) {
+		case MUTE:
+			soloMuteBar[index].setBackground(muteColor);
+			soloMuteBar[index].setText("MUTE");
+			break;
+		case SOLO:
+			soloMuteBar[index].setBackground(soloColor);
+			soloMuteBar[index].setText("SOLO");
+			break;
+		case AUDIBLE:
+			soloMuteBar[index].setBackground(backGroundColor);
+			soloMuteBar[index].setText("");
+			break;
+		default:
+			soloMuteBar[index].setBackground(backGroundColor);
+			soloMuteBar[index].setText("");
+		}
 	}
 
 }

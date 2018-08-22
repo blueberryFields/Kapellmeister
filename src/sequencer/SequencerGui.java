@@ -21,7 +21,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
-import arrangement.Sequence;
+import arrangement.Pattern;
 import arrangement.SoloMute;
 import note.Note;
 
@@ -359,15 +359,15 @@ public class SequencerGui extends JFrame {
 	}
 
 	/**
-	 * Checks the passed sequence and repaints the stepSequqncer accordingly
+	 * Checks the passed pattern and repaints the stepSequencer accordingly
 	 * 
-	 * @param sequence
-	 *            the sequence to be the model for the stepSequencer view
+	 * @param pattern
+	 *            the pattern to be the model for the stepSequencer view
 	 */
-	public void repaintSequencer(Note[] sequence) {
+	public void repaintSequencer(Note[] pattern) {
 
 		// Enable steps wich is included in sequence
-		for (int i = 0; i < sequence.length; i++) {
+		for (int i = 0; i < pattern.length; i++) {
 			noteChooser[i].setEnabled(true);
 			velocityChooser[i].setEnabled(true);
 			noteOnButton[i].setEnabled(true);
@@ -375,10 +375,10 @@ public class SequencerGui extends JFrame {
 		}
 
 		// set note, NoteOn and velocity on steps
-		for (int i = 0; i < sequence.length; i++) {
-			velocityChooser[i].setValue(sequence[i].getVelo());
-			noteChooser[i].setValue(sequence[i].getNote());
-			switch (sequence[i].getNoteOn()) {
+		for (int i = 0; i < pattern.length; i++) {
+			velocityChooser[i].setValue(pattern[i].getVelo());
+			noteChooser[i].setValue(pattern[i].getNote());
+			switch (pattern[i].getNoteOn()) {
 			case ON:
 				noteOnButton[i].setText("On");
 				break;
@@ -392,7 +392,7 @@ public class SequencerGui extends JFrame {
 		}
 
 		// Disable steps wich is not included in sequence
-		for (int i = sequence.length; i < 16; i++) {
+		for (int i = pattern.length; i < 16; i++) {
 			noteChooser[i].setEnabled(false);
 			velocityChooser[i].setEnabled(false);
 			noteOnButton[i].setEnabled(false);
@@ -402,25 +402,25 @@ public class SequencerGui extends JFrame {
 	}
 
 	/**
-	 * Makes a popup appear where you can type in a new name for the active sequence
+	 * Makes a popup appear where you can type in a new name for the active pattern
 	 */
-	public String renameSequence(int activeSequence) {
+	public String renamePattern(int activePattern) {
 		String newName = JOptionPane.showInputDialog(this, "New name:");
-		patternChoosers[activeSequence].setText(newName);
+		patternChoosers[activePattern].setText(newName);
 		return newName;
 	}
 
 	/**
 	 * Updates the text on the patternChooserButtons according to the passed array
-	 * of sequences
+	 * of patterns
 	 * 
-	 * @param sequences
-	 *            an array containing sequences from wich the names to be written on
+	 * @param patterns
+	 *            an array containing patterns from wich the names to be written on
 	 *            the patternChooserButtons will be retrieved
 	 */
-	public void setPatternNames(Sequence[] sequences) {
-		for (int i = 0; i < sequences.length; i++) {
-			patternChoosers[i].setText(sequences[i].getName());
+	public void setPatternNames(Pattern[] patterns) {
+		for (int i = 0; i < patterns.length; i++) {
+			patternChoosers[i].setText(patterns[i].getName());
 		}
 	}
 
@@ -461,18 +461,18 @@ public class SequencerGui extends JFrame {
 	 *            the currently playing step
 	 * @param isFirstNote
 	 *            boolean indicating if this is the first note since pressing start
-	 * @param sequence
-	 *            the sequence playing
+	 * @param pattern
+	 *            the pattern playing
 	 */
-	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
+	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] pattern) {
 		if (isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			disableStep(currentStep);
 		} else if (currentStep == 0 && !isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStepColor);
-			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
+			singleSteps[pattern.length - 1].setBackground(enabledStepColor);
 			disableStep(currentStep);
-			enableStep(sequence.length - 1);
+			enableStep(pattern.length - 1);
 		} else {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			singleSteps[currentStep - 1].setBackground(enabledStepColor);
@@ -506,7 +506,7 @@ public class SequencerGui extends JFrame {
 	}
 
 	/**
-	 * Enables the parts of the Gui that the disableGui disables...
+	 * Enables the parts of the Gui that the disableGui() disables...
 	 */
 	public void enableGui() {
 		deviceChooser.setEnabled(true);
@@ -540,7 +540,7 @@ public class SequencerGui extends JFrame {
 	}
 
 	/**
-	 * If a sequence is being played the step that is currently playing will be
+	 * If a pattern is being played the step that is currently playing will be
 	 * marked with red color and disabled. When you stop the playback this method
 	 * can be used to make sure the note is enabled again and the red color will
 	 * disappear
@@ -550,17 +550,17 @@ public class SequencerGui extends JFrame {
 	 *            be unmarked
 	 * @param isFirstNote
 	 *            is the current step the first note of the first repetition of the
-	 *            sequence?
-	 * @param sequence
-	 *            the sequence currently being played
+	 *            pattern?
+	 * @param pattern
+	 *            the pattern currently being played
 	 */
-	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] sequence) {
+	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] pattern) {
 		if (isFirstNote) {
 			singleSteps[currentStep].setBackground(enabledStepColor);
 			enableStep(currentStep);
 		} else if (currentStep == 0 && !isFirstNote) {
-			singleSteps[sequence.length - 1].setBackground(enabledStepColor);
-			enableStep(sequence.length - 1);
+			singleSteps[pattern.length - 1].setBackground(enabledStepColor);
+			enableStep(pattern.length - 1);
 		} else {
 			singleSteps[currentStep - 1].setBackground(enabledStepColor);
 			enableStep(currentStep - 1);
@@ -600,6 +600,8 @@ public class SequencerGui extends JFrame {
 		setVisible(true);
 	}
 
+	//The rest here is mostly basic getters and setters
+	
 	public JSpinner[] getNoteChooserArray() {
 		return noteChooser;
 	}

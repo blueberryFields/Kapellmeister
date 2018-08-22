@@ -1,6 +1,17 @@
 package note;
 
+/**
+ * This class is used to convert a String containing the name of a musical key
+ * into a notegenerator of this named key
+ */
 public class KeyConverter {
+
+	/**
+	 * 
+	 * @param key
+	 *            a String with the name of the desired key
+	 * @return a NoteGenerator of the desired musical key
+	 */
 
 	public NoteGenerator getKey(String key) {
 		switch (key) {

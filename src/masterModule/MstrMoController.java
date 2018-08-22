@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import arrangement.ArrangementWindow;
-import arrangement.Sequence;
+import arrangement.Pattern;
 import note.KeyConverter;
 
 /**
@@ -21,16 +21,47 @@ import note.KeyConverter;
 
 public class MstrMoController implements ActionListener {
 
+	/**
+	 * Creates placeholder for a KeyConverter, is used to convert a String
+	 * containing the name of a musical key into a notegenerator of this named key
+	 */
 	private KeyConverter keyConv;
+	/**
+	 * Contains Gui for the Master Module
+	 */
 	private MstrMoGui mstrMoGui;
+	/**
+	 * Containts the logic for the Master Module
+	 */
 	private MstrMoModel mstrMoModel;
-	private ArrangementWindow arrWin;
+	/**
+	 * Contains Gui for the arrangement, where you can arrange your patterns into
+	 * songs
+	 */
+	private ArrangementWindow arrangeWindow;
+	/**
+	 * the clock that drives the whole
+	 */
 	private Timer masterClock;
-	private int barCounter = 0;
-	private int beatCounter = 0;
-	private int tickCounter = 0;
+	/**
+	 * Keeps track of which scene is currently playing
+	 */
 	private int currentScene = 0;
-
+	/**
+	 * Keeps track on which bar in the current scene where at
+	 */
+	private int barCounter = 0;
+	/**
+	 * Keeps track on which beat in the current bar where at
+	 */
+	private int beatCounter = 0;
+	/**
+	 * Keeps track on which tick in the current beat where at
+	 */
+	private int tickCounter = 0;
+	/**
+	 * Keeps track of the next availible index in the sequencerArray
+	 */
 	private int nextIndex = 0;
 
 	/**
@@ -41,7 +72,7 @@ public class MstrMoController implements ActionListener {
 		mstrMoGui = new MstrMoGui();
 		mstrMoModel = new MstrMoModel();
 		keyConv = new KeyConverter();
-		arrWin = new ArrangementWindow();
+		arrangeWindow = new ArrangementWindow();
 		setMainClock(new Timer(500, this));
 
 		// Add actionListeners to masterModuleGui
@@ -49,16 +80,16 @@ public class MstrMoController implements ActionListener {
 		mstrMoGui.getPlayStopButtons()[0].addActionListener(e -> start());
 		mstrMoGui.getPlayStopButtons()[1].addActionListener(e -> stop());
 		mstrMoGui.getKeyChooser().addChangeListener(e -> changeKey());
-		mstrMoGui.getOpenArr().addActionListener(e -> openArrWin());
+		mstrMoGui.getOpenArr().addActionListener(e -> openArrangeWindow());
 
 		// Add actionListeners to arrangeWindow
-		for (int i = 0; i < arrWin.getSceneButtons().length; i++) {
+		for (int i = 0; i < arrangeWindow.getSceneButtons().length; i++) {
 			int index = i;
-			arrWin.getSceneButtons()[i].addActionListener(e -> clickSceneButton(index));
+			arrangeWindow.getSceneButtons()[i].addActionListener(e -> clickSceneButton(index));
 		}
-		for (int i = 0; i < arrWin.getSceneButtons().length; i++) {
+		for (int i = 0; i < arrangeWindow.getSceneButtons().length; i++) {
 			int index = i;
-			arrWin.getSceneButtons()[i].addMouseListener(new MouseListener() {
+			arrangeWindow.getSceneButtons()[i].addMouseListener(new MouseListener() {
 				@Override
 				public void mouseReleased(MouseEvent e) {
 					if (SwingUtilities.isRightMouseButton(e)) {
@@ -87,11 +118,45 @@ public class MstrMoController implements ActionListener {
 				}
 			});
 		}
-		for (int i = 0; i < arrWin.getLengthChoosers().length; i++) {
+		for (int i = 0; i < arrangeWindow.getLengthChoosers().length; i++) {
 			int index = i;
-			arrWin.getLengthChoosers()[i].addChangeListener(e -> changeSceneLength(index));
+			arrangeWindow.getLengthChoosers()[i].addChangeListener(e -> changeSceneLength(index));
 		}
 		clickSceneButton(0);
+	}
+
+	// The following methods just adds or removes actionListeners from buttons and
+	// sush
+	private void addActionListenersToArrWinInstr(int instrument) {
+		for (int i = 0; i < 8; i++) {
+			int scene = i;
+			arrangeWindow.getSequenceChoosers()[instrument][i]
+					.addActionListener(e -> setPatternChoice(instrument, scene));
+		}
+	}
+
+	private void addActionListenersToSeqStrip(int index) {
+		mstrMoGui.getTitles()[index].addActionListener(e -> rename(index));
+		mstrMoGui.getOpen()[index].addActionListener(e -> open(index));
+		mstrMoGui.getRemove()[index].addActionListener(e -> remove(index));
+		mstrMoGui.getMute()[index].addActionListener(e -> mute(index));
+		mstrMoGui.getSolo()[index].addActionListener(e -> solo(index));
+	}
+
+	private void removeActionListenerFromStrip(int index) {
+		mstrMoGui.getTitles()[index].removeActionListener(e -> rename(index));
+		mstrMoGui.getOpen()[index].removeActionListener(e -> open(index));
+		mstrMoGui.getRemove()[index].removeActionListener(e -> remove(index));
+		mstrMoGui.getMute()[index].removeActionListener(e -> mute(index));
+		mstrMoGui.getSolo()[index].removeActionListener(e -> solo(index));
+	}
+
+	private void removeActionListenersFromArrWinInstr(int instrument) {
+		for (int i = 0; i < 8; i++) {
+			int scene = i;
+			arrangeWindow.getSequenceChoosers()[instrument][i]
+					.removeActionListener(e -> setPatternChoice(instrument, scene));
+		}
 	}
 
 	/**
@@ -104,7 +169,7 @@ public class MstrMoController implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		tickCounter++;
 		if (tickCounter == 1) {
-			arrWin.markCurrentScene(currentScene);
+			arrangeWindow.markCurrentScene(currentScene);
 			beatCounter++;
 			mstrMoGui.setBeatCounter(beatCounter);
 			if (beatCounter == 1) {
@@ -115,10 +180,10 @@ public class MstrMoController implements ActionListener {
 		mstrMoModel.tick();
 		if (barCounter == mstrMoModel.getSceneLength(currentScene)) {
 			if (beatCounter == 4 && tickCounter == 16) {
-				arrWin.unMarkCurrentScene(currentScene);
-				currentScene = mstrMoModel.getNextActiveScene(currentScene, arrWin.loopIsSelected());
+				arrangeWindow.unMarkCurrentScene(currentScene);
+				currentScene = mstrMoModel.getNextActiveScene(currentScene, arrangeWindow.loopIsSelected());
 				if (currentScene > -1) {
-					mstrMoModel.setActiveSequences(currentScene);
+					mstrMoModel.setActivePatterns(currentScene);
 					barCounter = 0;
 				} else {
 					stop();
@@ -141,7 +206,7 @@ public class MstrMoController implements ActionListener {
 			mstrMoModel.setRunning(true);
 			changeBpm();
 			currentScene = mstrMoModel.getFirstActiveScene();
-			mstrMoModel.setActiveSequences(currentScene);
+			mstrMoModel.setActivePatterns(currentScene);
 			masterClock.start();
 			mstrMoModel.start();
 			mstrMoGui.disableGui(mstrMoModel.lastUsedIndex());
@@ -150,7 +215,7 @@ public class MstrMoController implements ActionListener {
 
 	/**
 	 * Stops playback of the sequencers and do some associated stuff like unmark the
-	 * active scene init some variables and the barcounter of the gui
+	 * active scene, init some variables and the barcounter of the gui
 	 */
 	private void stop() {
 		if (mstrMoModel.isRunning()) {
@@ -164,9 +229,9 @@ public class MstrMoController implements ActionListener {
 			mstrMoModel.stop();
 			mstrMoGui.enableGui(mstrMoModel.lastUsedIndex());
 			if (currentScene > -1) {
-				arrWin.unMarkCurrentScene(currentScene);
+				arrangeWindow.unMarkCurrentScene(currentScene);
 			} else {
-				arrWin.unMarkCurrentScene(mstrMoModel.getLastActiveScene());
+				arrangeWindow.unMarkCurrentScene(mstrMoModel.getLastActiveScene());
 			}
 		}
 	}
@@ -174,8 +239,8 @@ public class MstrMoController implements ActionListener {
 	/**
 	 * Opens the arrangewindow if its closed.
 	 */
-	private void openArrWin() {
-		arrWin.setVisible(true);
+	private void openArrangeWindow() {
+		arrangeWindow.setVisible(true);
 	}
 
 	/**
@@ -185,122 +250,174 @@ public class MstrMoController implements ActionListener {
 	 *            the index of the scene to be renamed.
 	 */
 	private void renameScene(int sceneNr) {
-		mstrMoModel.renameScene(sceneNr, arrWin.renameScene(sceneNr));
+		mstrMoModel.renameScene(sceneNr, arrangeWindow.renameScene(sceneNr));
 
 	}
 
+	/**
+	 * Changes the length of the scene in steps of one bar
+	 * 
+	 * @param scene
+	 *            the index of the scene to be changed
+	 */
 	private void changeSceneLength(int scene) {
-		mstrMoModel.setSceneLength(scene, (int) arrWin.getLengthChoosers()[scene].getValue());
+		mstrMoModel.setSceneLength(scene, (int) arrangeWindow.getLengthChoosers()[scene].getValue());
 	}
 
+	/**
+	 * If you click a scenebutton this method is called and the scene is set active
+	 * which means it and its associated sequences will be included in the playback
+	 * 
+	 * @param scene
+	 *            the scene to be set as active
+	 */
 	private void clickSceneButton(int scene) {
 		if (!mstrMoModel.isSceneActive(scene)) {
 			mstrMoModel.setSceneActive(scene, true);
-			arrWin.markActiveScene(scene);
+			arrangeWindow.markActiveScene(scene);
 		} else {
 			mstrMoModel.setSceneActive(scene, false);
-			arrWin.unmarkAciveScene(scene);
+			arrangeWindow.unmarkAciveScene(scene);
 		}
 	}
 
+	/**
+	 * Change the tempo of the playback by setting the masterClock delay, divided by
+	 * 16 to get the delay between the ticks, 16 ticks is one beat
+	 */
 	private void changeBpm() {
 		masterClock.setDelay(60000 / getBpm() / 16);
 	}
 
-	private int getBpm() {
-		return mstrMoGui.getBpm();
-	}
-
+	/**
+	 * Change the musical key from which the notegenerators will generate notes.
+	 * Apllies to all sequencers contained in mstrMoModel
+	 */
 	private void changeKey() {
 		mstrMoModel.changeKey(keyConv.getKey(mstrMoGui.getKey()));
 	}
 
+	/**
+	 * Creates a new instance of the standard sequencer and gui for this. Adds
+	 * guistrips in mastermodule and arrangeWindow. Collects all the information
+	 * needed, like key and bpm from the mastermodule and pass it on
+	 * Max 8 sequencers can be created
+	 */
 	private void createStandardSequencer() {
 		if (nextIndex < 8) {
-			mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), getBpm(), nextIndex,
+			mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), nextIndex,
 					"Stnd Sequencer");
 			int index = nextIndex;
 			mstrMoModel.getCopyButton(index).addActionListener(e -> copy(index));
 			mstrMoModel.getPasteButton(index).addActionListener(e -> paste(index));
 			mstrMoGui.addNewSeqStrip("Stnd Sequencer", nextIndex);
 			addActionListenersToSeqStrip(nextIndex);
-			arrWin.addInstrument(nextIndex, mstrMoModel.getTitle(nextIndex), mstrMoModel.getSequenceNames(nextIndex));
+			arrangeWindow.addSequencer(nextIndex, mstrMoModel.getTitle(nextIndex),
+					mstrMoModel.getPatternNames(nextIndex));
 			addActionListenersToArrWinInstr(nextIndex);
 			setNextIndex();
 		}
 	}
 
+	/**
+	 * makes a individual copy of a pattern and stores it in the clipboard in
+	 * mstrMoModel.
+	 * 
+	 * @param index
+	 *            index of the instrument/sequencer whos active pattern is to be
+	 *            copied
+	 */
 	public void copy(int index) {
-		mstrMoModel.copySequence(index);
+		mstrMoModel.copyPattern(index);
 	}
 
+	/**
+	 * If there is a pattern stored in
+	 * 
+	 * @param index
+	 */
 	public void paste(int index) {
-		mstrMoModel.pasteSequence(index);
+		mstrMoModel.pastePattern(index);
 	}
 
-	private void addActionListenersToArrWinInstr(int instrument) {
-		for (int i = 0; i < 8; i++) {
-			int scene = i;
-			arrWin.getSequenceChoosers()[instrument][i].addActionListener(e -> setSequenceChoice(instrument, scene));
-		}
+	/**
+	 * This method is used to set the choice of pattern for a instrument in a given
+	 * scene
+	 * 
+	 * @param sequencer
+	 *            the sequencer to choose pattern for
+	 * @param scene
+	 *            the scene to set the choice of pattern in
+	 */
+	private void setPatternChoice(int sequencer, int scene) {
+		mstrMoModel.setPatternChoice(scene, sequencer, arrangeWindow.getSequenceChoice(sequencer, scene));
 	}
 
-	private void setSequenceChoice(int instrument, int scene) {
-		mstrMoModel.setSequenceChoice(scene, instrument, arrWin.getSequenceChoice(instrument, scene));
-	}
-
-	private void addActionListenersToSeqStrip(int index) {
-		mstrMoGui.getTitles()[index].addActionListener(e -> rename(index));
-		mstrMoGui.getOpen()[index].addActionListener(e -> open(index));
-		mstrMoGui.getRemove()[index].addActionListener(e -> remove(index));
-		mstrMoGui.getMute()[index].addActionListener(e -> mute(index));
-		mstrMoGui.getSolo()[index].addActionListener(e -> solo(index));
-	}
-
-	private void removeActionListenerFromStrip(int index) {
-		mstrMoGui.getTitles()[index].removeActionListener(e -> rename(index));
-		mstrMoGui.getOpen()[index].removeActionListener(e -> open(index));
-		mstrMoGui.getRemove()[index].removeActionListener(e -> remove(index));
-		mstrMoGui.getMute()[index].removeActionListener(e -> mute(index));
-		mstrMoGui.getSolo()[index].removeActionListener(e -> solo(index));
-	}
-
-	private void removeActionListenersFromArrWinInstr(int instrument) {
-		for (int i = 0; i < 8; i++) {
-			int scene = i;
-			arrWin.getSequenceChoosers()[instrument][i].removeActionListener(e -> setSequenceChoice(instrument, scene));
-		}
-	}
-
+	/**
+	 * If a sequencer gui is closed/hidden this method can be used to open/show it
+	 * again
+	 * 
+	 * @param index
+	 *            index of the sequencer to show
+	 */
 	private void open(int index) {
 		mstrMoModel.open(index);
 	}
 
+	/**
+	 * Creates a popup-menu where you can type in a new name for the given sequencer
+	 * 
+	 * @param index
+	 *            index of the sequencer to rename
+	 */
 	private void rename(int index) {
 		mstrMoModel.renameSequencer(mstrMoGui.getTitle(index), index);
-		arrWin.changeTitle(mstrMoGui.getTitle(index), index);
+		arrangeWindow.changeTitle(mstrMoGui.getTitle(index), index);
 	}
 
+	/**
+	 * Removes a sequencer from the sequencerArray. Disposes all associated Gui. All
+	 * data contained is lost. Also reorders the sequencerArray and the arrays of
+	 * Gui-strips so theres no gap in the arrays
+	 * 
+	 * @param index
+	 *            index of the sequencer to be removed
+	 */
 	private void remove(int index) {
 		// removeActionListenersFromArrWinInstr(index);
-		arrWin.removeAllInstruments(mstrMoModel.lastUsedIndex());
+		arrangeWindow.removeAllInstruments(mstrMoModel.lastUsedIndex());
 		mstrMoModel.removeSequencer(index);
 		// removeActionListenerFromStrip(index);
 		mstrMoGui.removeAllSeqStrips();
 		addStripsToGui(mstrMoModel.lastUsedIndex());
 		mstrMoGui.paintAndPack();
 		setNextIndex();
-		addInstrumentsToArrWin(mstrMoModel.lastUsedIndex());
-		arrWin.repaintAndPack();
+		addSequencerToArrWin(mstrMoModel.lastUsedIndex());
+		arrangeWindow.repaintAndPack();
 	}
 
-	private void addInstrumentsToArrWin(int lastUsedIndex) {
+	/**
+	 * Adds a new strip to represent a sequencer in the arrangeWindow. Also adds
+	 * actionListeners to the strip
+	 * 
+	 * @param lastUsedIndex
+	 *            the last used index in the sequencerArray so the method shall now
+	 *            where to put the new sequencer
+	 */
+	private void addSequencerToArrWin(int lastUsedIndex) {
 		for (int i = 0; i <= lastUsedIndex; i++) {
-			arrWin.addInstrument(i, mstrMoModel.getTitle(i), mstrMoModel.getSequenceNames(i));
+			arrangeWindow.addSequencer(i, mstrMoModel.getTitle(i), mstrMoModel.getPatternNames(i));
 			addActionListenersToArrWinInstr(i);
 		}
 	}
 
+	/**
+	 * Adds a new strip in the master module Gui to represent a Sequencer
+	 * 
+	 * @param lastUsedIndex
+	 *            the last used index in the sequencerArray so the method shall now
+	 *            where to put the new strip
+	 */
 	private void addStripsToGui(int lastUsedIndex) {
 		for (int i = 0; i <= lastUsedIndex; i++) {
 			mstrMoGui.addNewSeqStrip(mstrMoModel.getTitle(i), i);
@@ -308,6 +425,14 @@ public class MstrMoController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Checks an array and return an Integer of the last used index. Most often used
+	 * for checking the sequencerArray to see where to put a new sequencer
+	 * 
+	 * @param array
+	 *            the array to check, probably the sequencerArray in mstrMoModel
+	 * @return the last index in the array that isnt nulll
+	 */
 	public int getLastUsedIndex(Object[] array) {
 		int index = -1;
 		for (int i = 0; i < array.length; i++) {
@@ -318,25 +443,50 @@ public class MstrMoController implements ActionListener {
 		return index;
 	}
 
+	/**
+	 * Sets the soloMuteBars in the sequencerStrips of the mstrMoGui acoording to
+	 * what each separate sequencer is set to
+	 */
 	private void setSoloMuteBars() {
 		for (int i = 0; i <= mstrMoModel.lastUsedIndex(); i++) {
 			mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(i), i);
 		}
 	}
 
+	/**
+	 * Sets the selected sequencer to mute and repaints all soloMuteBars accordingly
+	 * 
+	 * @param index
+	 *            index of the sequencer to be set to mute
+	 */
 	private void mute(int index) {
 		mstrMoModel.mute(index);
 		setSoloMuteBars();
-		// mstrMoGui.setSoloMuteBar(mstrMoModel.getSoloMute(index), index);
 	}
 
+	/**
+	 * Sets the selected sequencer to solo and repaints all soloMuteBars accordingly
+	 * 
+	 * @param index
+	 *            index of the sequencer to be set to solo
+	 */
 	private void solo(int index) {
 		mstrMoModel.solo(index);
 		setSoloMuteBars();
 	}
 
+	/**
+	 * Checks which index in the sequencerArray is next to be filled with a
+	 * sequencer and sets the nextIndex to show this.
+	 */
 	private void setNextIndex() {
 		nextIndex = mstrMoModel.nextIndex();
+	}
+
+	// Simple getters and setters
+
+	private int getBpm() {
+		return mstrMoGui.getBpm();
 	}
 
 	public Timer getMainClock() {

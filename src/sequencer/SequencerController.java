@@ -6,7 +6,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import arrangement.Pattern;
-import arrangement.SoloMute;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;

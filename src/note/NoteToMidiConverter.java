@@ -3,12 +3,20 @@ package note;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class helps you convert from noteName to the corresponding
+ * midiNoteNumber
+ */
+
 public class NoteToMidiConverter {
 
-	Map<String,Integer> noteToMidiMap = new HashMap<String, Integer>();
-	
-	//Konstruktor
-	public NoteToMidiConverter(){
+	Map<String, Integer> noteToMidiMap = new HashMap<String, Integer>();
+
+	/**
+	 * Constructor. Creates a HashMap and fills it with key/value-pairs for all the
+	 * notes that exists in midi, from 0-127
+	 */
+	public NoteToMidiConverter() {
 		noteToMidiMap.put("C-1", 0);
 		noteToMidiMap.put("C#-1", 1);
 		noteToMidiMap.put("D-1", 2);
@@ -138,7 +146,12 @@ public class NoteToMidiConverter {
 		noteToMidiMap.put("F#9", 126);
 		noteToMidiMap.put("G9", 127);
 	}
-	
+
+	/**
+	 * @param note
+	 *            the name of hte note you want to convert into midi
+	 * @return the corresponding midiNoteNumber
+	 */
 	public int get(String note) {
 		return noteToMidiMap.get(note);
 	}

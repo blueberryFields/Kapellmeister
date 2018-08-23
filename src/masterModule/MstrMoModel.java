@@ -4,9 +4,9 @@ import javax.swing.JButton;
 
 import arrangement.Scene;
 import arrangement.Pattern;
-import arrangement.SoloMute;
 import note.NoteGenerator;
 import sequencer.SequencerController;
+import sequencer.SoloMute;
 
 /**
  * The heart of the whole application, the core and most of the logic for the

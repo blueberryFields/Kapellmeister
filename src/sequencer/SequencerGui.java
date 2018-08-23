@@ -22,7 +22,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import arrangement.Pattern;
-import arrangement.SoloMute;
 import note.Note;
 
 public class SequencerGui extends JFrame {

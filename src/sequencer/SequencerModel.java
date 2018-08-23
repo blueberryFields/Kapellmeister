@@ -8,7 +8,6 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 import arrangement.Pattern;
-import arrangement.SoloMute;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
@@ -235,7 +234,7 @@ public class SequencerModel {
 	 *            the pattern you want to replace the choosen pattern whith.
 	 */
 	public void pastePattern(int activePattern, Pattern pattern) {
-		patterns[activePattern] = pattern;
+		patterns[activePattern].paste(pattern);
 	}
 
 	/**
@@ -457,6 +456,8 @@ public class SequencerModel {
 	public void setMidiChannel(int midiChannel) {
 		this.midiChannel = midiChannel;
 	}
+
+	// The rest is simple getters and setters
 
 	public void setPattern(Note[] pattern, int activePattern) {
 		patterns[activePattern].setPattern(pattern);

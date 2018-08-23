@@ -1,7 +1,14 @@
 package note;
 
-public class C extends NoteGenerator{
-	
+/**
+ * Subclass to noteGenerator. Represents the musical key C major
+ */
+
+public class C extends NoteGenerator {
+
+	/**
+	 * Constructor. Fills the notes-list with the notes in A minor
+	 */
 	public C() {
 		notes.add(new String("C"));
 		notes.add(new String("D"));

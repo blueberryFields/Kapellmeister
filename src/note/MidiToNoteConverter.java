@@ -1,5 +1,9 @@
 package note;
 
+/**
+ *  A test, isnt used in the application as for now, doubt it even works...
+ */
+
 import java.util.HashMap;
 
 public class MidiToNoteConverter {
@@ -41,7 +45,7 @@ public class MidiToNoteConverter {
 	}
 
 	public String getNoteSwitch(int key) {
-		switch(key) {
+		switch (key) {
 		case 48:
 			return "C3";
 		case 49:
@@ -86,7 +90,7 @@ public class MidiToNoteConverter {
 			return "G#4";
 		case 69:
 			return "A4";
-		case 70: 
+		case 70:
 			return "A#4";
 		case 71:
 			return "B4";

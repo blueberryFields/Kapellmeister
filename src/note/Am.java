@@ -1,7 +1,13 @@
 package note;
 
+/**
+ * Subclass to noteGenerator. Represents the musical key A minor
+ */
 public class Am extends NoteGenerator {
 
+	/**
+	 * Constructor. Fills the notes-list with the notes in A minor
+	 */
 	public Am() {
 		notes.add(new String("A"));
 		notes.add(new String("B"));

@@ -24,8 +24,8 @@ import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SwingConstants;
 
-import arrangement.SoloMute;
 import sequencer.SequencerController;
+import sequencer.SoloMute;
 
 /**
  * The graphic user interface for the master module

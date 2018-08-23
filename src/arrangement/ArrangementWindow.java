@@ -19,8 +19,18 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+/**
+ * Graphic user interface for handling the arrangement section of the master
+ * module. Allows user to choose which pattern should be played by each
+ * sequencer in each scene and which scenes should be included in the play back.
+ */
+
 public class ArrangementWindow extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4745498012660500713L;
 	// Create colorscheme
 	private Color backGroundColor = new Color(142, 175, 206);
 	private Color disabledStepColor = new Color(76, 94, 112);
@@ -42,6 +52,7 @@ public class ArrangementWindow extends JFrame {
 	private Dimension patternChooserDim = new Dimension(110, 25);
 	private Dimension titleLabelDim = new Dimension(100, 13);
 
+	// Create components for arrangementWindow
 	private JPanel loopPanel = new JPanel();
 	private JLabel loopLabel = new JLabel("Loop: ");
 	private JCheckBox loopCheck = new JCheckBox();
@@ -51,21 +62,21 @@ public class ArrangementWindow extends JFrame {
 	private SpinnerModel[] lengthModel = new SpinnerNumberModel[8];
 	private JSpinner[] lengthChoosers = new JSpinner[8];
 
-	private String[] sequenceNames;
-	private JComboBox<String>[][] sequenceChoosers = new JComboBox[8][8];
+	private String[] patternNames;
+	private JComboBox<String>[][] patternChoosers = new JComboBox[8][8];
 
 	private JPanel titlePanel = new JPanel();
 
 	private JPanel[] scenePanels = new JPanel[8];
-
-	private JSeparator[][] rowSeps = new JSeparator[9][8];
-	private JSeparator[] instrSeps = new JSeparator[8];
 
 	private GridBagConstraints gbc = new GridBagConstraints();
 	private GridBagConstraints sepGbc = new GridBagConstraints();
 
 	private Insets scenePanelInsets = new Insets(0, 8, 0, 8);
 
+	/**
+	 * Constructor. Creates the base of the arrangementWindow
+	 */
 	public ArrangementWindow() {
 		super("Arrangement Window");
 
@@ -117,7 +128,19 @@ public class ArrangementWindow extends JFrame {
 		setVisible(true);
 	}
 
-	public void addSequencer(int nextIndex, String title, String[] sequenceNames) {
+	/**
+	 * Adds a sequencer and a row of patternchoosers, one for each scene
+	 * 
+	 * @param nextIndex
+	 *            next free index, this is where in the different arrays that the
+	 *            associated components will be placed
+	 * @param title
+	 *            the title/name of the sequencers that will be added
+	 * @param patternNames
+	 *            an array of Strings containging the names of the patterns the new
+	 *            sequencer knows
+	 */
+	public void addSequencer(int nextIndex, String title, String[] patternNames) {
 		titles[nextIndex] = new JLabel(title + ":");
 		titles[nextIndex].setPreferredSize(titleLabelDim);
 		titles[nextIndex].setHorizontalAlignment(SwingConstants.RIGHT);
@@ -133,63 +156,131 @@ public class ArrangementWindow extends JFrame {
 		for (int i = 0; i < scenePanels.length; i++) {
 			sepGbc.gridx = 0;
 			sepGbc.gridy = 0;
-			// scenePanels[i].add(rowSeps[nextIndex][i], sepGbc);
-			scenePanels[i].add(sequenceChoosers[nextIndex][i] = new JComboBox<String>(sequenceNames), gbc);
-			sequenceChoosers[nextIndex][i].setPreferredSize(new Dimension(120, 25));
-			sequenceChoosers[nextIndex][i].setSelectedIndex(i);
+			scenePanels[i].add(patternChoosers[nextIndex][i] = new JComboBox<String>(patternNames), gbc);
+			patternChoosers[nextIndex][i].setPreferredSize(new Dimension(120, 25));
+			patternChoosers[nextIndex][i].setSelectedIndex(i);
 		}
 		repaint();
 		pack();
 	}
 
+	/**
+	 * Removes a sequencer and the associated patternChoosers from the
+	 * arrangeWindow.
+	 * 
+	 * @param index
+	 *            index of the sequencer to remove
+	 */
 	public void removeInstrument(int index) {
 		titlePanel.remove(titles[index]);
 		for (int i = 0; i < scenePanels.length; i++) {
-			scenePanels[i].remove(sequenceChoosers[index][i]);
+			scenePanels[i].remove(patternChoosers[index][i]);
 		}
 	}
 
+	/**
+	 * Removes all sequencers and their patternchooseres from the arrangeWindow
+	 * 
+	 * @param lastUsedIndex
+	 *            last used index of the arrays containing the components
+	 */
 	public void removeAllInstruments(int lastUsedIndex) {
 		for (int i = 0; i <= lastUsedIndex; i++) {
 			removeInstrument(i);
 		}
 	}
 
+	/**
+	 * Simply calls repaint() and pack();
+	 */
 	public void repaintAndPack() {
 		repaint();
 		pack();
 	}
 
+	/**
+	 * Change title of a sequencer
+	 * 
+	 * @param title
+	 *            the new title
+	 * @param index
+	 *            index of the sequencer to be renamed
+	 */
 	public void changeTitle(String title, int index) {
 		titles[index].setText(title + ":");
 	}
 
+	/**
+	 * Paints a scene in the arrangementWindow to indicate it is active and will be
+	 * included in the playback
+	 * 
+	 * @param scene
+	 *            index of the scene to be marked
+	 */
 	public void markActiveScene(int scene) {
 		scenePanels[scene].setBackground(activeSceneColor);
 	}
 
+	/**
+	 * Unmark a scene that has been marked as active by the markActiveScene()-method
+	 * 
+	 * @param scene
+	 *            index of the scene to be unmarked
+	 */
 	public void unmarkAciveScene(int scene) {
 		scenePanels[scene].setBackground(backGroundColor);
 	}
 
+	/**
+	 * Marks the currently playing scene to indicate that it is playing right now
+	 * 
+	 * @param currentScene
+	 *            index of the scene to be marked as currently playing
+	 */
 	public void markCurrentScene(int currentScene) {
 		scenePanels[currentScene].setBackground(currentSceneColor);
 	}
 
+	/**
+	 * Unmark a scene that has been marked as currently playing by the
+	 * markCurrentScene()-method
+	 * 
+	 * @param currentScene
+	 *            index of the scene to be marked as currently playing
+	 */
 	public void unMarkCurrentScene(int currentScene) {
 		scenePanels[currentScene].setBackground(activeSceneColor);
 	}
 
+	/**
+	 * By rightclicking a sceneButton this method will be called to create a
+	 * popup-menu where you can type in a new scenename
+	 * 
+	 * @param sceneIndex
+	 *            index of the scene to be renamed
+	 * @return a String containing the new name for the scene
+	 */
+	public String renameScene(int sceneIndex) {
+		String newName = JOptionPane.showInputDialog("New scene name:");
+		if (newName != null) {
+			sceneButtons[sceneIndex].setText(newName);
+			return newName;
+		} else {
+			return sceneButtons[sceneIndex].getText();
+		}
+	}
+
+	// The rest is simple getters and setters
 	public JButton[] getSceneButtons() {
 		return sceneButtons;
 	}
 
 	public JComboBox<String>[][] getSequenceChoosers() {
-		return sequenceChoosers;
+		return patternChoosers;
 	}
 
 	public int getSequenceChoice(int instrument, int scene) {
-		return sequenceChoosers[instrument][scene].getSelectedIndex();
+		return patternChoosers[instrument][scene].getSelectedIndex();
 	}
 
 	public JSpinner[] getLengthChoosers() {
@@ -200,13 +291,11 @@ public class ArrangementWindow extends JFrame {
 		return loopCheck.isSelected();
 	}
 
-	public String renameScene(int sceneNr) {
-		String newName = JOptionPane.showInputDialog("New scene name:");
-		if(newName != null) {
-		sceneButtons[sceneNr].setText(newName);
-		return newName;
-		} else {
-			return sceneButtons[sceneNr].getText();
-		}
+	public String[] getPatternNames() {
+		return patternNames;
+	}
+
+	public void setPatternNames(String[] patternNames) {
+		this.patternNames = patternNames;
 	}
 }

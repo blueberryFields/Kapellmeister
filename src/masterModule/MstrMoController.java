@@ -126,7 +126,7 @@ public class MstrMoController implements ActionListener {
 	}
 
 	// The following methods just adds or removes actionListeners from buttons and
-	// sush
+	// such
 	private void addActionListenersToArrWinInstr(int instrument) {
 		for (int i = 0; i < 8; i++) {
 			int scene = i;
@@ -300,13 +300,12 @@ public class MstrMoController implements ActionListener {
 	/**
 	 * Creates a new instance of the standard sequencer and gui for this. Adds
 	 * guistrips in mastermodule and arrangeWindow. Collects all the information
-	 * needed, like key and bpm from the mastermodule and pass it on
-	 * Max 8 sequencers can be created
+	 * needed, like key and bpm from the mastermodule and pass it on Max 8
+	 * sequencers can be created
 	 */
 	private void createStandardSequencer() {
 		if (nextIndex < 8) {
-			mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), nextIndex,
-					"Stnd Sequencer");
+			mstrMoModel.createStandardSequencer(keyConv.getKey(mstrMoGui.getKey()), nextIndex, "Stnd Sequencer");
 			int index = nextIndex;
 			mstrMoModel.getCopyButton(index).addActionListener(e -> copy(index));
 			mstrMoModel.getPasteButton(index).addActionListener(e -> paste(index));

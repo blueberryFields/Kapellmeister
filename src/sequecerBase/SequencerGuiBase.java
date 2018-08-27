@@ -174,76 +174,6 @@ public class SequencerGuiBase {
 		veloHighPanel.add(veloHighChooser);
 		rndVeloPanel.add(veloHighPanel);
 
-		// Configure
-		
-
-		// // Add stuff to and configure nudgeSequencePanel
-		// nudgeLeft.setPreferredSize(buttonDimSmall);
-		// nudgeRight.setPreferredSize(buttonDimSmall);
-		// nudgePanel.add(nudgeLeft);
-		// nudgePanel.add(nudgeText);
-		// nudgePanel.add(nudgeRight);
-		//
-		// copyPaste[0] = new JButton("Copy");
-		// copyPaste[1] = new JButton("Paste");
-		// for (int i = 0; i < copyPaste.length; i++) {
-		// copyPaste[i].setPreferredSize(buttonDimLarge);
-		// nudgePanel.add(copyPaste[i]);
-		// }
-
-		// // Add stuff to and configure stepPanel
-		// for (int i = 0; i < noteChooser.length; i++) {
-		// noteModel[i] = new SpinnerListModel(notes);
-		// noteChooser[i] = new JSpinner(noteModel[i]);
-		// noteChooser[i].setEditor(new JSpinner.DefaultEditor(noteChooser[i]));
-		// noteChooser[i].setPreferredSize(noteChooserDim);
-		// }
-		//
-		// for (int i = 0; i < velocityChooser.length; i++) {
-		// velocityModel[i] = new SpinnerNumberModel(100, 0, 127, 1);
-		// velocityChooser[i] = new JSpinner(velocityModel[i]);
-		// velocityChooser[i].setEditor(new JSpinner.DefaultEditor(velocityChooser[i]));
-		// velocityChooser[i].setPreferredSize(veloChooserDim);
-		// }
-		// for (int i = 0; i < noteOnButton.length; i++) {
-		// noteOnButton[i] = new JButton("");
-		// noteOnButton[i].setPreferredSize(buttonDimSmall);
-		// }
-		//
-		// for (int i = 0; i < singleSteps.length; i++) {
-		// singleSteps[i] = new JPanel();
-		// singleSteps[i].setLayout(new GridBagLayout());
-		// singleSteps[i].setBackground(enabledStepColor);
-		// GridBagConstraints singleStepsGbc = new GridBagConstraints();
-		// // singleStepsGbc.insets = new Insets(1, 1, 1, 1);
-		// singleStepsGbc.gridx = 0;
-		// singleStepsGbc.gridy = 0;
-		// singleSteps[i].add(noteChooser[i], singleStepsGbc);
-		// singleStepsGbc.gridx = 1;
-		// singleStepsGbc.gridy = 0;
-		// singleSteps[i].add(velocityChooser[i], singleStepsGbc);
-		// singleStepsGbc.gridx = 0;
-		// singleStepsGbc.gridy = 1;
-		// singleSteps[i].add(noteOnButton[i], singleStepsGbc);
-		// }
-		//
-		// stepPanel.setLayout(new GridBagLayout());
-		// GridBagConstraints stepPanelGbc = new GridBagConstraints();
-		// stepPanelGbc.insets = new Insets(2, 2, 2, 2);
-		// stepPanelGbc.gridx = 0;
-		// stepPanelGbc.gridy = 0;
-		//
-		// int k = 0;
-		// for (int i = 0; i < 4; i++) {
-		// for (int j = 0; j < 4; j++) {
-		// stepPanel.add(singleSteps[k], stepPanelGbc);
-		// stepPanelGbc.gridx++;
-		// k++;
-		// }
-		// stepPanelGbc.gridy++;
-		// stepPanelGbc.gridx = 0;
-		// }
-
 		// Configure and add stuff to patternPanel
 		patternPanel.setBackground(backGroundColor);
 		patternPanel.setLayout(new GridBagLayout());
@@ -280,40 +210,6 @@ public class SequencerGuiBase {
 		patternSettingsPanel.add(partNotesText);
 		patternSettingsPanel.add(partNotesChooser);
 		patternSettingsPanel.add(renamePattern);
-
-		// // configure and add stuff to frame
-		// frame.setLayout(new GridBagLayout());
-		// GridBagConstraints frameGbc = new GridBagConstraints();
-		// frameGbc.insets = new Insets(5, 5, 5, 5);
-		// frameGbc.gridx = 0;
-		// frameGbc.gridy = 0;
-		// frame.add(channelPanel, frameGbc);
-		//
-		// frameGbc.gridy = 1;
-		// frame.add(generatePanel, frameGbc);
-		//
-		// frameGbc.gridy = 2;
-		// frame.add(rndVeloPanel, frameGbc);
-		//
-		// frameGbc.gridy = 3;
-		// frame.add(generatorAlgorithmPanel, frameGbc);
-		//
-		// frameGbc.gridy = 4;
-		// frame.add(nudgePanel, frameGbc);
-		//
-		// frameGbc.gridy = 5;
-		// frame.add(stepPanel, frameGbc);
-		//
-		// frameGbc.gridy = 6;
-		// frame.add(patternPanel, frameGbc);
-		//
-		// frameGbc.gridy = 7;
-		// frame.add(patternSettingsPanel, frameGbc);
-		//
-		// frame.setResizable(false);
-		// frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		// frame.pack();
-		// frame.setVisible(true);
 	}
 
 	/**
@@ -339,49 +235,6 @@ public class SequencerGuiBase {
 	public void dispose() {
 		frame.dispose();
 	}
-
-	// /**
-	// * Checks the passed pattern and repaints the stepSequencer accordingly
-	// *
-	// * @param pattern
-	// * the pattern to be the model for the stepSequencer view
-	// */
-	// public void repaintSequencer(Note[] pattern) {
-	//
-	// // Enable steps wich is included in sequence
-	// for (int i = 0; i < pattern.length; i++) {
-	// noteChooser[i].setEnabled(true);
-	// velocityChooser[i].setEnabled(true);
-	// noteOnButton[i].setEnabled(true);
-	// singleSteps[i].setBackground(enabledStepColor);
-	// }
-	//
-	// // set note, NoteOn and velocity on steps
-	// for (int i = 0; i < pattern.length; i++) {
-	// velocityChooser[i].setValue(pattern[i].getVelo());
-	// noteChooser[i].setValue(pattern[i].getNote());
-	// switch (pattern[i].getNoteOn()) {
-	// case ON:
-	// noteOnButton[i].setText("On");
-	// break;
-	// case HOLD:
-	// noteOnButton[i].setText("Hold");
-	// break;
-	// case OFF:
-	// noteOnButton[i].setText("Off");
-	// break;
-	// }
-	// }
-	//
-	// // Disable steps wich is not included in sequence
-	// for (int i = pattern.length; i < 16; i++) {
-	// noteChooser[i].setEnabled(false);
-	// velocityChooser[i].setEnabled(false);
-	// noteOnButton[i].setEnabled(false);
-	// noteOnButton[i].setText("Off");
-	// singleSteps[i].setBackground(disabledStepColor);
-	// }
-	// }
 
 	/**
 	 * Makes a popup appear where you can type in a new name for the active pattern
@@ -436,82 +289,6 @@ public class SequencerGuiBase {
 		deviceChooser.removeAllItems();
 	}
 
-	// /**
-	// * Marks the currently playing note in the stepSequencer
-	// *
-	// * @param currentStep
-	// * the currently playing step
-	// * @param isFirstNote
-	// * boolean indicating if this is the first note since pressing start
-	// * @param pattern
-	// * the pattern playing
-	// */
-	// public void markActiveStep(int currentStep, boolean isFirstNote, Note[]
-	// pattern) {
-	// if (isFirstNote) {
-	// singleSteps[currentStep].setBackground(activeStepColor);
-	// disableStep(currentStep);
-	// } else if (currentStep == 0 && !isFirstNote) {
-	// singleSteps[currentStep].setBackground(activeStepColor);
-	// singleSteps[pattern.length - 1].setBackground(enabledStepColor);
-	// disableStep(currentStep);
-	// enableStep(pattern.length - 1);
-	// } else {
-	// singleSteps[currentStep].setBackground(activeStepColor);
-	// singleSteps[currentStep - 1].setBackground(enabledStepColor);
-	// disableStep(currentStep);
-	// enableStep(currentStep - 1);
-	// }
-	// }
-
-	// /**
-	// * Disables parts of the Gui so the user can´t change settings that shouldnt
-	// be
-	// * changed when sequencer is playing
-	// */
-	// public void disableGui() {
-	// deviceChooser.setEnabled(false);
-	// midiChannelChooser.setEnabled(false);
-	// generateButton.setEnabled(false);
-	// octaveLowChooser.setEnabled(false);
-	// octaveHighChooser.setEnabled(false);
-	// rndVeloCheckBox.setEnabled(false);
-	// veloLowChooser.setEnabled(false);
-	// veloHighChooser.setEnabled(false);
-	// generatorAlgorithmChooser.setEnabled(false);
-	// refreshButton.setEnabled(false);
-	// for (int i = 0; i < patternChoosers.length; i++) {
-	// patternChoosers[i].setEnabled(false);
-	// }
-	// copyPaste[0].setEnabled(false);
-	// copyPaste[1].setEnabled(false);
-	// nudgeLeft.setEnabled(false);
-	// nudgeRight.setEnabled(false);
-	// }
-	//
-	// /**
-	// * Enables the parts of the Gui that the disableGui() disables...
-	// */
-	// public void enableGui() {
-	// deviceChooser.setEnabled(true);
-	// midiChannelChooser.setEnabled(true);
-	// generateButton.setEnabled(true);
-	// octaveLowChooser.setEnabled(true);
-	// octaveHighChooser.setEnabled(true);
-	// rndVeloCheckBox.setEnabled(true);
-	// veloLowChooser.setEnabled(true);
-	// veloHighChooser.setEnabled(true);
-	// generatorAlgorithmChooser.setEnabled(true);
-	// refreshButton.setEnabled(true);
-	// for (int i = 0; i < patternChoosers.length; i++) {
-	// patternChoosers[i].setEnabled(true);
-	// }
-	// copyPaste[0].setEnabled(true);
-	// copyPaste[1].setEnabled(true);
-	// nudgeLeft.setEnabled(true);
-	// nudgeRight.setEnabled(true);
-	// }
-
 	// WORK IN PROGRESS!!!
 	public void setAvailibleDevices(Info[] infos) {
 		availibleDevices = new String[infos.length + 1];
@@ -522,61 +299,6 @@ public class SequencerGuiBase {
 		deviceChooserModel = new DefaultComboBoxModel<String>(getAvailibleDevices());
 		deviceChooser.setModel(deviceChooserModel);
 	}
-
-	// /**
-	// * If a pattern is being played the step that is currently playing will be
-	// * marked with red color and disabled. When you stop the playback this method
-	// * can be used to make sure the note is enabled again and the red color will
-	// * disappear
-	// *
-	// * @param currentStep
-	// * the step/note currently being played and marked as active and to
-	// * be unmarked
-	// * @param isFirstNote
-	// * is the current step the first note of the first repetition of the
-	// * pattern?
-	// * @param pattern
-	// * the pattern currently being played
-	// */
-	// public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[]
-	// pattern) {
-	// if (isFirstNote) {
-	// singleSteps[currentStep].setBackground(enabledStepColor);
-	// enableStep(currentStep);
-	// } else if (currentStep == 0 && !isFirstNote) {
-	// singleSteps[pattern.length - 1].setBackground(enabledStepColor);
-	// enableStep(pattern.length - 1);
-	// } else {
-	// singleSteps[currentStep - 1].setBackground(enabledStepColor);
-	// enableStep(currentStep - 1);
-	// }
-	// }
-
-	// /**
-	// * Disables a choosen step so the user cannot change it while it is playing
-	// * since this probably will cause some kind of error
-	// *
-	// * @param stepIndex
-	// * the step to be disabled
-	// */
-	// public void disableStep(int stepIndex) {
-	// noteChooser[stepIndex].setEnabled(false);
-	// velocityChooser[stepIndex].setEnabled(false);
-	// noteOnButton[stepIndex].setEnabled(false);
-	// }
-
-	// /**
-	// * Enables a step that has been disabled though the method disableStep(int
-	// * stepindex)
-	// *
-	// * @param stepIndex
-	// * the disabled step to be enabled
-	// */
-	// public void enableStep(int stepIndex) {
-	// noteChooser[stepIndex].setEnabled(true);
-	// velocityChooser[stepIndex].setEnabled(true);
-	// noteOnButton[stepIndex].setEnabled(true);
-	// }
 
 	/**
 	 * Sets the frame to visible if its not.

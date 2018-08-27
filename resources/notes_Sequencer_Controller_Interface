@@ -13,3 +13,11 @@ printPattern()
 playStep()
 
 tick()
+
+choosePattern(int pattern)
+
+changeNrOfSteps(int nrOfSteps)
+
+addActionListenersToPatternChoosers()
+
+Maybe these will need to be put back to the base-controller to be accessed through masteModuleModel  

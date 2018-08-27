@@ -24,6 +24,8 @@ comments  ✓
 
 paste() does it really paste a unique pattern? what hapen if you paste the same pattern to different places/patterns/sequencers??? ✓
 
+make an Interface for sequencerGui
+
 Save & Load
 
 Refresh mididevices

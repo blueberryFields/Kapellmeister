@@ -25,7 +25,7 @@ import arrangement.Pattern;
 import note.Note;
 import sequecerBase.SoloMute;
 
-public class SequencerGuiBase {
+public class SequencerGuiBase extends JFrame {
 
 	/**
 	 * The graphic user interface for the standard sequencers.
@@ -49,6 +49,8 @@ public class SequencerGuiBase {
 	private Dimension soloMuteBarDim = new Dimension(55, 20);
 	private Dimension patternChooserDim = new Dimension(110, 25);
 
+	
+	
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
 	private JPanel[] singleSteps = new JPanel[16];

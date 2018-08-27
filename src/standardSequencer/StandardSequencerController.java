@@ -9,9 +9,10 @@ import arrangement.Pattern;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
+import sequecerBase.SequencerControllerBase;
 import sequecerBase.SoloMute;
 
-public class StandardSequencerController {
+public class StandardSequencerController extends SequencerControllerBase {
 
 	/**
 	 * Controller for the standard sequencer. Up to 8 instances of this can be
@@ -19,33 +20,6 @@ public class StandardSequencerController {
 	 * the SequencerGui. Is driven by the masterClock in the Master Module
 	 * Controller.
 	 */
-
-	/**
-	 * Contains most of the logic and is the heart of the sequencer
-	 */
-	private StandardSequencerModel seq;
-	/**
-	 * Contains the graphical user interface for the sequencer
-	 */
-	private StandardSequencerGui gui;
-	/**
-	 * Stores the title/namename of the sequencer
-	 */
-	@SuppressWarnings("unused")
-	private String title;
-	/**
-	 * Keeps track of which pattern is currently the active one
-	 */
-	private int activePattern = 0;
-	/**
-	 * Keeps track of which tick in the tickgrid we´re currently at
-	 */
-	private int tickCounter = 0;
-	/**
-	 * The threshhold for where in the tickgrid a note will be played, is used to
-	 * determine how often a note will be played, i.e. setting the partnotes
-	 */
-	private int partNotesThreshhold = 8;
 
 	/**
 	 * Konstruktor
@@ -62,36 +36,23 @@ public class StandardSequencerController {
 	 *            the arrangeWindow
 	 */
 	public StandardSequencerController(NoteGenerator key, String title) {
-		this.title = title;
+		super(title);
 
 		seq = new StandardSequencerModel(key);
 
 		gui = new StandardSequencerGui(seq.getAvailibleMidiDevices(), title);
 
-		// clock = new Timer(500, this);
-		//
-		// setBpm(bpm);
 		setPartNotes();
 
 		// Add actionListeners to buttons
-		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 		gui.getGenerateButton().addActionListener(e -> generatePattern());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
-		gui.getRenamePattern().addActionListener(e -> renamePattern());
-		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
 
 		// Add ActionListeners to Jspinners
-		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
-		addActionListenersToPatternChoosers();
 		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
-		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
-		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
 		gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
 		gui.getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
-
-		// Add ActionListeners to ComboBox
-		addActionListenerToDeviceChooser();
 
 		// Add ActionListeners to singleSteps
 		addActionListenersToNoteChooser();
@@ -130,49 +91,11 @@ public class StandardSequencerController {
 		}
 	}
 
-	private void addActionListenersToPatternChoosers() {
-		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
-			int index = i;
-			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
-		}
-
-	}
-
 	private void addActionListenersToNoteOnButton() {
 		for (int i = 0; i < gui.getNoteOnButtonArray().length; i++) {
 			int index = i;
 			gui.getNoteOnButton(i).addActionListener(e -> clickNoteOnButton(index));
 		}
-	}
-
-	private void addActionListenerToDeviceChooser() {
-		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
-	}
-
-	private void removeActionListenerFromDeviceChooser() {
-		gui.getDeviceChooser().removeActionListener(e -> chooseMidiDevice());
-	}
-
-	// WORK IN PROGRESS!!!
-	private void refreshMidiDeviceList() {
-		// //removeActionListenerFromDeviceChooser();
-		// seq.refreshMidiDeviceList();
-		// gui.setAvailibleDevices(seq.getAvailibleMidiDevices());
-		// //addActionListenerToDeviceChooser();
-	}
-
-	/**
-	 * Makes a popup appear where you can type in a new name for the active pattern
-	 */
-	private void renamePattern() {
-		seq.setPatternName(activePattern, gui.renamePattern(activePattern));
-	}
-
-	/**
-	 * @return an array of Strings containing the names of the different patterns
-	 */
-	public String[] getPatternNames() {
-		return seq.getPatternNames();
 	}
 
 	/**
@@ -184,53 +107,6 @@ public class StandardSequencerController {
 	 */
 	private void changePartNotes(String partNotes) {
 		seq.setPartNotes(partNotes, activePattern);
-	}
-
-	/**
-	 * Change active pattern
-	 * 
-	 * @param pattern
-	 *            the new pattern to be set to active
-	 */
-	public void choosePattern(int pattern) {
-		if (this.activePattern != pattern) {
-			gui.disablePatternChooser(activePattern);
-			gui.enablePatternChooser(pattern);
-		}
-		if (seq.getRunning()) {
-			seq.killLastNote(activePattern);
-		}
-		this.activePattern = pattern;
-		setPartNotes();
-		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(pattern));
-		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(pattern));
-		gui.repaintSequencer(seq.getPattern(pattern));
-		gui.repaint();
-	}
-
-	/**
-	 * Sends a stopMessage adressed to the currently playing note in the choosen
-	 * pattern
-	 * 
-	 * @param activePattern
-	 *            the currently playing pattern
-	 */
-	public void killLastNote(int activePattern) {
-		seq.killLastNote(activePattern);
-	}
-
-	/**
-	 * Shows the sequencer GUI if it doesnt already show
-	 */
-	public void open() {
-		gui.open();
-	}
-
-	/**
-	 * Set the channel on which to send midinotes to the reciever
-	 */
-	private void chooseMidiChannel() {
-		seq.setMidiChannel((int) gui.getMidiChannelChooser().getSelectedItem() - 1);
 	}
 
 	/**
@@ -254,67 +130,6 @@ public class StandardSequencerController {
 	}
 
 	/**
-	 * Calls the dispose-method from JFrame and gets disposes all of the components
-	 * contained inside
-	 */
-	public void disposeGui() {
-		gui.dispose();
-	}
-
-	/**
-	 * If sequencer is set to anything else than solo this method will set it to
-	 * solo. If its already set to solo it will be set to audible
-	 */
-	public void solo() {
-		if (seq.getSoloMute() != SoloMute.SOLO) {
-			seq.solo();
-		} else {
-			seq.unSoloMute();
-		}
-		gui.setSoloMuteBar(seq.getSoloMute());
-	}
-
-	/**
-	 * Sets the sequencer to mute
-	 */
-	public void mute() {
-		if (seq.getSoloMute() != SoloMute.MUTE) {
-			seq.mute();
-			if (seq.getRunning()) {
-				seq.killLastNote(activePattern);
-			}
-			gui.setSoloMuteBar(seq.getSoloMute());
-		}
-	}
-
-	/**
-	 * If the sequencer is set to anything else than mute, this method will set it
-	 * to mute, if its already set to mute it will be unmuted
-	 */
-	public void muteUnmute() {
-		if (seq.getSoloMute() != SoloMute.MUTE) {
-			seq.mute();
-			if (seq.getRunning()) {
-				seq.killLastNote(activePattern);
-			}
-		} else {
-			seq.unSoloMute();
-		}
-		gui.setSoloMuteBar(seq.getSoloMute());
-	}
-
-	/**
-	 * If the sequencer is set to something else then audible this method will set
-	 * it to audible and show this in the soloMuteBar
-	 */
-	public void unSoloMute() {
-		if (seq.getSoloMute() != SoloMute.AUDIBLE) {
-			seq.unSoloMute();
-			gui.setSoloMuteBar(seq.getSoloMute());
-		}
-	}
-
-	/**
 	 * Moves the active pattern one step to the left, call checkHold and repaints
 	 * the gui representation of the sequence
 	 */
@@ -332,26 +147,6 @@ public class StandardSequencerController {
 		seq.nudgeRight(activePattern);
 		checkHold();
 		gui.repaintSequencer(seq.getPattern(activePattern));
-	}
-
-	/**
-	 * Check so the maximum value in the random velocity generator cant be lower
-	 * than the minimum value
-	 */
-	private void changeVeloHigh() {
-		if (gui.getVeloHighChooserValue() < gui.getVeloLowChooserValue()) {
-			gui.setVeloHighChooserValue(gui.getVeloLowChooserValue());
-		}
-	}
-
-	/**
-	 * Check so the minimum value in the random velocity generator cant be higher
-	 * than the maximum value
-	 */
-	private void changeVeloLow() {
-		if (gui.getVeloLowChooserValue() > gui.getVeloHighChooserValue()) {
-			gui.setVeloLowChooserValue(gui.getVeloHighChooserValue());
-		}
 	}
 
 	/**
@@ -494,18 +289,6 @@ public class StandardSequencerController {
 	}
 
 	/**
-	 * Add or remove steps from the pattern and then repaint sequencerGui
-	 * accordingly
-	 * 
-	 * @param the
-	 *            new number of steps
-	 */
-	private void changeNrOfSteps(int nrOfSteps) {
-		seq.changeNrOfSteps(nrOfSteps, activePattern);
-		gui.repaintSequencer(seq.getPattern(activePattern));
-	}
-
-	/**
 	 * Tells the sequencer to generate a new pattern based on info and choices
 	 * collected in Gui
 	 */
@@ -518,26 +301,13 @@ public class StandardSequencerController {
 	}
 
 	/**
-	 * Sets which of the available mididevices to send notes to
-	 */
-	private void chooseMidiDevice() {
-		seq.chooseMidiDevice(gui.getChoosenDevice());
-	}
-
-	/**
-	 * @return a unique copy of the active pattern
-	 */
-	public Pattern copyPattern() {
-		return seq.copyPattern(activePattern);
-	}
-
-	/**
 	 * Takes the passed sequence and replace active sequence with it and repaints
 	 * Gui to show the new sequence
 	 * 
 	 * @param the
 	 *            sequence to be pasted into the sequencer
 	 */
+	@Override
 	public void pastePattern(Pattern pattern) {
 		seq.pastePattern(activePattern, pattern);
 		gui.repaintSequencer(seq.getPattern(activePattern));
@@ -548,45 +318,12 @@ public class StandardSequencerController {
 	}
 
 	/**
-	 * Gets the sequencer ready for playback i.e. Collects needed info from gui and
-	 * then disables the Gui
-	 */
-	public void playMode() {
-		setPartNotes();
-		seq.initPlayVariables();
-		gui.disableGui();
-	}
-
-	/**
-	 * Sets the sequencer in stopMode i.e. enables Gui again and readies the
-	 * sequencer for next time it has to go int playMode
-	 */
-	public void stopMode() {
-		seq.stopPlayback(activePattern);
-		gui.enableGui();
-		tickCounter = 0;
-		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
-	}
-
-	/**
-	 * Step forward in the tickGrid, resets when partNotesThreshhold is reached
-	 * Every time tickCounter reaches tick nr 1 playStep() is invoked
-	 */
-	public void tick() {
-		tickCounter++;
-		if (tickCounter == 1) {
-			playStep();
-		}
-		if (tickCounter == partNotesThreshhold) {
-			tickCounter = 0;
-		}
-	}
-
-	/**
 	 * This method tells the model to play a note and the Gui to mark the played
-	 * note in the stepsequencer. If last note in the pattern is reached the sequencer
-	 * will reset and start from the beginning after the last note is played
+	 * note in the stepsequencer. If last note in the pattern is reached the
+	 * sequencer will reset and start from the beginning after the last note is
+	 * played
 	 */
+	@Override
 	public void playStep() {
 		seq.playStep(activePattern);
 		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
@@ -620,64 +357,4 @@ public class StandardSequencerController {
 	public void setKey(NoteGenerator key) {
 		seq.setKey(key);
 	}
-
-	/**
-	 * @return an array containg info of the availeble mididevices
-	 */
-	public Info[] getAvailibleMidiDevices() {
-		return seq.getAvailibleMidiDevices();
-	}
-
-	/**
-	 * Sets the partNoteThreshhold
-	 */
-	public void setPartNotes() {
-		switch (seq.getPartNotes(activePattern)) {
-		case "1 bar":
-			partNotesThreshhold = 64;
-			break;
-		case "1/2":
-			partNotesThreshhold = 32;
-			break;
-		case "1/4":
-			partNotesThreshhold = 16;
-			break;
-		case "1/8":
-			partNotesThreshhold = 8;
-			break;
-		case "1/16":
-			partNotesThreshhold = 4;
-			break;
-		}
-	}
-
-	public Note[] getPattern() {
-		return seq.getPattern(activePattern);
-	}
-
-	public void setPattern(Note[] pattern) {
-		seq.setPattern(pattern, activePattern);
-	}
-
-	public JButton getCopyButton() {
-		return gui.getCopyButton();
-	}
-
-	public JButton getPasteButton() {
-		return gui.getPasteButton();
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-		gui.setTitle(title);
-	}
-
-	public String getTitle() {
-		return gui.getTitle();
-	}
-
-	public SoloMute getSoloMute() {
-		return seq.getSoloMute();
-	}
-
 }

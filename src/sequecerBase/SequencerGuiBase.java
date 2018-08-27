@@ -25,16 +25,11 @@ import arrangement.Pattern;
 import note.Note;
 import sequecerBase.SoloMute;
 
-public class SequencerGuiBase extends JFrame {
+public class SequencerGuiBase {
 
 	/**
 	 * The graphic user interface for the standard sequencers.
 	 */
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5048555444576060385L;
 
 	// Create colorscheme
 	private Color backGroundColor = new Color(142, 175, 206);
@@ -111,8 +106,7 @@ public class SequencerGuiBase extends JFrame {
 
 	private JPanel generatorAlgorithmPanel = new JPanel();
 	private JLabel generatorAlgorithmText = new JLabel("Gen Algorithm:");
-	private String[] genAlgorithmStrings = { "Rnd notes", "Rnd notes, no dupl in row", "Rnd notes and On/Hold/Off",
-			"Rnd notes, no dupl in row, On/Hold/Off" };
+	private String[] genAlgorithmStrings;
 	private JComboBox<String> generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
 
 	// Create components for nudgePanel

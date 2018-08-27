@@ -1,4 +1,4 @@
-package sequencer;
+package standardSequencer;
 
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
@@ -9,8 +9,9 @@ import arrangement.Pattern;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
+import sequecerBase.SoloMute;
 
-public class SequencerController {
+public class StandardSequencerController {
 
 	/**
 	 * Controller for the standard sequencer. Up to 8 instances of this can be
@@ -22,11 +23,11 @@ public class SequencerController {
 	/**
 	 * Contains most of the logic and is the heart of the sequencer
 	 */
-	private SequencerModel seq;
+	private StandardSequencerModel seq;
 	/**
 	 * Contains the graphical user interface for the sequencer
 	 */
-	private SequencerGui gui;
+	private StandardSequencerGui gui;
 	/**
 	 * Stores the title/namename of the sequencer
 	 */
@@ -60,12 +61,12 @@ public class SequencerController {
 	 *            will be displayed in the top of the frame, the Master Module and
 	 *            the arrangeWindow
 	 */
-	public SequencerController(NoteGenerator key, String title) {
+	public StandardSequencerController(NoteGenerator key, String title) {
 		this.title = title;
 
-		seq = new SequencerModel(key);
+		seq = new StandardSequencerModel(key);
 
-		gui = new SequencerGui(seq.getAvailibleMidiDevices(), title);
+		gui = new StandardSequencerGui(seq.getAvailibleMidiDevices(), title);
 
 		// clock = new Timer(500, this);
 		//

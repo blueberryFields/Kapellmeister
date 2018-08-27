@@ -1,4 +1,4 @@
-package sequencer;
+package standardSequencer;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
@@ -11,13 +11,14 @@ import arrangement.Pattern;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
+import sequecerBase.SoloMute;
 
 /**
  * The heart, the core and logic of the standard sequencer. This class contains
  * the different patterns, the connection the the mididevice, the methods for
  * playing notes and so on.
  */
-public class SequencerModel {
+public class StandardSequencerModel {
 
 	/**
 	 * The mididevice to connect to
@@ -85,7 +86,7 @@ public class SequencerModel {
 	 *            the tempo in which the pattern of notes will be played back, can
 	 *            only be reset from the masterModule
 	 */
-	public SequencerModel(NoteGenerator key) {
+	public StandardSequencerModel(NoteGenerator key) {
 		infos = MidiSystem.getMidiDeviceInfo();
 		this.key = key;
 		initSeq();

@@ -5,8 +5,8 @@ import javax.swing.JButton;
 import arrangement.Scene;
 import arrangement.Pattern;
 import note.NoteGenerator;
-import sequencer.SequencerController;
-import sequencer.SoloMute;
+import sequecerBase.SoloMute;
+import standardSequencer.StandardSequencerController;
 
 /**
  * The heart of the whole application, the core and most of the logic for the
@@ -18,7 +18,7 @@ public class MstrMoModel {
 	/**
 	 * Contains up to 8 instances of sequencers
 	 */
-	private SequencerController[] sequencerArray = new SequencerController[8];
+	private StandardSequencerController[] sequencerArray = new StandardSequencerController[8];
 	/**
 	 * Contains the 8 available scenes in wich you can store information on which
 	 * pattern to play in which scene
@@ -138,7 +138,7 @@ public class MstrMoModel {
 	 *            a String containing the title of the new Sequencer
 	 */
 	public void createStandardSequencer(NoteGenerator key, int index, String title) {
-		sequencerArray[index] = new SequencerController(key, title);
+		sequencerArray[index] = new StandardSequencerController(key, title);
 	}
 
 	/**
@@ -389,7 +389,7 @@ public class MstrMoModel {
 		return sequencerArray[index].getTitle();
 	}
 
-	public SequencerController[] getSeqArr() {
+	public StandardSequencerController[] getSeqArr() {
 		return sequencerArray;
 	}
 

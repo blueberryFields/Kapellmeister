@@ -1,4 +1,4 @@
-package sequencer;
+package standardSequencer;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,8 +23,9 @@ import javax.swing.SwingConstants;
 
 import arrangement.Pattern;
 import note.Note;
+import sequecerBase.SoloMute;
 
-public class SequencerGui extends JFrame {
+public class StandardSequencerGui extends JFrame {
 
 	/**
 	 * The graphic user interface for the standard sequencers.
@@ -143,7 +144,7 @@ public class SequencerGui extends JFrame {
 	 *            the title of the sequencer/instrument to be displayed in the top
 	 *            of the frame
 	 */
-	public SequencerGui(Info[] infos, String title) {
+	public StandardSequencerGui(Info[] infos, String title) {
 		super(title);
 
 		// Set colors for panels n the like

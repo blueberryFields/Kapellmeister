@@ -50,6 +50,7 @@ public class StandardSequencerController extends SequencerControllerBase {
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
 		gui.getRenamePattern().addActionListener(e -> renamePattern());
 		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
+		addActionListenersToPatternChoosers();
 		
 		// Add ActionListeners to Jspinners
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
@@ -72,6 +73,8 @@ public class StandardSequencerController extends SequencerControllerBase {
 	// The following methods just add ActionListeners to different buttons n stuff
 	// as their titles says
 
+	
+	
 	private void addActionListenersToPatternChoosers() {
 		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
 			int index = i;

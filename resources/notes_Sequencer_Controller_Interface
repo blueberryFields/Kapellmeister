@@ -1,0 +1,15 @@
+Sequencer Controller INTERFACE
+
+stopMode()
+
+playMode()
+
+pastePattern()
+
+copyPattern()
+
+printPattern()
+
+playStep()
+
+tick()

@@ -20,16 +20,16 @@ Copy & paste sequences ✓
 
 solo mute works a little wierd, if you solo an instrument and then unmute annother, maybe it should also be soloed otherwise the first one should be unsoloed ✓
 
+comments  ✓
+
+paste() does it really paste a unique pattern? what hapen if you paste the same pattern to different places/patterns/sequencers??? ✓
+
 Save & Load
 
 Refresh mididevices
-
-comments
 
 refactoring
 
 remake playStep()
 
 divide sequencer-classes to base-class and special sub-classes for the standard sequencer and drum/rythm sequencer
-
-paste() does it really paste a unique pattern? what hapen if you paste the same pattern to different places/patterns/sequencers???

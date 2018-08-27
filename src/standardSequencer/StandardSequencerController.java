@@ -22,7 +22,7 @@ public class StandardSequencerController extends SequencerControllerBase {
 	 */
 
 	/**
-	 * Konstruktor
+	 * Constructor
 	 * 
 	 * @param key
 	 *            the musical key from which the notes in the noteGenerator will be
@@ -65,6 +65,18 @@ public class StandardSequencerController extends SequencerControllerBase {
 
 	// The following methods just add ActionListeners to different buttons n stuff
 	// as their titles says
+
+	private void addActionListenersToPatternChoosers() {
+		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
+			int index = i;
+			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
+		}
+
+	}
+
+	private void addChangeListenerToNrOfStepsChooser() {
+		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
+	}
 
 	private void addActionListenersToNoteChooser() {
 		for (int i = 0; i < gui.getNoteChooserArray().length; i++) {
@@ -289,6 +301,18 @@ public class StandardSequencerController extends SequencerControllerBase {
 	}
 
 	/**
+	 * Add or remove steps from the pattern and then repaint sequencerGui
+	 * accordingly
+	 * 
+	 * @param the
+	 *            new number of steps
+	 */
+	private void changeNrOfSteps(int nrOfSteps) {
+		seq.changeNrOfSteps(nrOfSteps, activePattern);
+		gui.repaintSequencer(seq.getPattern(activePattern));
+	}
+
+	/**
 	 * Tells the sequencer to generate a new pattern based on info and choices
 	 * collected in Gui
 	 */
@@ -301,13 +325,43 @@ public class StandardSequencerController extends SequencerControllerBase {
 	}
 
 	/**
+	 * Change active pattern
+	 * 
+	 * @param pattern
+	 *            the new pattern to be set to active
+	 */
+	public void choosePattern(int pattern) {
+		if (this.activePattern != pattern) {
+			gui.disablePatternChooser(activePattern);
+			gui.enablePatternChooser(pattern);
+		}
+		if (seq.getRunning()) {
+			seq.killLastNote(activePattern);
+		}
+		this.activePattern = pattern;
+		setPartNotes();
+		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(pattern));
+		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(pattern));
+		gui.repaintSequencer(seq.getPattern(pattern));
+		gui.repaint();
+	}
+
+	/**
+	 * 
+	 * 
+	 * @return a unique copy of the active pattern
+	 */
+	public Pattern copyPattern() {
+		return seq.copyPattern(activePattern);
+	}
+
+	/**
 	 * Takes the passed sequence and replace active sequence with it and repaints
 	 * Gui to show the new sequence
 	 * 
 	 * @param the
 	 *            sequence to be pasted into the sequencer
 	 */
-	@Override
 	public void pastePattern(Pattern pattern) {
 		seq.pastePattern(activePattern, pattern);
 		gui.repaintSequencer(seq.getPattern(activePattern));
@@ -318,12 +372,26 @@ public class StandardSequencerController extends SequencerControllerBase {
 	}
 
 	/**
+	 * Step forward in the tickGrid, resets when partNotesThreshhold is reached
+	 * Every time tickCounter reaches tick nr 1 playStep() is invoked
+	 */
+	public void tick() {
+		tickCounter++;
+		if (tickCounter == 1) {
+
+			playStep();
+		}
+		if (tickCounter == partNotesThreshhold) {
+			tickCounter = 0;
+		}
+	}
+
+	/**
 	 * This method tells the model to play a note and the Gui to mark the played
 	 * note in the stepsequencer. If last note in the pattern is reached the
 	 * sequencer will reset and start from the beginning after the last note is
 	 * played
 	 */
-	@Override
 	public void playStep() {
 		seq.playStep(activePattern);
 		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));

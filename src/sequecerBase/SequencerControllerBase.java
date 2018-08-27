@@ -46,7 +46,7 @@ public class SequencerControllerBase {
 	protected int partNotesThreshhold;
 
 	/**
-	 * Konstruktor
+	 * Constructor
 	 * 
 	 * @param key
 	 *            the musical key from which the notes in the noteGenerator will be
@@ -73,7 +73,7 @@ public class SequencerControllerBase {
 		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
 
 		// Add ActionListeners to Jspinners
-		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
+
 		// addActionListenersToPatternChoosers();
 		// gui.getPartNotesChooser().addChangeListener(e ->
 		// changePartNotes(gui.getPartnotes()));
@@ -97,13 +97,6 @@ public class SequencerControllerBase {
 	// The following methods just add ActionListeners to different buttons n stuff
 	// as their titles says
 
-	private void addActionListenersToPatternChoosers() {
-		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
-			int index = i;
-			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
-		}
-
-	}
 
 	private void addActionListenerToDeviceChooser() {
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
@@ -133,28 +126,6 @@ public class SequencerControllerBase {
 	 */
 	public String[] getPatternNames() {
 		return seq.getPatternNames();
-	}
-
-	/**
-	 * Change active pattern
-	 * 
-	 * @param pattern
-	 *            the new pattern to be set to active
-	 */
-	public void choosePattern(int pattern) {
-		if (this.activePattern != pattern) {
-			gui.disablePatternChooser(activePattern);
-			gui.enablePatternChooser(pattern);
-		}
-		if (seq.getRunning()) {
-			seq.killLastNote(activePattern);
-		}
-		this.activePattern = pattern;
-		setPartNotes();
-		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(pattern));
-		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(pattern));
-		gui.repaintSequencer(seq.getPattern(pattern));
-		gui.repaint();
 	}
 
 	/**
@@ -263,17 +234,6 @@ public class SequencerControllerBase {
 		}
 	}
 
-	/**
-	 * Add or remove steps from the pattern and then repaint sequencerGui
-	 * accordingly
-	 * 
-	 * @param the
-	 *            new number of steps
-	 */
-	private void changeNrOfSteps(int nrOfSteps) {
-		seq.changeNrOfSteps(nrOfSteps, activePattern);
-		gui.repaintSequencer(seq.getPattern(activePattern));
-	}
 
 	/**
 	 * Sets which of the available mididevices to send notes to
@@ -281,111 +241,6 @@ public class SequencerControllerBase {
 	private void chooseMidiDevice() {
 		seq.chooseMidiDevice(gui.getChoosenDevice());
 	}
-
-	// /**
-	/**
-	 * 
-	 * 
-	 * @return a unique copy of the active pattern
-	 */
-	public Pattern copyPattern() {
-		return seq.copyPattern(activePattern);
-	}
-
-	/**
-	 * Takes the passed sequence and replace active sequence with it and repaints
-	 * Gui to show the new sequence
-	 * 
-	 * @param the
-	 *            sequence to be pasted into the sequencer
-	 */
-	public void pastePattern(Pattern pattern) {
-		seq.pastePattern(activePattern, pattern);
-		gui.repaintSequencer(seq.getPattern(activePattern));
-		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activePattern));
-		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(activePattern));
-		gui.getPatterChoosers()[activePattern].setText(seq.getPatternName(activePattern));
-		// checkHold();
-	}
-
-	 /**
-	 * Gets the sequencer ready for playback i.e. Collects needed info from gui
-	 and
-	 * then disables the Gui
-	 */
-	 public void playMode() {
-	 setPartNotes();
-	 seq.initPlayVariables();
-	 gui.disableGui();
-	 }
-	
-	 /**
-	 * Sets the sequencer in stopMode i.e. enables Gui again and readies the
-	 * sequencer for next time it has to go int playMode
-	 */
-	 public void stopMode() {
-	 seq.stopPlayback(activePattern);
-	 gui.enableGui();
-	 tickCounter = 0;
-	 gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(),
-	 seq.getPattern(activePattern));
-	 }
-
-	/**
-	 * Step forward in the tickGrid, resets when partNotesThreshhold is reached
-	 * Every time tickCounter reaches tick nr 1 playStep() is invoked
-	 */
-	public void tick() {
-		tickCounter++;
-		if (tickCounter == 1) {
-
-			playStep();
-		}
-		if (tickCounter == partNotesThreshhold) {
-			tickCounter = 0;
-		}
-	}
-
-	/**
-	 * This method tells the model to play a note and the Gui to mark the played
-	 * note in the stepsequencer. If last note in the pattern is reached the
-	 * sequencer will reset and start from the beginning after the last note is
-	 * played
-	 */
-	public void playStep() {
-		seq.playStep(activePattern);
-		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
-		int tempStep = seq.getCurrentStep();
-		tempStep++;
-		if (tempStep == seq.getPattern(activePattern).length) {
-			tempStep = 0;
-		}
-		seq.setCurrentStep(tempStep++);
-	}
-
-	// /**
-	// * Prints choosen pattern to sysout. Good for doubleChecking Gui so it
-	// reflects
-	// * what notes there really is for example
-	// *
-	// * @param the
-	// * pattern choosen to be printed
-	// */
-	// public void printPattern(int pattern) {
-	// String s = "";
-	// for (int i = 0; i < seq.getPattern(pattern).length; i++) {
-	// s += seq.getSingleStep(pattern, i).toString();
-	// }
-	// System.out.println(s);
-	// }
-
-	// /**
-	// * @param key
-	// * the musical key from wich note will be generated
-	// */
-	// public void setKey(NoteGenerator key) {
-	// seq.setKey(key);
-	// }
 
 	/**
 	 * @return an array containg info of the availeble mididevices

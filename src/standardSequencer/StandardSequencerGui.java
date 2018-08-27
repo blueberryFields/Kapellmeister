@@ -23,36 +23,35 @@ import javax.swing.SwingConstants;
 
 import arrangement.Pattern;
 import note.Note;
+import sequecerBase.SequencerGuiBase;
 import sequecerBase.SoloMute;
 
-public class StandardSequencerGui extends JFrame {
+public class StandardSequencerGui extends SequencerGuiBase {
 
 	/**
 	 * The graphic user interface for the standard sequencers.
 	 */
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5048555444576060385L;
-
-	// Create colorscheme
-	private Color backGroundColor = new Color(142, 175, 206);
-	private Color disabledStepColor = new Color(76, 94, 112);
-	private Color enabledStepColor = new Color(193, 218, 242);
-	private Color activeStepColor = Color.RED;
-	private Color muteColor = Color.BLUE;
-	private Color soloColor = Color.YELLOW;
-	private Color enabledText = Color.BLACK;
-	private Color disabledText = Color.GRAY;
-
-	// Create dimensions
-	private Dimension buttonDimSmall = new Dimension(55, 25);
-	private Dimension buttonDimLarge = new Dimension(75, 25);
-	private Dimension veloChooserDim = new Dimension(50, 25);
-	private Dimension noteChooserDim = new Dimension(50, 25);
-	private Dimension soloMuteBarDim = new Dimension(55, 20);
-	private Dimension patternChooserDim = new Dimension(110, 25);
+//	// Create colorscheme
+//	private Color backGroundColor = new Color(142, 175, 206);
+//	private Color disabledStepColor = new Color(76, 94, 112);
+//	private Color enabledStepColor = new Color(193, 218, 242);
+//	private Color activeStepColor = Color.RED;
+//	private Color muteColor = Color.BLUE;
+//	private Color soloColor = Color.YELLOW;
+//	private Color enabledText = Color.BLACK;
+//	private Color disabledText = Color.GRAY;
+//
+//	// Create dimensions
+//	private Dimension buttonDimSmall = new Dimension(55, 25);
+//	private Dimension buttonDimLarge = new Dimension(75, 25);
+//	private Dimension veloChooserDim = new Dimension(50, 25);
+//	private Dimension noteChooserDim = new Dimension(50, 25);
+//	private Dimension soloMuteBarDim = new Dimension(55, 20);
+//	private Dimension patternChooserDim = new Dimension(110, 25);
+//
+//	// Create JFrame
+//	protected JFrame frame;
 
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
@@ -84,9 +83,9 @@ public class StandardSequencerGui extends JFrame {
 	private JLabel soloMuteBar = new JLabel();
 
 	// Create components for generatorpanel
-	private JPanel generatorPanel = new JPanel();
-	private JPanel generatePanel = new JPanel();
-	private JButton generateButton = new JButton("Generate");
+//	private JPanel generatorPanel = new JPanel();
+//	private JPanel generatePanel = new JPanel();
+//	private JButton generateButton = new JButton("Generate");
 	private JPanel octaveRangePanel = new JPanel();
 	private JLabel octaveRangeFromText = new JLabel("Octave-range, from:");
 	private JLabel octaveRangeToText = new JLabel("to:");
@@ -95,25 +94,24 @@ public class StandardSequencerGui extends JFrame {
 	private JSpinner octaveLowChooser = new JSpinner(octaveLowModel);
 	private JSpinner octaveHighChooser = new JSpinner(octaveHighModel);
 
-	// Create components for the random velocity panel
-	private JPanel rndVeloPanel = new JPanel();
-	private JPanel rndVeloCheckPanel = new JPanel();
-	private JPanel veloLowPanel = new JPanel();
-	private JPanel veloHighPanel = new JPanel();
-	private JLabel rndVeloText = new JLabel("Random velocity:");
-	private JCheckBox rndVeloCheckBox = new JCheckBox();
-	private JLabel fromText = new JLabel("from:");
-	private JLabel toText = new JLabel("to:");
-	private SpinnerModel veloLowModel = new SpinnerNumberModel(70, 0, 127, 1);
-	private JSpinner veloLowChooser = new JSpinner(veloLowModel);
-	private SpinnerModel veloHighModel = new SpinnerNumberModel(110, 0, 127, 1);
-	private JSpinner veloHighChooser = new JSpinner(veloHighModel);
+//	// Create components for the random velocity panel
+//	private JPanel rndVeloPanel = new JPanel();
+//	private JPanel rndVeloCheckPanel = new JPanel();
+//	private JPanel veloLowPanel = new JPanel();
+//	private JPanel veloHighPanel = new JPanel();
+//	private JLabel rndVeloText = new JLabel("Random velocity:");
+//	private JCheckBox rndVeloCheckBox = new JCheckBox();
+//	private JLabel fromText = new JLabel("from:");
+//	private JLabel toText = new JLabel("to:");
+//	private SpinnerModel veloLowModel = new SpinnerNumberModel(70, 0, 127, 1);
+//	private JSpinner veloLowChooser = new JSpinner(veloLowModel);
+//	private SpinnerModel veloHighModel = new SpinnerNumberModel(110, 0, 127, 1);
+//	private JSpinner veloHighChooser = new JSpinner(veloHighModel);
 
 	private JPanel generatorAlgorithmPanel = new JPanel();
 	private JLabel generatorAlgorithmText = new JLabel("Gen Algorithm:");
-	private String[] genAlgorithmStrings = { "Rnd notes", "Rnd notes, no dupl in row", "Rnd notes and On/Hold/Off",
-			"Rnd notes, no dupl in row, On/Hold/Off" };
-	private JComboBox<String> generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
+	private String[] genAlgorithmStrings;
+	private JComboBox<String> generatorAlgorithmChooser;
 
 	// Create components for nudgePanel
 	private JPanel nudgePanel = new JPanel();
@@ -145,7 +143,10 @@ public class StandardSequencerGui extends JFrame {
 	 *            of the frame
 	 */
 	public StandardSequencerGui(Info[] infos, String title) {
-		super(title);
+		super(infos, title);
+		
+		genAlgorithmStrings = {};
+		generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
 
 		// Set colors for panels n the like
 		rndVeloCheckPanel.setBackground(backGroundColor);
@@ -162,7 +163,7 @@ public class StandardSequencerGui extends JFrame {
 		soloMuteBar.setBackground(backGroundColor);
 
 		// Set BackgroundColor for frame
-		getContentPane().setBackground(backGroundColor);
+		frame.getContentPane().setBackground(backGroundColor);
 
 		// Add stuff to channelPanel
 		// setAvailibleDevices(infos);
@@ -324,38 +325,62 @@ public class StandardSequencerGui extends JFrame {
 		patternSettingsPanel.add(renamePattern);
 
 		// configure and add stuff to frame
-		setLayout(new GridBagLayout());
+		frame.setLayout(new GridBagLayout());
 		GridBagConstraints frameGbc = new GridBagConstraints();
 		frameGbc.insets = new Insets(5, 5, 5, 5);
 		frameGbc.gridx = 0;
 		frameGbc.gridy = 0;
-		add(channelPanel, frameGbc);
+		frame.add(channelPanel, frameGbc);
 
 		frameGbc.gridy = 1;
-		add(generatePanel, frameGbc);
+		frame.add(generatePanel, frameGbc);
 
 		frameGbc.gridy = 2;
-		add(rndVeloPanel, frameGbc);
+		frame.add(rndVeloPanel, frameGbc);
 
 		frameGbc.gridy = 3;
-		add(generatorAlgorithmPanel, frameGbc);
+		frame.add(generatorAlgorithmPanel, frameGbc);
 
 		frameGbc.gridy = 4;
-		add(nudgePanel, frameGbc);
+		frame.add(nudgePanel, frameGbc);
 
 		frameGbc.gridy = 5;
-		add(stepPanel, frameGbc);
+		frame.add(stepPanel, frameGbc);
 
 		frameGbc.gridy = 6;
-		add(patternPanel, frameGbc);
+		frame.add(patternPanel, frameGbc);
 
 		frameGbc.gridy = 7;
-		add(patternSettingsPanel, frameGbc);
+		frame.add(patternSettingsPanel, frameGbc);
 
-		setResizable(false);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		pack();
-		setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
+	}
+
+	/**
+	 * Sets the title of the frame
+	 * 
+	 * @param title
+	 *            a String containing the new title
+	 */
+	public void setTitle(String title) {
+		frame.setTitle(title);
+	}
+
+	/**
+	 * Calls repaint for the JFrame
+	 */
+	public void repaint() {
+		frame.repaint();
+	}
+
+	/**
+	 * Calls dispose for the JFrame
+	 */
+	public void dispose() {
+		frame.dispose();
 	}
 
 	/**
@@ -597,11 +622,11 @@ public class StandardSequencerGui extends JFrame {
 	 * Sets the frame to visible if its not.
 	 */
 	public void open() {
-		setVisible(true);
+		frame.setVisible(true);
 	}
 
-	//The rest here is mostly basic getters and setters
-	
+	// The rest here is mostly basic getters and setters
+
 	public JSpinner[] getNoteChooserArray() {
 		return noteChooser;
 	}

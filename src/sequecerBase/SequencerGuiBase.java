@@ -25,7 +25,7 @@ import arrangement.Pattern;
 import note.Note;
 import sequecerBase.SoloMute;
 
-public class SequencerGuiBase extends JFrame {
+public class SequencerGuiBase {
 
 	/**
 	 * The graphic user interface for the standard sequencers.
@@ -49,8 +49,9 @@ public class SequencerGuiBase extends JFrame {
 	private Dimension soloMuteBarDim = new Dimension(55, 20);
 	private Dimension patternChooserDim = new Dimension(110, 25);
 
-	
-	
+	// Create JFrame
+	protected JFrame frame;
+
 	// Create components for steppanel
 	private JPanel stepPanel = new JPanel();
 	private JPanel[] singleSteps = new JPanel[16];
@@ -141,7 +142,7 @@ public class SequencerGuiBase extends JFrame {
 	 *            of the frame
 	 */
 	public SequencerGuiBase(Info[] infos, String title) {
-		super(title);
+		frame = new JFrame(title);
 
 		// Set colors for panels n the like
 		rndVeloCheckPanel.setBackground(backGroundColor);
@@ -158,7 +159,7 @@ public class SequencerGuiBase extends JFrame {
 		soloMuteBar.setBackground(backGroundColor);
 
 		// Set BackgroundColor for frame
-		getContentPane().setBackground(backGroundColor);
+		frame.getContentPane().setBackground(backGroundColor);
 
 		// Add stuff to channelPanel
 		// setAvailibleDevices(infos);
@@ -320,38 +321,62 @@ public class SequencerGuiBase extends JFrame {
 		patternSettingsPanel.add(renamePattern);
 
 		// configure and add stuff to frame
-		setLayout(new GridBagLayout());
+		frame.setLayout(new GridBagLayout());
 		GridBagConstraints frameGbc = new GridBagConstraints();
 		frameGbc.insets = new Insets(5, 5, 5, 5);
 		frameGbc.gridx = 0;
 		frameGbc.gridy = 0;
-		add(channelPanel, frameGbc);
+		frame.add(channelPanel, frameGbc);
 
 		frameGbc.gridy = 1;
-		add(generatePanel, frameGbc);
+		frame.add(generatePanel, frameGbc);
 
 		frameGbc.gridy = 2;
-		add(rndVeloPanel, frameGbc);
+		frame.add(rndVeloPanel, frameGbc);
 
 		frameGbc.gridy = 3;
-		add(generatorAlgorithmPanel, frameGbc);
+		frame.add(generatorAlgorithmPanel, frameGbc);
 
 		frameGbc.gridy = 4;
-		add(nudgePanel, frameGbc);
+		frame.add(nudgePanel, frameGbc);
 
 		frameGbc.gridy = 5;
-		add(stepPanel, frameGbc);
+		frame.add(stepPanel, frameGbc);
 
 		frameGbc.gridy = 6;
-		add(patternPanel, frameGbc);
+		frame.add(patternPanel, frameGbc);
 
 		frameGbc.gridy = 7;
-		add(patternSettingsPanel, frameGbc);
+		frame.add(patternSettingsPanel, frameGbc);
 
-		setResizable(false);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		pack();
-		setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
+	}
+
+	/**
+	 * Sets the title of the frame
+	 * 
+	 * @param title
+	 *            a String containing the new title
+	 */
+	public void setTitle(String title) {
+		frame.setTitle(title);
+	}
+
+	/**
+	 * Calls repaint for the JFrame
+	 */
+	public void repaint() {
+		frame.repaint();
+	}
+
+	/**
+	 * Calls dispose for the JFrame
+	 */
+	public void dispose() {
+		frame.dispose();
 	}
 
 	/**
@@ -593,11 +618,11 @@ public class SequencerGuiBase extends JFrame {
 	 * Sets the frame to visible if its not.
 	 */
 	public void open() {
-		setVisible(true);
+		frame.setVisible(true);
 	}
 
-	//The rest here is mostly basic getters and setters
-	
+	// The rest here is mostly basic getters and setters
+
 	public JSpinner[] getNoteChooserArray() {
 		return noteChooser;
 	}

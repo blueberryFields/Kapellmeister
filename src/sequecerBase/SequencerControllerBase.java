@@ -2,13 +2,8 @@ package sequecerBase;
 
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-import arrangement.Pattern;
 import note.Note;
-import note.NoteGenerator;
-import note.NoteOn;
 import standardSequencer.StandardSequencerGui;
 import standardSequencer.StandardSequencerModel;
 
@@ -21,15 +16,14 @@ public class SequencerControllerBase {
 	/**
 	 * Contains most of the logic and is the heart of the sequencer
 	 */
-	protected SequencerModelBase seq;
+	protected StandardSequencerModel seq;
 	/**
 	 * Contains the graphical user interface for the sequencer
 	 */
-	protected SequencerGuiBase gui;
+	protected StandardSequencerGui gui;
 	/**
 	 * Stores the title/namename of the sequencer
 	 */
-	@SuppressWarnings("unused")
 	protected String title;
 	/**
 	 * Keeps track of which pattern is currently the active one
@@ -65,25 +59,23 @@ public class SequencerControllerBase {
 		// setPartNotes();
 
 		// Add actionListeners to buttons
-		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
+		
 		// gui.getGenerateButton().addActionListener(e -> generatePattern());
 		// gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		// gui.getNudgeRight().addActionListener(e -> nudgeRight());
-		gui.getRenamePattern().addActionListener(e -> renamePattern());
-		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
+		
 
 		// Add ActionListeners to Jspinners
 
 		// addActionListenersToPatternChoosers();
 		// gui.getPartNotesChooser().addChangeListener(e ->
 		// changePartNotes(gui.getPartnotes()));
-		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
-		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
+		
 		// gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
 		// gui.getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
 
 		// Add ActionListeners to ComboBox
-		addActionListenerToDeviceChooser();
+		//addActionListenerToDeviceChooser();
 
 		// Add ActionListeners to singleSteps
 		// addActionListenersToNoteChooser();
@@ -98,7 +90,7 @@ public class SequencerControllerBase {
 	// as their titles says
 
 
-	private void addActionListenerToDeviceChooser() {
+	protected void addActionListenerToDeviceChooser() {
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 	}
 
@@ -107,7 +99,7 @@ public class SequencerControllerBase {
 	}
 
 	// WORK IN PROGRESS!!!
-	private void refreshMidiDeviceList() {
+	protected void refreshMidiDeviceList() {
 		// //removeActionListenerFromDeviceChooser();
 		// seq.refreshMidiDeviceList();
 		// gui.setAvailibleDevices(seq.getAvailibleMidiDevices());
@@ -117,7 +109,7 @@ public class SequencerControllerBase {
 	/**
 	 * Makes a popup appear where you can type in a new name for the active pattern
 	 */
-	private void renamePattern() {
+	protected void renamePattern() {
 		seq.setPatternName(activePattern, gui.renamePattern(activePattern));
 	}
 
@@ -149,7 +141,7 @@ public class SequencerControllerBase {
 	/**
 	 * Set the channel on which to send midinotes to the reciever
 	 */
-	private void chooseMidiChannel() {
+	protected void chooseMidiChannel() {
 		seq.setMidiChannel((int) gui.getMidiChannelChooser().getSelectedItem() - 1);
 	}
 
@@ -218,7 +210,7 @@ public class SequencerControllerBase {
 	 * Check so the maximum value in the random velocity generator cant be lower
 	 * than the minimum value
 	 */
-	private void changeVeloHigh() {
+	protected void changeVeloHigh() {
 		if (gui.getVeloHighChooserValue() < gui.getVeloLowChooserValue()) {
 			gui.setVeloHighChooserValue(gui.getVeloLowChooserValue());
 		}
@@ -228,7 +220,7 @@ public class SequencerControllerBase {
 	 * Check so the minimum value in the random velocity generator cant be higher
 	 * than the maximum value
 	 */
-	private void changeVeloLow() {
+	protected void changeVeloLow() {
 		if (gui.getVeloLowChooserValue() > gui.getVeloHighChooserValue()) {
 			gui.setVeloLowChooserValue(gui.getVeloHighChooserValue());
 		}

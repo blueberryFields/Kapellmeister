@@ -2,9 +2,10 @@ package masterModule;
 
 import javax.swing.JButton;
 
-import arrangement.Scene;
 import arrangement.Pattern;
+import arrangement.Scene;
 import note.NoteGenerator;
+import sequecerBase.SequencerControllerBase;
 import sequecerBase.SoloMute;
 import standardSequencer.StandardSequencerController;
 

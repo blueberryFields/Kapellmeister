@@ -1,30 +1,24 @@
 package standardSequencer;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.sound.midi.MidiDevice.Info;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
 
-import arrangement.Pattern;
 import note.Note;
 import sequecerBase.SequencerGuiBase;
-import sequecerBase.SoloMute;
 
 public class StandardSequencerGui extends SequencerGuiBase {
 
@@ -49,17 +43,6 @@ public class StandardSequencerGui extends SequencerGuiBase {
 	private SpinnerModel[] velocityModel = new SpinnerNumberModel[16];
 	private JSpinner velocityChooser[] = new JSpinner[16];
 	private JButton[] noteOnButton = new JButton[16];
-
-	// Create components for channelpanel
-	private JPanel channelPanel = new JPanel();
-	private String[] availibleDevices;
-	private JComboBox<String> deviceChooser;
-	private DefaultComboBoxModel<String> deviceChooserModel;
-	private JLabel channelText = new JLabel("ch:");
-	private Integer[] midiChannels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-	private JComboBox<Integer> midiChannelChooser = new JComboBox<Integer>(midiChannels);
-	private JButton refreshButton = new JButton("Refresh");
-	private JLabel soloMuteBar = new JLabel();
 
 	// Create components for generatorpanel
 	private JPanel octaveRangePanel = new JPanel();
@@ -91,7 +74,9 @@ public class StandardSequencerGui extends SequencerGuiBase {
 		genAlgorithmStrings = new String[] { "Rnd notes", "Rnd notes, no dupl in row", "Rnd notes and On/Hold/Off",
 				"Rnd notes, no dupl in row, On/Hold/Off" };
 		generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
-
+		generatorAlgorithmPanel.add(generatorAlgorithmText);
+		generatorAlgorithmPanel.add(generatorAlgorithmChooser);
+		
 		// Set colors for panels n the like
 		nudgePanel.setBackground(backGroundColor);
 		stepPanel.setBackground(backGroundColor);
@@ -427,4 +412,37 @@ public class StandardSequencerGui extends SequencerGuiBase {
 	public String getNoteOnButtonText(int index) {
 		return noteOnButton[index].getText();
 	}
+
+	public JButton getNudgeLeft() {
+		return nudgeLeft;
+	}
+
+	public JButton getNudgeRight() {
+		return nudgeRight;
+	}
+
+	public JSpinner getOctaveLowChooser() {
+		return octaveLowChooser;
+	}
+
+	public JSpinner getOctaveHighChooser() {
+		return octaveHighChooser;
+	}
+
+	public int getOctaveLow() {
+		return (int) octaveLowChooser.getValue();
+	}
+
+	public int getOctaveHigh() {
+		return (int) octaveHighChooser.getValue();
+	}
+
+	public void setOctaveLow(int value) {
+		octaveLowChooser.setValue(value);
+	}
+
+	public void setOctaveHigh(int value) {
+		octaveHighChooser.setValue(value);
+	}
+
 }

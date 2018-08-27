@@ -48,12 +48,18 @@ public class StandardSequencerController extends SequencerControllerBase {
 		gui.getGenerateButton().addActionListener(e -> generatePattern());
 		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
 		gui.getNudgeRight().addActionListener(e -> nudgeRight());
-
+		gui.getRenamePattern().addActionListener(e -> renamePattern());
+		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
+		
 		// Add ActionListeners to Jspinners
+		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
 		gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
 		gui.getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
-
+		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
+		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
+		addActionListenerToDeviceChooser();
+		
 		// Add ActionListeners to singleSteps
 		addActionListenersToNoteChooser();
 		addActionListenersToVelocityChooser();
@@ -403,6 +409,27 @@ public class StandardSequencerController extends SequencerControllerBase {
 		seq.setCurrentStep(tempStep++);
 	}
 
+	/**
+	 * Gets the sequencer ready for playback i.e. Collects needed info from gui and
+	 * then disables the Gui
+	 */
+	public void playMode() {
+		setPartNotes();
+		seq.initPlayVariables();
+		gui.disableGui();
+	}
+
+	/**
+	 * Sets the sequencer in stopMode i.e. enables Gui again and readies the
+	 * sequencer for next time it has to go int playMode
+	 */
+	public void stopMode() {
+		seq.stopPlayback(activePattern);
+		gui.enableGui();
+		tickCounter = 0;
+		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
+	}
+	
 	/**
 	 * Prints choosen pattern to sysout. Good for doubleChecking Gui so it reflects
 	 * what notes there really is for example

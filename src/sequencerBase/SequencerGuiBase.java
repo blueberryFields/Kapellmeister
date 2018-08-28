@@ -1,4 +1,4 @@
-package sequecerBase;
+package sequencerBase;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,7 +20,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
-import arrangement.Pattern;
+import pattern.StandardPattern;
 
 public class SequencerGuiBase {
 
@@ -253,7 +253,7 @@ public class SequencerGuiBase {
 	 *            an array containing patterns from wich the names to be written on
 	 *            the patternChooserButtons will be retrieved
 	 */
-	public void setPatternNames(Pattern[] patterns) {
+	public void setPatternNames(StandardPattern[] patterns) {
 		for (int i = 0; i < patterns.length; i++) {
 			patternChoosers[i].setText(patterns[i].getName());
 		}

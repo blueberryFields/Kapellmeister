@@ -1,70 +1,23 @@
 package standardSequencer;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
-import arrangement.Pattern;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
-import sequecerBase.SoloMute;
+import pattern.StandardPattern;
+import sequencerBase.SequencerModelBase;
+import sequencerBase.SoloMute;
+import sequencerBase.SubSequenceModel;
 
 /**
  * The heart, the core and logic of the standard sequencer. This class contains
  * the different patterns, the connection the the mididevice, the methods for
  * playing notes and so on.
  */
-public class StandardSequencerModel {
+public class StandardSequencerModel extends SequencerModelBase implements SubSequenceModel {
 
-	/**
-	 * The mididevice to connect to
-	 */
-	private MidiDevice device;
-	/**
-	 * A list of availeble midiDevices
-	 */
-	private MidiDevice.Info[] infos;
-	/**
-	 * The reciever to send midinotes to
-	 */
-	private Receiver rcvr;
-	/**
-	 * standard timestamp to go with the midinotes
-	 */
-	private long timeStamp = -1;
-	/**
-	 * An array of the patterns the sequencer know and can play back
-	 */
-	private Pattern[] patterns;
-	/**
-	 * This will contain all the noteOn messages
-	 */
-	private ShortMessage noteOn = new ShortMessage();
-	/**
-	 * This will contain all the noteOff messages
-	 */
-	private ShortMessage noteOff = new ShortMessage();
-	/**
-	 * Enumeration of hte diferrent states this sequencer can be in, SOLO, MUTE,
-	 * AUDIBLE
-	 */
-	private SoloMute soloMute;
-	/**
-	 * the midichannel on which the sequencer will send its notes on
-	 */
-	private int midiChannel = 0;
-	/**
-	 * This will be used to generate notes. Can be set to different musical keys
-	 */
-	private NoteGenerator key;
-	/**
-	 * Indicates if the sequencer is currently running/playing
-	 */
-	boolean running = false;
 	/**
 	 * Indicates if the current note is the first note of the first repetition of
 	 * the played pattern. Needed for the playNote method. Hopefully will be
@@ -72,9 +25,9 @@ public class StandardSequencerModel {
 	 */
 	private boolean firstNote;
 	/**
-	 * Keeps track of which note/step is currently playing
+	 * This will be used to generate notes. Can be set to different musical keys
 	 */
-	private int currentStep = 0;
+	private NoteGenerator key;
 
 	/**
 	 * Constructor
@@ -87,7 +40,7 @@ public class StandardSequencerModel {
 	 *            only be reset from the masterModule
 	 */
 	public StandardSequencerModel(NoteGenerator key) {
-		infos = MidiSystem.getMidiDeviceInfo();
+		super();
 		this.key = key;
 		initSeq();
 	}
@@ -96,70 +49,11 @@ public class StandardSequencerModel {
 	 * Initialize the sequencer
 	 */
 	public void initSeq() {
-		patterns = new Pattern[8];
+		patterns = new StandardPattern[8];
 		soloMute = SoloMute.AUDIBLE;
 		for (int i = 0; i < patterns.length; i++) {
-			patterns[i] = new Pattern("pat " + (i + 1));
+			patterns[i] = new StandardPattern("pat " + (i + 1));
 		}
-	}
-
-	/**
-	 * Tries to connect to a mididevice
-	 * 
-	 * @param index
-	 *            index of the mididevice to connect to
-	 */
-	public void chooseMidiDevice(int index) {
-		try {
-			device = MidiSystem.getMidiDevice(infos[index]);
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-		}
-		if (!(device.isOpen())) {
-			try {
-				device.open();
-			} catch (MidiUnavailableException e) {
-				e.printStackTrace();
-			}
-		}
-		try {
-			rcvr = MidiSystem.getReceiver();
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// WORK IN PROGRESS!!!
-	public void refreshMidiDeviceList() {
-		infos = MidiSystem.getMidiDeviceInfo();
-	}
-
-	/**
-	 * Sends a test note(C4, 1 sec) to the reciever
-	 */
-	public void playTestNote() {
-		ShortMessage testNoteOn = new ShortMessage();
-		try {
-			testNoteOn.setMessage(ShortMessage.NOTE_ON, 0, 60, 100);
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
-		}
-		ShortMessage testNoteOff = new ShortMessage();
-		try {
-			testNoteOff.setMessage(ShortMessage.NOTE_OFF, 0, 60, 100);
-		} catch (InvalidMidiDataException e1) {
-			e1.printStackTrace();
-		}
-
-		rcvr.send(testNoteOn, timeStamp);
-
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		rcvr.send(testNoteOff, timeStamp);
 	}
 
 	/**
@@ -193,7 +87,7 @@ public class StandardSequencerModel {
 			int veloLow, int veloHigh, int octaveLow, int octaveHigh, int activePattern) {
 		String tempName = patterns[activePattern].getName();
 		String tempPartNotes = patterns[activePattern].getPartNotesChoise();
-		patterns[activePattern] = new Pattern(tempName, nrOfSteps, tempPartNotes);
+		patterns[activePattern] = new StandardPattern(tempName, nrOfSteps, tempPartNotes);
 		switch (generatorAlgorithm) {
 		case "Rnd notes":
 			patterns[activePattern].setPattern(key.getRndSequence(patterns[activePattern].getPattern(),
@@ -222,7 +116,7 @@ public class StandardSequencerModel {
 	 *            a copy from
 	 * @return a individual copy of the choosen pattern
 	 */
-	public Pattern copyPattern(int activePattern) {
+	public StandardPattern copyPattern(int activePattern) {
 		return patterns[activePattern].copy();
 	}
 
@@ -234,7 +128,7 @@ public class StandardSequencerModel {
 	 * @param pattern
 	 *            the pattern you want to replace the choosen pattern whith.
 	 */
-	public void pastePattern(int activePattern, Pattern pattern) {
+	public void pastePattern(int activePattern, StandardPattern pattern) {
 		patterns[activePattern].paste(pattern);
 	}
 
@@ -262,23 +156,7 @@ public class StandardSequencerModel {
 	}
 
 	/**
-	 * Closes the midiDevice
-	 */
-	public void closeDevice() {
-		if (device.isOpen()) {
-			device.close();
-		}
-	}
-
-	/**
-	 * Closes the reciever
-	 */
-	public void closeRcvr() {
-		rcvr.close();
-	}
-
-	/**
-	 * plays the current step in the active patterne. Really long, tortuous method,
+	 * plays the current step in the active pattern. Really long, tortuous method,
 	 * to be raplaced sometime in the future
 	 * 
 	 * @param activePattern
@@ -287,12 +165,12 @@ public class StandardSequencerModel {
 	public void playStep(int activePattern) {
 		if (soloMute != SoloMute.MUTE) {
 			if (currentStep == 0 && !firstNote) {
-				if (patterns[activePattern].getSingleStep(getPattern(activePattern).length - 1)
+				if (patterns[activePattern].getSingleStep(getPatternLength(activePattern) - 1)
 						.getNoteOn() != NoteOn.HOLD) {
 					try {
 						noteOff.setMessage(
 								ShortMessage.NOTE_OFF, midiChannel, patterns[activePattern]
-										.getSingleStep(getPattern(activePattern).length - 1).getMidiNote(),
+										.getSingleStep(getPatternLength(activePattern) - 1).getMidiNote(),
 								patterns[activePattern].getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
@@ -372,27 +250,6 @@ public class StandardSequencerModel {
 	}
 
 	/**
-	 * Sets the sequencer in mute mode.
-	 */
-	public void mute() {
-		soloMute = SoloMute.MUTE;
-	}
-
-	/**
-	 * Sets the sequencer in solo mode
-	 */
-	public void solo() {
-		soloMute = SoloMute.SOLO;
-	}
-
-	/**
-	 * Sets the sequencer in audible mode
-	 */
-	public void unSoloMute() {
-		soloMute = SoloMute.AUDIBLE;
-	}
-
-	/**
 	 * When you stop playback of the sequencer this method is to be called to make
 	 * shure the last played note will be stopped. Otherwise theres a chance it will
 	 * never stop playing
@@ -448,28 +305,10 @@ public class StandardSequencerModel {
 		patterns[activePattern].changeNrOfSteps(nrOfSteps);
 	}
 
-	/**
-	 * Choose which midichannel the midinotes will be sent on
-	 * 
-	 * @param midiChannel
-	 *            the midichannel you wich to send your midinotes on
-	 */
-	public void setMidiChannel(int midiChannel) {
-		this.midiChannel = midiChannel;
-	}
-
 	// The rest is simple getters and setters
 
 	public void setPattern(Note[] pattern, int activePattern) {
 		patterns[activePattern].setPattern(pattern);
-	}
-
-	public Note[] getPattern(int activePattern) {
-		return patterns[activePattern].getPattern();
-	}
-
-	public Pattern[] getPatterns() {
-		return patterns;
 	}
 
 	public String[] getPatternNames() {
@@ -492,28 +331,8 @@ public class StandardSequencerModel {
 		return currentStep;
 	}
 
-	public void setPatternName(int activePattern, String newName) {
-		patterns[activePattern].setName(newName);
-	}
-
-	public void setPartNotes(String partNotes, int activePattern) {
-		patterns[activePattern].setpartNotesChoise(partNotes);
-	}
-
-	public MidiDevice.Info[] getAvailibleMidiDevices() {
-		return infos;
-	}
-
 	public boolean isFirstNote() {
 		return firstNote;
-	}
-
-	public boolean getRunning() {
-		return running;
-	}
-
-	public void isRunning(boolean running) {
-		this.running = running;
 	}
 
 	public NoteGenerator getKey() {
@@ -522,26 +341,6 @@ public class StandardSequencerModel {
 
 	public void setKey(NoteGenerator key) {
 		this.key = key;
-	}
-
-	public SoloMute getSoloMute() {
-		return soloMute;
-	}
-
-	public void setSoloMute(SoloMute soloMute) {
-		this.soloMute = soloMute;
-	}
-
-	public String getPartNotesChoice(int index) {
-		return patterns[index].getPartNotesChoise();
-	}
-
-	public int getNrOfSteps(int index) {
-		return patterns[index].getNrOfSteps();
-	}
-
-	public String getPatternName(int index) {
-		return patterns[index].getName();
 	}
 
 	public String getPartNotes(int index) {

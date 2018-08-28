@@ -24,7 +24,7 @@ import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SwingConstants;
 
-import sequecerBase.SoloMute;
+import sequencerBase.SoloMute;
 import standardSequencer.StandardSequencerController;
 
 /**

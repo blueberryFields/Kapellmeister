@@ -2,11 +2,13 @@ package masterModule;
 
 import javax.swing.JButton;
 
-import arrangement.Pattern;
+import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
+
 import arrangement.Scene;
 import note.NoteGenerator;
-import sequecerBase.SequencerControllerBase;
-import sequecerBase.SoloMute;
+import pattern.StandardPattern;
+import sequencerBase.SequencerControllerBase;
+import sequencerBase.SoloMute;
 import standardSequencer.StandardSequencerController;
 
 /**
@@ -19,7 +21,7 @@ public class MstrMoModel {
 	/**
 	 * Contains up to 8 instances of sequencers
 	 */
-	private StandardSequencerController[] sequencerArray = new StandardSequencerController[8];
+	private SequencerControllerBase[] sequencerArray = new SequencerControllerBase[8];
 	/**
 	 * Contains the 8 available scenes in wich you can store information on which
 	 * pattern to play in which scene
@@ -32,7 +34,7 @@ public class MstrMoModel {
 	/**
 	 * Clipboard for storing patterns you copy via the copy-functionality
 	 */
-	private Pattern clipBoard;
+	private StandardPattern clipBoard;
 
 	/**
 	 * Constructor
@@ -109,7 +111,10 @@ public class MstrMoModel {
 	 */
 	public void setActivePatterns(int currentScene) {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
-			sequencerArray[i].choosePattern(scenes[currentScene].getPatternChoice(i));
+			if (sequencerArray[i] instanceof StandardSequencerController) {
+				((StandardSequencerController) sequencerArray[i])
+						.choosePattern(scenes[currentScene].getPatternChoice(i));
+			}
 		}
 	}
 
@@ -150,7 +155,9 @@ public class MstrMoModel {
 	 *            index of the pattern to be copied
 	 */
 	public void copyPattern(int index) {
-		clipBoard = sequencerArray[index].copyPattern();
+		if (sequencerArray[index] instanceof StandardSequencerController) {
+			clipBoard = ((StandardSequencerController) sequencerArray[index]).copyPattern();
+		}
 	}
 
 	/**
@@ -161,7 +168,9 @@ public class MstrMoModel {
 	 */
 	public void pastePattern(int index) {
 		if (clipBoard != null) {
-			sequencerArray[index].pastePattern(clipBoard);
+			if (sequencerArray[index] instanceof StandardSequencerController) {
+				((StandardSequencerController) sequencerArray[index]).pastePattern(clipBoard);
+			}
 		}
 	}
 
@@ -171,7 +180,9 @@ public class MstrMoModel {
 	 */
 	public void tick() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
-			sequencerArray[i].tick();
+			if (sequencerArray[i] instanceof StandardSequencerController) {
+				((StandardSequencerController) sequencerArray[i]).tick();
+			}
 		}
 	}
 
@@ -180,7 +191,9 @@ public class MstrMoModel {
 	 */
 	public void start() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
-			sequencerArray[i].playMode();
+			if (sequencerArray[i] instanceof StandardSequencerController) {
+				((StandardSequencerController) sequencerArray[i]).playMode();
+			}
 		}
 	}
 
@@ -189,7 +202,9 @@ public class MstrMoModel {
 	 */
 	public void stop() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
-			sequencerArray[i].stopMode();
+			if (sequencerArray[i] instanceof StandardSequencerController) {
+			((StandardSequencerController) sequencerArray[i]).stopMode();
+			}
 		}
 	}
 
@@ -202,7 +217,9 @@ public class MstrMoModel {
 	 */
 	public void changeKey(NoteGenerator key) {
 		for (int i = 0; i < sequencerArray.length; i++) {
-			sequencerArray[i].setKey(key);
+			if (sequencerArray[i] instanceof StandardSequencerController) {
+			((StandardSequencerController) sequencerArray[i]).setKey(key);
+			}
 		}
 	}
 
@@ -390,7 +407,7 @@ public class MstrMoModel {
 		return sequencerArray[index].getTitle();
 	}
 
-	public StandardSequencerController[] getSeqArr() {
+	public SequencerControllerBase[] getSeqArr() {
 		return sequencerArray;
 	}
 

@@ -17,9 +17,11 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import note.Note;
-import sequecerBase.SequencerGuiBase;
+import pattern.StandardPattern;
+import sequencerBase.SequencerGuiBase;
+import sequencerBase.SubSequencerGui;
 
-public class StandardSequencerGui extends SequencerGuiBase {
+public class StandardSequencerGui extends SequencerGuiBase implements SubSequencerGui{
 
 	/**
 	 * The graphic user interface for the standard sequencers.
@@ -202,10 +204,10 @@ public class StandardSequencerGui extends SequencerGuiBase {
 	 * @param pattern
 	 *            the pattern to be the model for the stepSequencer view
 	 */
-	public void repaintSequencer(Note[] pattern) {
+	public void repaintSequencer(StandardPattern pattern) {
 
 		// Enable steps wich is included in sequence
-		for (int i = 0; i < pattern.length; i++) {
+		for (int i = 0; i < pattern.getPattern().length; i++) {
 			noteChooser[i].setEnabled(true);
 			velocityChooser[i].setEnabled(true);
 			noteOnButton[i].setEnabled(true);
@@ -213,10 +215,10 @@ public class StandardSequencerGui extends SequencerGuiBase {
 		}
 
 		// set note, NoteOn and velocity on steps
-		for (int i = 0; i < pattern.length; i++) {
-			velocityChooser[i].setValue(pattern[i].getVelo());
-			noteChooser[i].setValue(pattern[i].getNote());
-			switch (pattern[i].getNoteOn()) {
+		for (int i = 0; i < pattern.getPattern().length; i++) {
+			velocityChooser[i].setValue(pattern.getPattern()[i].getVelo());
+			noteChooser[i].setValue(pattern.getPattern()[i].getNote());
+			switch (pattern.getPattern()[i].getNoteOn()) {
 			case ON:
 				noteOnButton[i].setText("On");
 				break;
@@ -230,7 +232,7 @@ public class StandardSequencerGui extends SequencerGuiBase {
 		}
 
 		// Disable steps wich is not included in sequence
-		for (int i = pattern.length; i < 16; i++) {
+		for (int i = pattern.getPattern().length; i < 16; i++) {
 			noteChooser[i].setEnabled(false);
 			velocityChooser[i].setEnabled(false);
 			noteOnButton[i].setEnabled(false);
@@ -249,15 +251,15 @@ public class StandardSequencerGui extends SequencerGuiBase {
 	 * @param pattern
 	 *            the pattern playing
 	 */
-	public void markActiveStep(int currentStep, boolean isFirstNote, Note[] pattern) {
+	public void markActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern) {
 		if (isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			disableStep(currentStep);
 		} else if (currentStep == 0 && !isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStepColor);
-			singleSteps[pattern.length - 1].setBackground(enabledStepColor);
+			singleSteps[pattern.getPattern().length - 1].setBackground(enabledStepColor);
 			disableStep(currentStep);
-			enableStep(pattern.length - 1);
+			enableStep(pattern.getPattern().length - 1);
 		} else {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			singleSteps[currentStep - 1].setBackground(enabledStepColor);
@@ -266,6 +268,34 @@ public class StandardSequencerGui extends SequencerGuiBase {
 		}
 	}
 
+	/**
+	 * If a pattern is being played the step that is currently playing will be
+	 * marked with red color and disabled. When you stop the playback this method
+	 * can be used to make sure the note is enabled again and the red color will
+	 * disappear
+	 * 
+	 * @param currentStep
+	 *            the step/note currently being played and marked as active and to
+	 *            be unmarked
+	 * @param isFirstNote
+	 *            is the current step the first note of the first repetition of the
+	 *            pattern?
+	 * @param pattern
+	 *            the pattern currently being played
+	 */
+	public void unmarkActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern) {
+		if (isFirstNote) {
+			singleSteps[currentStep].setBackground(enabledStepColor);
+			enableStep(currentStep);
+		} else if (currentStep == 0 && !isFirstNote) {
+			singleSteps[pattern.getPattern().length - 1].setBackground(enabledStepColor);
+			enableStep(pattern.getPattern().length - 1);
+		} else {
+			singleSteps[currentStep - 1].setBackground(enabledStepColor);
+			enableStep(currentStep - 1);
+		}
+	}
+	
 	/**
 	 * Disables parts of the Gui so the user can´t change settings that shouldnt be
 	 * changed when sequencer is playing
@@ -324,33 +354,6 @@ public class StandardSequencerGui extends SequencerGuiBase {
 	// deviceChooser.setModel(deviceChooserModel);
 	// }
 
-	/**
-	 * If a pattern is being played the step that is currently playing will be
-	 * marked with red color and disabled. When you stop the playback this method
-	 * can be used to make sure the note is enabled again and the red color will
-	 * disappear
-	 * 
-	 * @param currentStep
-	 *            the step/note currently being played and marked as active and to
-	 *            be unmarked
-	 * @param isFirstNote
-	 *            is the current step the first note of the first repetition of the
-	 *            pattern?
-	 * @param pattern
-	 *            the pattern currently being played
-	 */
-	public void unmarkActiveStep(int currentStep, boolean isFirstNote, Note[] pattern) {
-		if (isFirstNote) {
-			singleSteps[currentStep].setBackground(enabledStepColor);
-			enableStep(currentStep);
-		} else if (currentStep == 0 && !isFirstNote) {
-			singleSteps[pattern.length - 1].setBackground(enabledStepColor);
-			enableStep(pattern.length - 1);
-		} else {
-			singleSteps[currentStep - 1].setBackground(enabledStepColor);
-			enableStep(currentStep - 1);
-		}
-	}
 
 	/**
 	 * Disables a choosen step so the user cannot change it while it is playing

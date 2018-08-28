@@ -1,16 +1,17 @@
-package arrangement;
+package pattern;
 
 import note.Note;
 
 /**
- * This class represent a pattern or sequence of notes that can be played by a
- * sequencer. A pattern can consist of between 1 and 16 notes as well as a title
- * and information about how fast it will be played relative to the bpm, the
- * partNotes variable. It also contains some useful operations you can use to
- * manipulate the pattern, like nudge(), copy(), paste() and changeNrOfSteps()
+ * This class represent a Standard pattern or sequence of notes that can be
+ * played by a Standard Sequencer. A pattern can consist of between 1 and 16
+ * notes as well as a title and information about how fast it will be played
+ * relative to the bpm, the partNotes variable. It also contains some useful
+ * operations you can use to manipulate the pattern, like nudge(), copy(),
+ * paste() and changeNrOfSteps()
  */
 
-public class Pattern {
+public class StandardPattern extends PatternBase implements SubPattern {
 
 	/**
 	 * Title/name of the pattern
@@ -32,8 +33,8 @@ public class Pattern {
 	 * @param title
 	 *            a String containing the title of the pattern
 	 */
-	public Pattern(String title) {
-		this.title = title;
+	public StandardPattern(String title) {
+		super(title);
 		pattern = new Note[8];
 		for (int i = 0; i < pattern.length; i++) {
 			pattern[i] = new Note();
@@ -50,8 +51,8 @@ public class Pattern {
 	 * @param nrOfSteps
 	 *            int contatining the nr of notes in the pattern
 	 */
-	public Pattern(String title, int nrOfSteps) {
-		this.title = title;
+	public StandardPattern(String title, int nrOfSteps) {
+		super(title);
 		pattern = new Note[nrOfSteps];
 		for (int i = 0; i < pattern.length; i++) {
 			pattern[i] = new Note();
@@ -71,8 +72,8 @@ public class Pattern {
 	 *            String containing partNotes-settings, the availible choices are:
 	 *            "1 bar", "1/2", "1/4", "1/8", "1/16"
 	 */
-	public Pattern(String title, int nrOfSteps, String partNotes) {
-		this.title = title;
+	public StandardPattern(String title, int nrOfSteps, String partNotes) {
+		super(title);
 		this.partNotes = partNotes;
 		pattern = new Note[nrOfSteps];
 		for (int i = 0; i < pattern.length; i++) {
@@ -137,8 +138,8 @@ public class Pattern {
 	 * 
 	 * @return an individual copy of the pattern
 	 */
-	public Pattern copy() {
-		Pattern tempPattern = new Pattern(title, getNrOfSteps(), partNotes);
+	public StandardPattern copy() {
+		StandardPattern tempPattern = new StandardPattern(title, getNrOfSteps(), partNotes);
 		for (int i = 0; i < tempPattern.getPattern().length; i++) {
 			tempPattern.getPattern()[i] = new Note(this.pattern[i].getVelo(), this.pattern[i].getNote(),
 					this.pattern[i].getNoteOn());
@@ -153,10 +154,11 @@ public class Pattern {
 	 * @param pattern
 	 *            the new pattern to be pasted
 	 */
-	public void paste(Pattern pattern) {
-		this.pattern = new Note[pattern.getNrOfSteps()];
-		for (int i = 0; i < pattern.getNrOfSteps(); i++) {
-			this.pattern[i] = pattern.getCopyOfSingleStep(i);
+	@Override
+	public void paste(PatternBase pattern) {
+		this.pattern = new Note[((StandardPattern) pattern).getNrOfSteps()];
+		for (int i = 0; i < ((StandardPattern) pattern).getNrOfSteps(); i++) {
+			this.pattern[i] = ((StandardPattern) pattern).getCopyOfSingleStep(i);
 		}
 	}
 
@@ -178,16 +180,8 @@ public class Pattern {
 		return pattern;
 	}
 
-	public void setPattern(Note[] sequence) {
-		this.pattern = sequence;
-	}
-
-	public String getPartNotesChoise() {
-		return partNotes;
-	}
-
-	public void setpartNotesChoise(String partNotes) {
-		this.partNotes = partNotes;
+	public void setPattern(Note[] pattern) {
+		this.pattern = pattern;
 	}
 
 	public Note getSingleStep(int index) {
@@ -202,12 +196,8 @@ public class Pattern {
 		return pattern.length;
 	}
 
-	public String getName() {
-		return title;
-	}
-
-	public void setName(String name) {
-		this.title = name;
+	public int length() {
+		return pattern.length;
 	}
 
 }

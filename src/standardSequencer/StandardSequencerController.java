@@ -5,14 +5,15 @@ import javax.swing.JButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import arrangement.Pattern;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
-import sequecerBase.SequencerControllerBase;
-import sequecerBase.SoloMute;
+import pattern.StandardPattern;
+import sequencerBase.SequencerControllerBase;
+import sequencerBase.SoloMute;
+import sequencerBase.SubSequencerController;
 
-public class StandardSequencerController extends SequencerControllerBase {
+public class StandardSequencerController extends SequencerControllerBase implements SubSequencerController {
 
 	/**
 	 * Controller for the standard sequencer. Up to 8 instances of this can be
@@ -71,11 +72,9 @@ public class StandardSequencerController extends SequencerControllerBase {
 	}
 
 	// The following methods just add ActionListeners to different buttons n stuff
-	// as their titles says
+	// as their signatures says
 
-	
-	
-	private void addActionListenersToPatternChoosers() {
+	public void addActionListenersToPatternChoosers() {
 		for (int i = 0; i < gui.getPatternChoosers().length; i++) {
 			int index = i;
 			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
@@ -240,17 +239,17 @@ public class StandardSequencerController extends SequencerControllerBase {
 	 */
 	private void checkHold() {
 		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < seq.getPattern(activePattern).length; j++) {
+			for (int j = 0; j < seq.getPatternLength(activePattern); j++) {
 				if (j == 0) {
 					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
+						if (seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
 								.getNoteOn() != NoteOn.HOLD) {
 							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
+									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
 											.getMidiNote());
 						} else {
 							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
+									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
 											.getHoldNote());
 						}
 					}
@@ -279,17 +278,17 @@ public class StandardSequencerController extends SequencerControllerBase {
 	private void checkHold(int index) {
 		int loopStart = index;
 		for (int i = 0; i < 2; i++) {
-			for (int j = loopStart; j < seq.getPattern(activePattern).length; j++) {
+			for (int j = loopStart; j < seq.getPatternLength(activePattern); j++) {
 				if (j == 0) {
 					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
+						if (seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
 								.getNoteOn() != NoteOn.HOLD) {
 							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
+									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
 											.getMidiNote());
 						} else {
 							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPattern(activePattern).length - 1)
+									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
 											.getHoldNote());
 						}
 					}
@@ -360,7 +359,7 @@ public class StandardSequencerController extends SequencerControllerBase {
 	 * 
 	 * @return a unique copy of the active pattern
 	 */
-	public Pattern copyPattern() {
+	public StandardPattern copyPattern() {
 		return seq.copyPattern(activePattern);
 	}
 
@@ -371,7 +370,7 @@ public class StandardSequencerController extends SequencerControllerBase {
 	 * @param the
 	 *            sequence to be pasted into the sequencer
 	 */
-	public void pastePattern(Pattern pattern) {
+	public void pastePattern(StandardPattern pattern) {
 		seq.pastePattern(activePattern, pattern);
 		gui.repaintSequencer(seq.getPattern(activePattern));
 		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activePattern));
@@ -406,7 +405,7 @@ public class StandardSequencerController extends SequencerControllerBase {
 		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
 		int tempStep = seq.getCurrentStep();
 		tempStep++;
-		if (tempStep == seq.getPattern(activePattern).length) {
+		if (tempStep == seq.getPatternLength(activePattern)) {
 			tempStep = 0;
 		}
 		seq.setCurrentStep(tempStep++);
@@ -442,7 +441,7 @@ public class StandardSequencerController extends SequencerControllerBase {
 	 */
 	public void printPattern(int pattern) {
 		String s = "";
-		for (int i = 0; i < seq.getPattern(pattern).length; i++) {
+		for (int i = 0; i < seq.getPatternLength(pattern); i++) {
 			s += seq.getSingleStep(pattern, i).toString();
 		}
 		System.out.println(s);

@@ -9,8 +9,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import arrangement.ArrangementWindow;
-import arrangement.Pattern;
 import note.KeyConverter;
+import pattern.StandardPattern;
 
 /**
  * Controller for the Master Module. Contains logic for managing the different

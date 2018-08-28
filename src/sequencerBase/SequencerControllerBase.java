@@ -1,9 +1,10 @@
-package sequecerBase;
+package sequencerBase;
 
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
 
 import note.Note;
+import pattern.StandardPattern;
 import standardSequencer.StandardSequencerGui;
 import standardSequencer.StandardSequencerModel;
 
@@ -55,35 +56,6 @@ public class SequencerControllerBase {
 	 */
 	public SequencerControllerBase(String title) {
 		this.title = title;
-
-		// setPartNotes();
-
-		// Add actionListeners to buttons
-		
-		// gui.getGenerateButton().addActionListener(e -> generatePattern());
-		// gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
-		// gui.getNudgeRight().addActionListener(e -> nudgeRight());
-		
-
-		// Add ActionListeners to Jspinners
-
-		// addActionListenersToPatternChoosers();
-		// gui.getPartNotesChooser().addChangeListener(e ->
-		// changePartNotes(gui.getPartnotes()));
-		
-		// gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
-		// gui.getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
-
-		// Add ActionListeners to ComboBox
-		//addActionListenerToDeviceChooser();
-
-		// Add ActionListeners to singleSteps
-		// addActionListenersToNoteChooser();
-		// addActionListenersToVelocityChooser();
-		// addActionListenersToNoteOnButton();
-
-		// gui.repaintSequencer(seq.getPattern(activePattern));
-		// gui.setPatternNames(seq.getPatterns());
 	}
 
 	// The following methods just add ActionListeners to different buttons n stuff
@@ -264,7 +236,7 @@ public class SequencerControllerBase {
 		}
 	}
 
-	public Note[] getPattern() {
+	public StandardPattern getPattern() {
 		return seq.getPattern(activePattern);
 	}
 

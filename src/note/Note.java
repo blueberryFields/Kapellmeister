@@ -51,13 +51,6 @@ public class Note {
 
 	}
 
-	// public Note(int midiNote, int velo, String note) {
-	// setMidiNote(midiNote);
-	// setVelo(velo);
-	// setNote(note);
-	// setNoteOn(NoteOn.ON);
-	// }
-
 	/**
 	 * Constructor 2. Will create a note of your choice with a velocity of your
 	 * choice

@@ -2,7 +2,7 @@ package sequencerBase;
 
 import pattern.StandardPattern;
 
-public interface SubSequenceModel {
+public interface SubSequencerModel {
 
 	public void initSeq();
 	

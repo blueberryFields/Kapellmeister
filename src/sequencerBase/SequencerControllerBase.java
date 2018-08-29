@@ -17,11 +17,11 @@ public class SequencerControllerBase {
 	/**
 	 * Contains most of the logic and is the heart of the sequencer
 	 */
-	protected StandardSequencerModel seq;
+	protected SequencerModelBase seq;
 	/**
 	 * Contains the graphical user interface for the sequencer
 	 */
-	protected StandardSequencerGui gui;
+	protected SequencerGuiBase gui;
 	/**
 	 * Stores the title/namename of the sequencer
 	 */
@@ -66,6 +66,7 @@ public class SequencerControllerBase {
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 	}
 
+	@SuppressWarnings("unused")
 	private void removeActionListenerFromDeviceChooser() {
 		gui.getDeviceChooser().removeActionListener(e -> chooseMidiDevice());
 	}
@@ -89,7 +90,7 @@ public class SequencerControllerBase {
 	 * @return an array of Strings containing the names of the different patterns
 	 */
 	public String[] getPatternNames() {
-		return seq.getPatternNames();
+		return ((StandardSequencerModel) seq).getPatternNames();
 	}
 
 	/**
@@ -100,7 +101,7 @@ public class SequencerControllerBase {
 	 *            the currently playing pattern
 	 */
 	public void killLastNote(int activePattern) {
-		seq.killLastNote(activePattern);
+		((StandardSequencerModel) seq).killLastNote(activePattern);
 	}
 
 	/**
@@ -145,7 +146,7 @@ public class SequencerControllerBase {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				seq.killLastNote(activePattern);
+				((StandardSequencerModel) seq).killLastNote(activePattern);
 			}
 			gui.setSoloMuteBar(seq.getSoloMute());
 		}
@@ -159,7 +160,7 @@ public class SequencerControllerBase {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				seq.killLastNote(activePattern);
+				((StandardSequencerModel) seq).killLastNote(activePattern);
 			}
 		} else {
 			seq.unSoloMute();
@@ -217,7 +218,7 @@ public class SequencerControllerBase {
 	 * Sets the partNoteThreshhold
 	 */
 	public void setPartNotes() {
-		switch (seq.getPartNotes(activePattern)) {
+		switch (((StandardSequencerModel) seq).getPartNotes(activePattern)) {
 		case "1 bar":
 			partNotesThreshhold = 64;
 			break;
@@ -234,14 +235,6 @@ public class SequencerControllerBase {
 			partNotesThreshhold = 4;
 			break;
 		}
-	}
-
-	public StandardPattern getPattern() {
-		return seq.getPattern(activePattern);
-	}
-
-	public void setPattern(Note[] pattern) {
-		seq.setPattern(pattern, activePattern);
 	}
 
 	public JButton getCopyButton() {

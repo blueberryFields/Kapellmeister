@@ -78,6 +78,7 @@ public class MstrMoGui extends JFrame {
 	private JMenuBar createNewBar = new JMenuBar();
 	private JMenu createNewMenu = new JMenu("Create new");
 	private JMenuItem standardSequencer = new JMenuItem("Standard Sequencer");
+	private JMenuItem drumSequencer = new JMenuItem("Drum Sequencer");
 
 	// Size for masterPanel and seqStrips and more
 	private Dimension stripDim = new Dimension(600, 35);
@@ -144,6 +145,7 @@ public class MstrMoGui extends JFrame {
 		// createPanel.setLayout(new BorderLayout());
 
 		createNewMenu.add(standardSequencer);
+		createNewMenu.add(drumSequencer);
 		createNewBar.add(createNewMenu);
 		createPanel.add(createNewBar);
 
@@ -346,6 +348,10 @@ public class MstrMoGui extends JFrame {
 		return standardSequencer;
 	}
 
+	public JMenuItem getDrumSequencer() {
+		return drumSequencer;
+	}
+	
 	public JMenuItem getSave() {
 		return save;
 	}

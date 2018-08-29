@@ -7,11 +7,7 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
-import note.Note;
-import note.NoteGenerator;
-import note.NoteOn;
-import pattern.StandardPattern;
-import sequencerBase.SoloMute;
+import pattern.PatternBase;
 
 /**
  * The heart, the core and logic of the standard sequencer. This class contains
@@ -39,7 +35,7 @@ public class SequencerModelBase {
 	/**
 	 * An array of the patterns the sequencer know and can play back
 	 */
-	protected StandardPattern[] patterns;
+	protected PatternBase[] patterns;
 	/**
 	 * This will contain all the noteOn messages
 	 */
@@ -188,22 +184,6 @@ public class SequencerModelBase {
 
 	// The rest is simple getters and setters
 
-	public void setPattern(Note[] pattern, int activePattern) {
-		patterns[activePattern].setPattern(pattern);
-	}
-
-	public StandardPattern getPattern(int activePattern) {
-		return patterns[activePattern];
-	}
-	
-	public int getPatternLength(int activePattern) {
-		return  patterns[activePattern].length();
-	}
-
-	public StandardPattern[] getPatterns() {
-		return patterns;
-	}
-
 	public MidiDevice.Info[] getAvailibleMidiDevices() {
 		return infos;
 	}
@@ -224,23 +204,19 @@ public class SequencerModelBase {
 		this.soloMute = soloMute;
 	}
 
-	public String getPartNotesChoice(int index) {
-		return patterns[index].getPartNotesChoise();
-	}
-
-	public int getNrOfSteps(int index) {
-		return patterns[index].getNrOfSteps();
-	}
-
 	public String getPatternName(int index) {
 		return patterns[index].getName();
 	}
-	
+
 	public void setPatternName(int activePattern, String newName) {
 		patterns[activePattern].setName(newName);
 	}
-	
-	public void setPartNotes(String partNotes, int activePattern) {
-		patterns[activePattern].setpartNotesChoise(partNotes);
+
+	public String[] getPatternNames() {
+		String[] patternNames = new String[8];
+		for (int i = 0; i < patterns.length; i++) {
+			patternNames[i] = patterns[i].getName();
+		}
+		return patternNames;
 	}
 }

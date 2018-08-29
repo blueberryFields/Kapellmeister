@@ -14,10 +14,6 @@ import note.Note;
 public class StandardPattern extends PatternBase implements SubPattern {
 
 	/**
-	 * Title/name of the pattern
-	 */
-	private String title;
-	/**
 	 * The array that contains the notes in the pattern
 	 */
 	private Note[] pattern;
@@ -176,6 +172,14 @@ public class StandardPattern extends PatternBase implements SubPattern {
 
 	// The rest is simple getters and setters
 
+	public String getPartNotesChoise() {
+		return partNotes;
+	}
+
+	public void setpartNotesChoise(String partNotes) {
+		this.partNotes = partNotes;
+	}
+	
 	public Note[] getPattern() {
 		return pattern;
 	}

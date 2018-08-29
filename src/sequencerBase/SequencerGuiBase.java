@@ -87,23 +87,12 @@ public class SequencerGuiBase {
 	protected JComboBox<String> generatorAlgorithmChooser;
 
 	// // Create components for nudgePanel
-	// private JPanel nudgePanel = new JPanel();
-	// private JButton nudgeLeft = new JButton("<-");
-	// private JButton nudgeRight = new JButton("->");
-	// private JLabel nudgeText = new JLabel("Nudge Sequence");
 	protected JButton[] copyPaste = new JButton[2];
 
 	// Create components for patternsPanel
 	protected JPanel patternPanel = new JPanel();
 	protected JButton[] patternChoosers = new JButton[8];
 	protected JPanel patternSettingsPanel = new JPanel();
-	protected JLabel nrOfStepsText = new JLabel("Nr of steps:");
-	protected SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
-	protected JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
-	protected String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
-	protected SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
-	protected JSpinner partNotesChooser = new JSpinner(partNotesModel);
-	protected JLabel partNotesText = new JLabel("Partnotes:");
 	protected JButton renamePattern = new JButton("Rename");
 
 	/**
@@ -126,10 +115,7 @@ public class SequencerGuiBase {
 		generatorPanel.setBackground(backGroundColor);
 		generatePanel.setBackground(backGroundColor);
 		generatorAlgorithmPanel.setBackground(backGroundColor);
-		// nudgePanel.setBackground(backGroundColor);
 		channelPanel.setBackground(backGroundColor);
-		// stepPanel.setBackground(backGroundColor);
-		// octaveRangePanel.setBackground(backGroundColor);
 		soloMuteBar.setBackground(backGroundColor);
 
 		// Set BackgroundColor for frame
@@ -199,16 +185,6 @@ public class SequencerGuiBase {
 		patternChoosers[0].setForeground(enabledText);
 
 		patternSettingsPanel.setBackground(backGroundColor);
-
-		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
-		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
-		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
-		partNotesChooser.setValue("1/8");
-		partNotesChooser.setPreferredSize(new Dimension(60, 25));
-		patternSettingsPanel.add(nrOfStepsText);
-		patternSettingsPanel.add(nrOfStepsChooser);
-		patternSettingsPanel.add(partNotesText);
-		patternSettingsPanel.add(partNotesChooser);
 		patternSettingsPanel.add(renamePattern);
 	}
 
@@ -240,7 +216,7 @@ public class SequencerGuiBase {
 	 * Makes a popup appear where you can type in a new name for the active pattern
 	 */
 	public String renamePattern(int activePattern) {
-		String newName = JOptionPane.showInputDialog(this, "New name:");
+		String newName = JOptionPane.showInputDialog("New name:", null);
 		patternChoosers[activePattern].setText(newName);
 		return newName;
 	}
@@ -317,14 +293,6 @@ public class SequencerGuiBase {
 		return patternSettingsPanel;
 	}
 
-	public JSpinner getNrOfStepsChooser() {
-		return nrOfStepsChooser;
-	}
-
-	public JSpinner getPartNotesChooser() {
-		return partNotesChooser;
-	}
-
 	public JButton[] getPatterChoosers() {
 		return patternChoosers;
 	}
@@ -399,14 +367,6 @@ public class SequencerGuiBase {
 
 	public JComboBox<Integer> getMidiChannelChooser() {
 		return midiChannelChooser;
-	}
-
-	public int getNrOfSteps() {
-		return (int) nrOfStepsChooser.getValue();
-	}
-
-	public String getPartnotes() {
-		return (String) partNotesChooser.getValue();
 	}
 
 	public JButton getRenamePattern() {

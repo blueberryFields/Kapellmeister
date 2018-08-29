@@ -9,14 +9,14 @@ import note.NoteOn;
 import pattern.StandardPattern;
 import sequencerBase.SequencerModelBase;
 import sequencerBase.SoloMute;
-import sequencerBase.SubSequenceModel;
+import sequencerBase.SubSequencerModel;
 
 /**
  * The heart, the core and logic of the standard sequencer. This class contains
  * the different patterns, the connection the the mididevice, the methods for
  * playing notes and so on.
  */
-public class StandardSequencerModel extends SequencerModelBase implements SubSequenceModel {
+public class StandardSequencerModel extends SequencerModelBase implements SubSequencerModel {
 
 	/**
 	 * Indicates if the current note is the first note of the first repetition of
@@ -86,23 +86,23 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	public void generatePattern(int nrOfSteps, NoteGenerator key, String generatorAlgorithm, boolean rndVeloIsChecked,
 			int veloLow, int veloHigh, int octaveLow, int octaveHigh, int activePattern) {
 		String tempName = patterns[activePattern].getName();
-		String tempPartNotes = patterns[activePattern].getPartNotesChoise();
+		String tempPartNotes = ((StandardPattern) patterns[activePattern]).getPartNotesChoise();
 		patterns[activePattern] = new StandardPattern(tempName, nrOfSteps, tempPartNotes);
 		switch (generatorAlgorithm) {
 		case "Rnd notes":
-			patterns[activePattern].setPattern(key.getRndSequence(patterns[activePattern].getPattern(),
+			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSequence(((StandardPattern) patterns[activePattern]).getPattern(),
 					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row":
-			patterns[activePattern].setPattern(key.getRndSeqNoDuplInRow(patterns[activePattern].getPattern(),
+			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSeqNoDuplInRow(((StandardPattern) patterns[activePattern]).getPattern(),
 					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes and On/Hold/Off":
-			patterns[activePattern].setPattern(key.getRndSequenceOnHoldOff(patterns[activePattern].getPattern(),
+			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSequenceOnHoldOff(((StandardPattern) patterns[activePattern]).getPattern(),
 					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row, On/Hold/Off":
-			patterns[activePattern].setPattern(key.getRndSeqNoDuplInRowOnHoldOff(patterns[activePattern].getPattern(),
+			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSeqNoDuplInRowOnHoldOff(((StandardPattern) patterns[activePattern]).getPattern(),
 					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		}
@@ -117,7 +117,7 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 * @return a individual copy of the choosen pattern
 	 */
 	public StandardPattern copyPattern(int activePattern) {
-		return patterns[activePattern].copy();
+		return ((StandardPattern) patterns[activePattern]).copy();
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 *            the pattern you want to replace the choosen pattern whith.
 	 */
 	public void pastePattern(int activePattern, StandardPattern pattern) {
-		patterns[activePattern].paste(pattern);
+		((StandardPattern) patterns[activePattern]).paste(pattern);
 	}
 
 	/**
@@ -165,18 +165,18 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	public void playStep(int activePattern) {
 		if (soloMute != SoloMute.MUTE) {
 			if (currentStep == 0 && !firstNote) {
-				if (patterns[activePattern].getSingleStep(getPatternLength(activePattern) - 1)
+				if (((StandardPattern) patterns[activePattern]).getSingleStep(getPatternLength(activePattern) - 1)
 						.getNoteOn() != NoteOn.HOLD) {
 					try {
 						noteOff.setMessage(
-								ShortMessage.NOTE_OFF, midiChannel, patterns[activePattern]
+								ShortMessage.NOTE_OFF, midiChannel, ((StandardPattern) patterns[activePattern])
 										.getSingleStep(getPatternLength(activePattern) - 1).getMidiNote(),
-								patterns[activePattern].getSingleStep(currentStep).getVelo());
+								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
-				if (patterns[activePattern].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
+				if (((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
 					try {
 						rcvr.send(noteOff, timeStamp);
 					} catch (Exception e) {
@@ -184,24 +184,24 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 					}
 				}
 			} else if (currentStep != 0) {
-				if (patterns[activePattern].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
+				if (((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								patterns[activePattern].getSingleStep(currentStep - 1).getMidiNote(),
-								patterns[activePattern].getSingleStep(currentStep).getVelo());
+								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getMidiNote(),
+								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				} else {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								patterns[activePattern].getSingleStep(currentStep - 1).getHoldNote(),
-								patterns[activePattern].getSingleStep(currentStep).getVelo());
+								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getHoldNote(),
+								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
 					}
 				}
-				if (patterns[activePattern].getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
+				if (((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getNoteOn() != NoteOn.HOLD) {
 					try {
 						rcvr.send(noteOff, timeStamp);
 					} catch (Exception e) {
@@ -211,12 +211,12 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 			}
 			try {
 				noteOn.setMessage(ShortMessage.NOTE_ON, midiChannel,
-						patterns[activePattern].getSingleStep(currentStep).getMidiNote(),
-						patterns[activePattern].getSingleStep(currentStep).getVelo());
+						((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getMidiNote(),
+						((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 			} catch (InvalidMidiDataException e1) {
 				e1.printStackTrace();
 			}
-			if (patterns[activePattern].getSingleStep(currentStep).getNoteOn() == NoteOn.ON) {
+			if (((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getNoteOn() == NoteOn.ON) {
 				try {
 					rcvr.send(noteOn, timeStamp);
 				} catch (Exception e) {
@@ -236,7 +236,7 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 *            the pattern to be nudged, preferebly the active pattern
 	 */
 	public void nudgeLeft(int activePattern) {
-		patterns[activePattern].nudgeLeft();
+		((StandardPattern) patterns[activePattern]).nudgeLeft();
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 *            the sequence to be nudged, preferebly the active pattern
 	 */
 	public void nudgeRight(int activePattern) {
-		patterns[activePattern].nudgeRight();
+		((StandardPattern) patterns[activePattern]).nudgeRight();
 	}
 
 	/**
@@ -259,32 +259,32 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 */
 	public void killLastNote(int activePattern) {
 		if (currentStep == 0 && !firstNote) {
-			if (patterns[activePattern].getSingleStep(patterns[activePattern].getPattern().length - 1)
+			if (((StandardPattern) patterns[activePattern]).getSingleStep(((StandardPattern) patterns[activePattern]).getPattern().length - 1)
 					.getNoteOn() != NoteOn.HOLD) {
 				try {
 					noteOff.setMessage(
-							ShortMessage.NOTE_OFF, midiChannel, patterns[activePattern]
-									.getSingleStep(patterns[activePattern].getPattern().length - 1).getMidiNote(),
-							patterns[activePattern].getSingleStep(currentStep).getVelo());
+							ShortMessage.NOTE_OFF, midiChannel, ((StandardPattern) patterns[activePattern])
+									.getSingleStep(((StandardPattern) patterns[activePattern]).getPattern().length - 1).getMidiNote(),
+							((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			}
 			rcvr.send(noteOff, timeStamp);
 		} else if (currentStep != 0) {
-			if (patterns[activePattern].getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
+			if (((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-							patterns[activePattern].getSingleStep(currentStep - 1).getMidiNote(),
-							patterns[activePattern].getSingleStep(currentStep).getVelo());
+							((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getMidiNote(),
+							((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			} else {
 				try {
 					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-							patterns[activePattern].getSingleStep(currentStep - 1).getHoldNote(),
-							patterns[activePattern].getSingleStep(currentStep).getVelo());
+							((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getHoldNote(),
+							((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
@@ -302,25 +302,42 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 *            the pattern to be changed
 	 */
 	public void changeNrOfSteps(int nrOfSteps, int activePattern) {
-		patterns[activePattern].changeNrOfSteps(nrOfSteps);
+		((StandardPattern) patterns[activePattern]).changeNrOfSteps(nrOfSteps);
 	}
 
 	// The rest is simple getters and setters
 
+
+	public StandardPattern getPattern(int activePattern) {
+		return (StandardPattern) patterns[activePattern];
+	}
+	
+	public int getPatternLength(int activePattern) {
+		return  ((StandardPattern) patterns[activePattern]).length();
+	}
+
+	public StandardPattern[] getPatterns() {
+		return (StandardPattern[]) patterns;
+	}
+	
 	public void setPattern(Note[] pattern, int activePattern) {
-		patterns[activePattern].setPattern(pattern);
+		((StandardPattern) patterns[activePattern]).setPattern(pattern);
 	}
 
-	public String[] getPatternNames() {
-		String[] patternNames = new String[8];
-		for (int i = 0; i < patterns.length; i++) {
-			patternNames[i] = patterns[i].getName();
-		}
-		return patternNames;
+	public int getNrOfSteps(int index) {
+		return ((StandardPattern) patterns[index]).getNrOfSteps();
 	}
-
+	
+	public void setPartNotes(String partNotes, int activePattern) {
+		((StandardPattern) patterns[activePattern]).setpartNotesChoise(partNotes);
+	}
+	
+	public String getPartNotesChoice(int index) {
+		return ((StandardPattern) patterns[index]).getPartNotesChoise();
+	}
+	
 	public Note getSingleStep(int activePattern, int index) {
-		return patterns[activePattern].getSingleStep(index);
+		return ((StandardPattern) patterns[activePattern]).getSingleStep(index);
 	}
 
 	public void setCurrentStep(int step) {
@@ -344,6 +361,6 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	}
 
 	public String getPartNotes(int index) {
-		return patterns[index].getPartNotesChoise();
+		return ((StandardPattern) patterns[index]).getPartNotesChoise();
 	}
 }

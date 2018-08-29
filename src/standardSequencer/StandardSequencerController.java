@@ -1,7 +1,5 @@
 package standardSequencer;
 
-import javax.sound.midi.MidiDevice.Info;
-import javax.swing.JButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -9,8 +7,8 @@ import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
 import pattern.StandardPattern;
+import pattern.SubPattern;
 import sequencerBase.SequencerControllerBase;
-import sequencerBase.SoloMute;
 import sequencerBase.SubSequencerController;
 
 public class StandardSequencerController extends SequencerControllerBase implements SubSequencerController {
@@ -47,28 +45,31 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 
 		// Add actionListeners to buttons
 		gui.getGenerateButton().addActionListener(e -> generatePattern());
-		gui.getNudgeLeft().addActionListener(e -> nudgeLeft());
-		gui.getNudgeRight().addActionListener(e -> nudgeRight());
+		((StandardSequencerGui) gui).getNudgeLeft().addActionListener(e -> nudgeLeft());
+		((StandardSequencerGui) gui).getNudgeRight().addActionListener(e -> nudgeRight());
 		gui.getRenamePattern().addActionListener(e -> renamePattern());
 		gui.getRefreshButton().addActionListener(e -> refreshMidiDeviceList());
 		addActionListenersToPatternChoosers();
-		
+
 		// Add ActionListeners to Jspinners
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
-		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
-		gui.getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
-		gui.getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
+		((StandardSequencerGui) gui).getPartNotesChooser()
+				.addChangeListener(e -> changePartNotes(((StandardSequencerGui) gui).getPartnotes()));
+		((StandardSequencerGui) gui).getNrOfStepsChooser()
+				.addChangeListener(e -> changeNrOfSteps(((StandardSequencerGui) gui).getNrOfSteps()));
+		((StandardSequencerGui) gui).getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
+		((StandardSequencerGui) gui).getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
 		addActionListenerToDeviceChooser();
-		
+
 		// Add ActionListeners to singleSteps
 		addActionListenersToNoteChooser();
 		addActionListenersToVelocityChooser();
 		addActionListenersToNoteOnButton();
 
-		gui.repaintSequencer(seq.getPattern(activePattern));
-		gui.setPatternNames(seq.getPatterns());
+		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(activePattern));
+		gui.setPatternNames(((StandardSequencerModel) seq).getPatterns());
 	}
 
 	// The following methods just add ActionListeners to different buttons n stuff
@@ -82,17 +83,20 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 
 	}
 
+	@SuppressWarnings("unused")
 	private void addChangeListenerToNrOfStepsChooser() {
-		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
+		((StandardSequencerGui) gui).getNrOfStepsChooser()
+				.addChangeListener(e -> changeNrOfSteps(((SubPattern) gui).getNrOfSteps()));
 	}
 
 	private void addActionListenersToNoteChooser() {
-		for (int i = 0; i < gui.getNoteChooserArray().length; i++) {
+		for (int i = 0; i < ((StandardSequencerGui) gui).getNoteChooserArray().length; i++) {
 			int index = i;
-			gui.getNoteChooser(i).addChangeListener(new ChangeListener() {
+			((StandardSequencerGui) gui).getNoteChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSingleStep(activePattern, index).changeNote((String) gui.getNoteChooser(index).getValue());
+					((StandardSequencerModel) seq).getSingleStep(activePattern, index)
+							.changeNote((String) ((StandardSequencerGui) gui).getNoteChooser(index).getValue());
 					checkHold(index);
 				}
 			});
@@ -100,21 +104,22 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	}
 
 	private void addActionListenersToVelocityChooser() {
-		for (int i = 0; i < gui.getVelocityChooserArray().length; i++) {
+		for (int i = 0; i < ((StandardSequencerGui) gui).getVelocityChooserArray().length; i++) {
 			int index = i;
-			gui.getVelocityChooser(i).addChangeListener(new ChangeListener() {
+			((StandardSequencerGui) gui).getVelocityChooser(i).addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					seq.getSingleStep(activePattern, index).setVelo((int) gui.getVelocityChooser(index).getValue());
+					((StandardSequencerModel) seq).getSingleStep(activePattern, index)
+							.setVelo((int) ((StandardSequencerGui) gui).getVelocityChooser(index).getValue());
 				}
 			});
 		}
 	}
 
 	private void addActionListenersToNoteOnButton() {
-		for (int i = 0; i < gui.getNoteOnButtonArray().length; i++) {
+		for (int i = 0; i < ((StandardSequencerGui) gui).getNoteOnButtonArray().length; i++) {
 			int index = i;
-			gui.getNoteOnButton(i).addActionListener(e -> clickNoteOnButton(index));
+			((StandardSequencerGui) gui).getNoteOnButton(i).addActionListener(e -> clickNoteOnButton(index));
 		}
 	}
 
@@ -126,7 +131,7 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            "1/16"
 	 */
 	private void changePartNotes(String partNotes) {
-		seq.setPartNotes(partNotes, activePattern);
+		((StandardSequencerModel) seq).setPartNotes(partNotes, activePattern);
 	}
 
 	/**
@@ -134,8 +139,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * the minimum value
 	 */
 	private void changeOctaveHigh() {
-		if (gui.getOctaveHigh() < gui.getOctaveLow()) {
-			gui.setOctaveHigh(gui.getOctaveLow());
+		if (((StandardSequencerGui) gui).getOctaveHigh() < ((StandardSequencerGui) gui).getOctaveLow()) {
+			((StandardSequencerGui) gui).setOctaveHigh(((StandardSequencerGui) gui).getOctaveLow());
 		}
 	}
 
@@ -144,8 +149,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * than the maximum value
 	 */
 	private void changeOctaveLow() {
-		if (gui.getOctaveLow() > gui.getOctaveHigh()) {
-			gui.setOctaveLow(gui.getOctaveHigh());
+		if (((StandardSequencerGui) gui).getOctaveLow() > ((StandardSequencerGui) gui).getOctaveHigh()) {
+			((StandardSequencerGui) gui).setOctaveLow(((StandardSequencerGui) gui).getOctaveHigh());
 		}
 	}
 
@@ -154,9 +159,9 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * the gui representation of the sequence
 	 */
 	private void nudgeLeft() {
-		seq.nudgeLeft(activePattern);
+		((StandardSequencerModel) seq).nudgeLeft(activePattern);
 		checkHold();
-		gui.repaintSequencer(seq.getPattern(activePattern));
+		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(activePattern));
 	}
 
 	/**
@@ -164,9 +169,9 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * the gui representation of the sequence
 	 */
 	private void nudgeRight() {
-		seq.nudgeRight(activePattern);
+		((StandardSequencerModel) seq).nudgeRight(activePattern);
 		checkHold();
-		gui.repaintSequencer(seq.getPattern(activePattern));
+		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(activePattern));
 	}
 
 	/**
@@ -177,7 +182,7 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            the note which is pressed
 	 */
 	private void clickNoteOnButton(int index) {
-		switch (gui.getNoteOnButtonText(index)) {
+		switch (((StandardSequencerGui) gui).getNoteOnButtonText(index)) {
 		case "On":
 			hold(index);
 			break;
@@ -198,9 +203,9 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            the note to be set to off
 	 */
 	private void Off(int index) {
-		seq.getSingleStep(activePattern, index).setHoldNote(-1);
-		seq.getSingleStep(activePattern, index).setNoteOn(NoteOn.OFF);
-		gui.setNoteOnButtonText(index, "Off");
+		((StandardSequencerModel) seq).getSingleStep(activePattern, index).setHoldNote(-1);
+		((StandardSequencerModel) seq).getSingleStep(activePattern, index).setNoteOn(NoteOn.OFF);
+		((StandardSequencerGui) gui).setNoteOnButtonText(index, "Off");
 		checkHold(index);
 	}
 
@@ -212,9 +217,9 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            which note to set to On
 	 */
 	private void On(int index) {
-		seq.getSingleStep(activePattern, index).setNoteOn(NoteOn.ON);
-		gui.setNoteOnButtonText(index, "On");
-		seq.getSingleStep(activePattern, index).setHoldNote(-1);
+		((StandardSequencerModel) seq).getSingleStep(activePattern, index).setNoteOn(NoteOn.ON);
+		((StandardSequencerGui) gui).setNoteOnButtonText(index, "On");
+		((StandardSequencerModel) seq).getSingleStep(activePattern, index).setHoldNote(-1);
 		checkHold(index);
 	}
 
@@ -227,8 +232,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            the note to be set to Hold
 	 */
 	private void hold(int index) {
-		seq.getSingleStep(activePattern, index).setNoteOn(NoteOn.HOLD);
-		gui.setNoteOnButtonText(index, "Hold");
+		((StandardSequencerModel) seq).getSingleStep(activePattern, index).setNoteOn(NoteOn.HOLD);
+		((StandardSequencerGui) gui).setNoteOnButtonText(index, "Hold");
 		checkHold(index);
 	}
 
@@ -239,28 +244,39 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 */
 	private void checkHold() {
 		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < seq.getPatternLength(activePattern); j++) {
+			for (int j = 0; j < ((StandardSequencerModel) seq).getPatternLength(activePattern); j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
+					if (((StandardSequencerModel) seq).getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (((StandardSequencerModel) seq)
+								.getSingleStep(activePattern,
+										((StandardSequencerModel) seq).getPatternLength(activePattern) - 1)
 								.getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
-											.getMidiNote());
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j)
+									.setHoldNote(
+											((StandardSequencerModel) seq)
+													.getSingleStep(activePattern,
+															((StandardSequencerModel) seq)
+																	.getPatternLength(activePattern) - 1)
+													.getMidiNote());
 						} else {
-							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
-											.getHoldNote());
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j)
+									.setHoldNote(
+											((StandardSequencerModel) seq)
+													.getSingleStep(activePattern,
+															((StandardSequencerModel) seq)
+																	.getPatternLength(activePattern) - 1)
+													.getHoldNote());
 						}
 					}
 				} else {
-					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activePattern, j - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activePattern, j)
-									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getMidiNote());
+					if (((StandardSequencerModel) seq).getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (((StandardSequencerModel) seq).getSingleStep(activePattern, j - 1)
+								.getNoteOn() != NoteOn.HOLD) {
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j).setHoldNote(
+									((StandardSequencerModel) seq).getSingleStep(activePattern, j - 1).getMidiNote());
 						} else {
-							seq.getSingleStep(activePattern, j)
-									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getHoldNote());
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j).setHoldNote(
+									((StandardSequencerModel) seq).getSingleStep(activePattern, j - 1).getHoldNote());
 						}
 					}
 				}
@@ -278,28 +294,39 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	private void checkHold(int index) {
 		int loopStart = index;
 		for (int i = 0; i < 2; i++) {
-			for (int j = loopStart; j < seq.getPatternLength(activePattern); j++) {
+			for (int j = loopStart; j < ((StandardSequencerModel) seq).getPatternLength(activePattern); j++) {
 				if (j == 0) {
-					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
+					if (((StandardSequencerModel) seq).getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (((StandardSequencerModel) seq)
+								.getSingleStep(activePattern,
+										((StandardSequencerModel) seq).getPatternLength(activePattern) - 1)
 								.getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
-											.getMidiNote());
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j)
+									.setHoldNote(
+											((StandardSequencerModel) seq)
+													.getSingleStep(activePattern,
+															((StandardSequencerModel) seq)
+																	.getPatternLength(activePattern) - 1)
+													.getMidiNote());
 						} else {
-							seq.getSingleStep(activePattern, j).setHoldNote(
-									seq.getSingleStep(activePattern, seq.getPatternLength(activePattern) - 1)
-											.getHoldNote());
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j)
+									.setHoldNote(
+											((StandardSequencerModel) seq)
+													.getSingleStep(activePattern,
+															((StandardSequencerModel) seq)
+																	.getPatternLength(activePattern) - 1)
+													.getHoldNote());
 						}
 					}
 				} else {
-					if (seq.getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
-						if (seq.getSingleStep(activePattern, j - 1).getNoteOn() != NoteOn.HOLD) {
-							seq.getSingleStep(activePattern, j)
-									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getMidiNote());
+					if (((StandardSequencerModel) seq).getSingleStep(activePattern, j).getNoteOn() == NoteOn.HOLD) {
+						if (((StandardSequencerModel) seq).getSingleStep(activePattern, j - 1)
+								.getNoteOn() != NoteOn.HOLD) {
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j).setHoldNote(
+									((StandardSequencerModel) seq).getSingleStep(activePattern, j - 1).getMidiNote());
 						} else {
-							seq.getSingleStep(activePattern, j)
-									.setHoldNote(seq.getSingleStep(activePattern, j - 1).getHoldNote());
+							((StandardSequencerModel) seq).getSingleStep(activePattern, j).setHoldNote(
+									((StandardSequencerModel) seq).getSingleStep(activePattern, j - 1).getHoldNote());
 						}
 					}
 				}
@@ -316,8 +343,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            new number of steps
 	 */
 	private void changeNrOfSteps(int nrOfSteps) {
-		seq.changeNrOfSteps(nrOfSteps, activePattern);
-		gui.repaintSequencer(seq.getPattern(activePattern));
+		((StandardSequencerModel) seq).changeNrOfSteps(nrOfSteps, activePattern);
+		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(activePattern));
 	}
 
 	/**
@@ -325,11 +352,13 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * collected in Gui
 	 */
 	private void generatePattern() {
-		seq.generatePattern(gui.getNrOfSteps(), seq.getKey(), gui.getGeneratorAlgoRithmChooser(),
-				gui.isRndVeloChecked(), gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(), gui.getOctaveLow(),
-				gui.getOctaveHigh(), activePattern);
+		((StandardSequencerModel) seq).generatePattern(((StandardSequencerGui) gui).getNrOfSteps(),
+				((StandardSequencerModel) seq).getKey(), gui.getGeneratorAlgoRithmChooser(), gui.isRndVeloChecked(),
+				gui.getVeloLowChooserValue(), gui.getVeloHighChooserValue(),
+				((StandardSequencerGui) gui).getOctaveLow(), ((StandardSequencerGui) gui).getOctaveHigh(),
+				activePattern);
 		checkHold();
-		gui.repaintSequencer(seq.getPattern(activePattern));
+		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(activePattern));
 	}
 
 	/**
@@ -344,13 +373,16 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 			gui.enablePatternChooser(pattern);
 		}
 		if (seq.getRunning()) {
-			seq.killLastNote(activePattern);
+			((StandardSequencerModel) seq).killLastNote(activePattern);
 		}
 		this.activePattern = pattern;
 		setPartNotes();
-		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(pattern));
-		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(pattern));
-		gui.repaintSequencer(seq.getPattern(pattern));
+		((StandardSequencerModel) seq).initPlayVariables();
+		((StandardSequencerGui) gui).getPartNotesChooser()
+				.setValue(((StandardSequencerModel) seq).getPartNotesChoice(pattern));
+		((StandardSequencerGui) gui).getNrOfStepsChooser()
+				.setValue(((StandardSequencerModel) seq).getNrOfSteps(pattern));
+		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(pattern));
 		gui.repaint();
 	}
 
@@ -360,7 +392,7 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * @return a unique copy of the active pattern
 	 */
 	public StandardPattern copyPattern() {
-		return seq.copyPattern(activePattern);
+		return ((StandardSequencerModel) seq).copyPattern(activePattern);
 	}
 
 	/**
@@ -371,10 +403,12 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            sequence to be pasted into the sequencer
 	 */
 	public void pastePattern(StandardPattern pattern) {
-		seq.pastePattern(activePattern, pattern);
-		gui.repaintSequencer(seq.getPattern(activePattern));
-		gui.getPartNotesChooser().setValue(seq.getPartNotesChoice(activePattern));
-		gui.getNrOfStepsChooser().setValue(seq.getNrOfSteps(activePattern));
+		((StandardSequencerModel) seq).pastePattern(activePattern, pattern);
+		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(activePattern));
+		((StandardSequencerGui) gui).getPartNotesChooser()
+				.setValue(((StandardSequencerModel) seq).getPartNotesChoice(activePattern));
+		((StandardSequencerGui) gui).getNrOfStepsChooser()
+				.setValue(((StandardSequencerModel) seq).getNrOfSteps(activePattern));
 		gui.getPatterChoosers()[activePattern].setText(seq.getPatternName(activePattern));
 		checkHold();
 	}
@@ -401,14 +435,15 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * played
 	 */
 	public void playStep() {
-		seq.playStep(activePattern);
-		gui.markActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
-		int tempStep = seq.getCurrentStep();
+		((StandardSequencerModel) seq).playStep(activePattern);
+		((StandardSequencerGui) gui).markActiveStep(((StandardSequencerModel) seq).getCurrentStep(),
+				((StandardSequencerModel) seq).isFirstNote(), ((StandardSequencerModel) seq).getPattern(activePattern));
+		int tempStep = ((StandardSequencerModel) seq).getCurrentStep();
 		tempStep++;
-		if (tempStep == seq.getPatternLength(activePattern)) {
+		if (tempStep == ((StandardSequencerModel) seq).getPatternLength(activePattern)) {
 			tempStep = 0;
 		}
-		seq.setCurrentStep(tempStep++);
+		((StandardSequencerModel) seq).setCurrentStep(tempStep++);
 	}
 
 	/**
@@ -417,8 +452,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 */
 	public void playMode() {
 		setPartNotes();
-		seq.initPlayVariables();
-		gui.disableGui();
+		((StandardSequencerModel) seq).initPlayVariables();
+		((StandardSequencerGui) gui).disableGui();
 	}
 
 	/**
@@ -426,12 +461,13 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * sequencer for next time it has to go int playMode
 	 */
 	public void stopMode() {
-		seq.stopPlayback(activePattern);
-		gui.enableGui();
+		((StandardSequencerModel) seq).stopPlayback(activePattern);
+		((StandardSequencerGui) gui).enableGui();
 		tickCounter = 0;
-		gui.unmarkActiveStep(seq.getCurrentStep(), seq.isFirstNote(), seq.getPattern(activePattern));
+		((StandardSequencerGui) gui).unmarkActiveStep(((StandardSequencerModel) seq).getCurrentStep(),
+				((StandardSequencerModel) seq).isFirstNote(), ((StandardSequencerModel) seq).getPattern(activePattern));
 	}
-	
+
 	/**
 	 * Prints choosen pattern to sysout. Good for doubleChecking Gui so it reflects
 	 * what notes there really is for example
@@ -441,8 +477,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 */
 	public void printPattern(int pattern) {
 		String s = "";
-		for (int i = 0; i < seq.getPatternLength(pattern); i++) {
-			s += seq.getSingleStep(pattern, i).toString();
+		for (int i = 0; i < ((StandardSequencerModel) seq).getPatternLength(pattern); i++) {
+			s += ((StandardSequencerModel) seq).getSingleStep(pattern, i).toString();
 		}
 		System.out.println(s);
 	}
@@ -452,6 +488,16 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 *            the musical key from wich note will be generated
 	 */
 	public void setKey(NoteGenerator key) {
-		seq.setKey(key);
+		((StandardSequencerModel) seq).setKey(key);
 	}
+
+	// Getters and setters for patterns
+	public StandardPattern getPattern() {
+		return ((StandardSequencerModel) seq).getPattern(activePattern);
+	}
+
+	public void setPattern(Note[] pattern) {
+		((StandardSequencerModel) seq).setPattern(pattern, activePattern);
+	}
+
 }

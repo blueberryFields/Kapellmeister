@@ -2,9 +2,8 @@ package masterModule;
 
 import javax.swing.JButton;
 
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
-
 import arrangement.Scene;
+import drumSequencer.DrumSequencerController;
 import note.NoteGenerator;
 import pattern.StandardPattern;
 import sequencerBase.SequencerControllerBase;
@@ -145,6 +144,10 @@ public class MstrMoModel {
 	 */
 	public void createStandardSequencer(NoteGenerator key, int index, String title) {
 		sequencerArray[index] = new StandardSequencerController(key, title);
+	}
+	
+	public void createDrumSequencer(int index, String title) {
+		sequencerArray[index] = new DrumSequencerController(title);
 	}
 
 	/**

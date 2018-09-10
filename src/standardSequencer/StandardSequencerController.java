@@ -194,6 +194,17 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 			break;
 		}
 	}
+	
+	/**
+	 * Sends a stopMessage adressed to the currently playing note in the choosen
+	 * pattern
+	 * 
+	 * @param activePattern
+	 *            the currently playing pattern
+	 */
+	public void killLastNote(int activePattern) {
+		((StandardSequencerModel) seq).killLastNote(activePattern);
+	}
 
 	/**
 	 * Sets a note in the pattern to Off, which means it will not be sent to the

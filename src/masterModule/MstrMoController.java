@@ -323,8 +323,8 @@ public class MstrMoController implements ActionListener {
 		if(nextIndex < 8) {
 			mstrMoModel.createDrumSequencer(nextIndex, "Drum Sequencer");
 			int index = nextIndex;
-			mstrMoModel.getCopyButton(index).addActionListener(e -> copy(index));
-			mstrMoModel.getPasteButton(index).addActionListener(e -> paste(index));
+//			mstrMoModel.getCopyButton(index).addActionListener(e -> copy(index));
+//			mstrMoModel.getPasteButton(index).addActionListener(e -> paste(index));
 			mstrMoGui.addNewSeqStrip("Drum Sequencer", nextIndex);
 			addActionListenersToSeqStrip(nextIndex);
 			arrangeWindow.addSequencer(nextIndex, mstrMoModel.getTitle(nextIndex),

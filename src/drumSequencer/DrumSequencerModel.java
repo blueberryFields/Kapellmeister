@@ -1,7 +1,9 @@
 package drumSequencer;
 
+import pattern.DrumPattern;
 import pattern.StandardPattern;
 import sequencerBase.SequencerModelBase;
+import sequencerBase.SoloMute;
 import sequencerBase.SubSequencerModel;
 
 public class DrumSequencerModel extends SequencerModelBase implements SubSequencerModel {
@@ -10,13 +12,17 @@ public class DrumSequencerModel extends SequencerModelBase implements SubSequenc
 	 * Constructor
 	 */
 	public DrumSequencerModel() {
-		
+		super();
+		initSeq();
 	}
 	
 	@Override
 	public void initSeq() {
-		// TODO Auto-generated method stub
-		
+		patterns = new DrumPattern[8];
+		soloMute = SoloMute.AUDIBLE;
+		for (int i = 0; i < patterns.length; i++) {
+			patterns[i] = new DrumPattern("pat " + (i + 1));
+		}
 	}
 
 	@Override
@@ -63,8 +69,17 @@ public class DrumSequencerModel extends SequencerModelBase implements SubSequenc
 
 	@Override
 	public String[] getPatternNames() {
-		// TODO Auto-generated method stub
-		return null;
+		String[] patternNames = new String[8];
+		for (int i = 0; i < patterns.length; i++) {
+			patternNames[i] = patterns[i].getName();
+		}
+		return patternNames;
+	}
+
+	
+	@Override
+	public DrumPattern[] getPatterns() {
+		return (DrumPattern[]) patterns;
 	}
 
 }

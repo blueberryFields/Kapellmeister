@@ -20,12 +20,13 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import pattern.PatternBase;
 import pattern.StandardPattern;
 
 public class SequencerGuiBase {
 
 	/**
-	 * The graphic user interface for the standard sequencers.
+	 * The base for the graphic user interface for sequencers.
 	 */
 
 	// Create colorscheme
@@ -95,6 +96,15 @@ public class SequencerGuiBase {
 	protected JPanel patternSettingsPanel = new JPanel();
 	protected JButton renamePattern = new JButton("Rename");
 
+	//Create components for patternSettingsPanel
+		protected JLabel nrOfStepsText = new JLabel("Nr of steps:");
+		protected SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
+		protected JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
+		protected String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
+		protected SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
+		protected JSpinner partNotesChooser = new JSpinner(partNotesModel);
+		protected JLabel partNotesText = new JLabel("Partnotes:");
+	
 	/**
 	 * Constructor
 	 * 
@@ -184,8 +194,18 @@ public class SequencerGuiBase {
 		}
 		patternChoosers[0].setForeground(enabledText);
 
-		patternSettingsPanel.setBackground(backGroundColor);
+		// Configure and add stuff to patternSettingsPanel
+		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
+		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
+		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
+//		partNotesChooser.setValue("1/8");
+		partNotesChooser.setPreferredSize(new Dimension(60, 25));
+		patternSettingsPanel.add(nrOfStepsText);
+		patternSettingsPanel.add(nrOfStepsChooser);
+		patternSettingsPanel.add(partNotesText);
+		patternSettingsPanel.add(partNotesChooser);		
 		patternSettingsPanel.add(renamePattern);
+		patternSettingsPanel.setBackground(backGroundColor);
 	}
 
 	/**
@@ -229,7 +249,7 @@ public class SequencerGuiBase {
 	 *            an array containing patterns from wich the names to be written on
 	 *            the patternChooserButtons will be retrieved
 	 */
-	public void setPatternNames(StandardPattern[] patterns) {
+	public void setPatternNames(PatternBase[] patterns) {
 		for (int i = 0; i < patterns.length; i++) {
 			patternChoosers[i].setText(patterns[i].getName());
 		}

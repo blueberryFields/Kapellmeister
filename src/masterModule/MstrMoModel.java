@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import arrangement.Scene;
 import drumSequencer.DrumSequencerController;
 import note.NoteGenerator;
+import pattern.DrumPattern;
 import pattern.StandardPattern;
 import sequencerBase.SequencerControllerBase;
 import sequencerBase.SoloMute;
@@ -31,9 +32,13 @@ public class MstrMoModel {
 	 */
 	private boolean running = false;
 	/**
-	 * Clipboard for storing patterns you copy via the copy-functionality
+	 * Clipboard for storing StandardPatterns you copy via the copy-functionality
 	 */
-	private StandardPattern clipBoard;
+	private StandardPattern standardClipBoard;
+	/**
+	 * Clipboard for storing DrumPatterns you copy via the copy-functionality
+	 */
+	private DrumPattern drumClipBoard;
 
 	/**
 	 * Constructor
@@ -159,7 +164,7 @@ public class MstrMoModel {
 	 */
 	public void copyPattern(int index) {
 		if (sequencerArray[index] instanceof StandardSequencerController) {
-			clipBoard = ((StandardSequencerController) sequencerArray[index]).copyPattern();
+			standardClipBoard = ((StandardSequencerController) sequencerArray[index]).copyPattern();
 		}
 	}
 
@@ -170,9 +175,9 @@ public class MstrMoModel {
 	 *            index of the pattern to be replaced
 	 */
 	public void pastePattern(int index) {
-		if (clipBoard != null) {
+		if (standardClipBoard != null) {
 			if (sequencerArray[index] instanceof StandardSequencerController) {
-				((StandardSequencerController) sequencerArray[index]).pastePattern(clipBoard);
+				((StandardSequencerController) sequencerArray[index]).pastePattern(standardClipBoard);
 			}
 		}
 	}

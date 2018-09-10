@@ -1,5 +1,6 @@
 package sequencerBase;
 
+import pattern.PatternBase;
 import pattern.StandardPattern;
 
 public interface SubSequencerModel {
@@ -22,7 +23,7 @@ public interface SubSequencerModel {
 	
 	public void changeNrOfSteps(int nrOfSteps, int activePattern);
 	
-	public String[] getPatternNames();
+	//public String[] getPatternNames();
 	
-	
+	public PatternBase[] getPatterns();
 }

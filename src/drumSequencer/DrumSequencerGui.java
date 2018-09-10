@@ -1,18 +1,21 @@
 package drumSequencer;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 
 import pattern.StandardPattern;
 import sequencerBase.SequencerGuiBase;
@@ -21,31 +24,67 @@ import sequencerBase.SubSequencerGui;
 public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGui {
 
 	private JPanel stepPanel = new JPanel();
+	private JPanel stepStrips[] = new JPanel[8];
 	private JPanel[][] singleSteps = new JPanel[8][16];
-	private String[] instrumentTitles = new String[8];
+	private JPanel[] instrumentHeaders = new JPanel[8];
+	private JLabel[] instrumentTitles = new JLabel[8];
+	private JButton[] muteButtons = new JButton[8];
+	private JButton[] soloButtons = new JButton[8];
 	private JButton[][] noteOnButtons = new JButton[8][16];
-	private JLabel noteOnLabel[][] = new JLabel[8][16];
-	private Color noteOnColor = Color.BLUE;
-	private Color noteOffColor = Color.GRAY;
 	private SpinnerModel[][] velocityModel = new SpinnerNumberModel[8][16];
 	private JSpinner velocityChooser[][] = new JSpinner[8][16];
+
+	private Dimension buttonDimMiddle = new Dimension(65, 25);
+	private Dimension generatorAlgorithmChooserDimension = new Dimension(175, 25);
+
+	private Color noteOnColor = Color.BLUE;
+	private Color noteOffColor = Color.GRAY;
 
 	public DrumSequencerGui(Info[] infos, String title) {
 		super(infos, title);
 
+		// Add stuff to generator algorithmPanel
+		genAlgorithmStrings = new String[] { "Rnd 4 on the floor" };
+		generatorAlgorithmChooser = new JComboBox<>(genAlgorithmStrings);
+		generatorAlgorithmChooser.setPreferredSize(generatorAlgorithmChooserDimension);
+		generatorAlgorithmPanel.add(generatorAlgorithmText);
+		generatorAlgorithmPanel.add(generatorAlgorithmChooser);
+
+		// Create, configure and add stuff to instrumentheaders
+		for (int i = 0; i < 8; i++) {
+			instrumentHeaders[i] = new JPanel();
+			instrumentHeaders[i].setLayout(new GridBagLayout());
+			instrumentHeaders[i].setBackground(enabledStepColor);
+			instrumentTitles[i] = new JLabel("Instrument" + " " + (i + 1));
+			instrumentTitles[i].setHorizontalAlignment(SwingConstants.RIGHT);
+			muteButtons[i] = new JButton("MUTE");
+			muteButtons[i].setPreferredSize(buttonDimMiddle);
+			soloButtons[i] = new JButton("SOLO");
+			soloButtons[i].setPreferredSize(buttonDimMiddle);
+			GridBagConstraints instrHeadGbc = new GridBagConstraints();
+			instrHeadGbc.insets = new Insets(2, 0, 2, 0);
+			instrHeadGbc.gridx = 0;
+			instrHeadGbc.gridy = 0;
+			instrHeadGbc.gridwidth = 2;
+			instrumentHeaders[i].add(instrumentTitles[i], instrHeadGbc);
+			instrHeadGbc.gridwidth = 1;
+			instrHeadGbc.gridy = 1;
+			instrumentHeaders[i].add(muteButtons[i], instrHeadGbc);
+			instrHeadGbc.gridx = 1;
+			instrumentHeaders[i].add(soloButtons[i], instrHeadGbc);
+		}
+
 		// Create and configure noteOnButtons
 		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 16; i++) {
-				noteOnButtons[i][j] = new JButton();
-				noteOnLabel[i][j] = new JLabel();
-				noteOnLabel[i][j].setBackground(noteOffColor);
-				noteOnButtons[i][j].add(noteOnLabel[i][j]);
+			for (int j = 0; j < 16; j++) {
+				noteOnButtons[i][j] = new JButton("OFF");
+				noteOnButtons[i][j].setPreferredSize(buttonDimSmall);
 			}
 		}
 
 		// Create and configure velocity choosers
 		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 16; i++) {
+			for (int j = 0; j < 16; j++) {
 				velocityModel[i][j] = new SpinnerNumberModel(100, 0, 127, 1);
 				velocityChooser[i][j] = new JSpinner(velocityModel[i][j]);
 				velocityChooser[i][j].setEditor(new JSpinner.DefaultEditor(velocityChooser[i][j]));
@@ -55,17 +94,32 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 
 		// Create and configure singleSteps
 		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 16; i++) {
+			for (int j = 0; j < 16; j++) {
 				singleSteps[i][j] = new JPanel();
 				singleSteps[i][j].setLayout(new GridBagLayout());
-				singleSteps[i][j].setBackground(enabledStepColor);
+				singleSteps[i][j].setBackground(disabledStepColor);
 				GridBagConstraints singleStepsGbc = new GridBagConstraints();
 				singleStepsGbc.gridx = 0;
 				singleStepsGbc.gridy = 0;
-				singleSteps[i][j].add(noteOnButtons[i][j]);
+				singleSteps[i][j].add(noteOnButtons[i][j], singleStepsGbc);
 				singleStepsGbc.gridx = 0;
 				singleStepsGbc.gridy = 1;
-				singleSteps[i][j].add(noteOnButtons[i][j]);
+				singleSteps[i][j].add(velocityChooser[i][j], singleStepsGbc);
+			}
+		}
+
+		// Create, configure and add stuff to stepStrips
+		for (int i = 0; i < stepStrips.length; i++) {
+			stepStrips[i] = new JPanel();
+			stepStrips[i].setBackground(backGroundColor);
+			stepStrips[i].setLayout(new GridBagLayout());
+			GridBagConstraints stepStripGbc = new GridBagConstraints();
+			stepStripGbc.insets = new Insets(5, 5, 5, 5);
+			stepStripGbc.gridx = 0;
+			stepStrips[i].add(instrumentHeaders[i], stepStripGbc);
+			for (int j = 0; j < 16; j++) {
+				stepStripGbc.gridx++;
+				stepStrips[i].add(singleSteps[i][j], stepStripGbc);
 			}
 		}
 
@@ -75,12 +129,18 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 		stepPanelGbc.gridx = 0;
 		stepPanelGbc.gridy = 0;
 		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 16; i++) {
-				stepPanel.add(singleSteps[i][j]);
-				stepPanelGbc.gridx++;
-			}
-			stepPanelGbc.gridx = 0;
+			stepPanel.add(stepStrips[i], stepPanelGbc);
 			stepPanelGbc.gridy++;
+		}
+		
+		// Configure and add stuff to PatternSettingsPanel
+		partNotesChooser.setValue("1/16");
+		
+		copyPaste[0] = new JButton("Copy");
+		copyPaste[1] = new JButton("Paste");
+		for (int i = 0; i < copyPaste.length; i++) {
+			copyPaste[i].setPreferredSize(buttonDimLarge);
+			patternSettingsPanel.add(copyPaste[i]);
 		}
 
 		// configure and add stuff to frame
@@ -91,21 +151,29 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 		frameGbc.gridy = 0;
 		frame.add(channelPanel, frameGbc);
 
-		frameGbc.gridy = 1;
+		frameGbc.gridx = 1;
 		frame.add(generatePanel, frameGbc);
 
-		frameGbc.gridy = 2;
+		frameGbc.gridx = 2;
 		frame.add(rndVeloPanel, frameGbc);
 
-		frameGbc.gridy = 3;
+		frameGbc.gridx = 3;
 		frame.add(generatorAlgorithmPanel, frameGbc);
-		
-		frameGbc.gridy = 4;
+
+		frameGbc.gridwidth = 4;
+		frameGbc.gridx = 0;
+		frameGbc.gridy = 2;
 		frame.add(stepPanel, frameGbc);
-		
-		frameGbc.gridy = 5;
+
+		frameGbc.gridwidth = 2;
+		frameGbc.gridx = 0;
+		frameGbc.gridy = 3;
 		frame.add(patternPanel, frameGbc);
 		
+		frameGbc.gridx = 2;
+		frameGbc.gridy = 3;
+		frame.add(patternSettingsPanel, frameGbc);
+
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.pack();

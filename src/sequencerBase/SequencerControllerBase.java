@@ -90,19 +90,9 @@ public class SequencerControllerBase {
 	 * @return an array of Strings containing the names of the different patterns
 	 */
 	public String[] getPatternNames() {
-		return ((StandardSequencerModel) seq).getPatternNames();
+		return  seq.getPatternNames();
 	}
 
-	/**
-	 * Sends a stopMessage adressed to the currently playing note in the choosen
-	 * pattern
-	 * 
-	 * @param activePattern
-	 *            the currently playing pattern
-	 */
-	public void killLastNote(int activePattern) {
-		((StandardSequencerModel) seq).killLastNote(activePattern);
-	}
 
 	/**
 	 * Shows the sequencer GUI if it doesnt already show

@@ -4,6 +4,7 @@ import pattern.StandardPattern;
 import sequencerBase.SequencerControllerBase;
 import sequencerBase.SubSequencerController;
 import standardSequencer.StandardSequencerGui;
+import standardSequencer.StandardSequencerModel;
 
 public class DrumSequencerController extends SequencerControllerBase implements SubSequencerController {
 
@@ -13,6 +14,8 @@ public class DrumSequencerController extends SequencerControllerBase implements 
 		seq = new DrumSequencerModel();
 		
 		gui = new DrumSequencerGui(seq.getAvailibleMidiDevices(), title);
+		
+		gui.setPatternNames(((DrumSequencerModel) seq).getPatterns());
 	}
 
 	@Override

@@ -60,14 +60,7 @@ public class StandardSequencerGui extends SequencerGuiBase implements SubSequenc
 	private JButton nudgeRight = new JButton("->");
 	private JLabel nudgeText = new JLabel("Nudge Sequence");
 
-	//Create components for patternPanel
-	protected JLabel nrOfStepsText = new JLabel("Nr of steps:");
-	protected SpinnerModel nrOfStepsModel = new SpinnerNumberModel(8, 1, 16, 1);
-	protected JSpinner nrOfStepsChooser = new JSpinner(nrOfStepsModel);
-	protected String[] partNotes = new String[] { "1 bar", "1/2", "1/4", "1/8", "1/16" };
-	protected SpinnerModel partNotesModel = new SpinnerListModel(partNotes);
-	protected JSpinner partNotesChooser = new JSpinner(partNotesModel);
-	protected JLabel partNotesText = new JLabel("Partnotes:");
+	
 	
 	
 	/**
@@ -173,15 +166,8 @@ public class StandardSequencerGui extends SequencerGuiBase implements SubSequenc
 			stepPanelGbc.gridx = 0;
 		}
 		
-		nrOfStepsChooser.setEditor(new JSpinner.DefaultEditor(nrOfStepsChooser));
-		nrOfStepsChooser.setPreferredSize(new Dimension(43, 25));
-		partNotesChooser.setEditor(new JSpinner.DefaultEditor(partNotesChooser));
+		// Set startvalue for patterSettingsPanel - partNotesChooser
 		partNotesChooser.setValue("1/8");
-		partNotesChooser.setPreferredSize(new Dimension(60, 25));
-		patternSettingsPanel.add(nrOfStepsText);
-		patternSettingsPanel.add(nrOfStepsChooser);
-		patternSettingsPanel.add(partNotesText);
-		patternSettingsPanel.add(partNotesChooser);
 
 		// configure and add stuff to frame
 		frame.setLayout(new GridBagLayout());

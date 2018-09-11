@@ -13,10 +13,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import pattern.DrumPattern;
+import pattern.PatternBase;
 import pattern.StandardPattern;
 import sequencerBase.SequencerGuiBase;
 import sequencerBase.SubSequencerGui;
@@ -28,6 +31,8 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	private JPanel[][] singleSteps = new JPanel[8][16];
 	private JPanel[] instrumentHeaders = new JPanel[8];
 	private JLabel[] instrumentTitles = new JLabel[8];
+	private JSpinner[] noteChooser = new JSpinner[8];
+	private SpinnerListModel[] noteModel = new SpinnerListModel[8];
 	private JButton[] muteButtons = new JButton[8];
 	private JButton[] soloButtons = new JButton[8];
 	private JButton[][] noteOnButtons = new JButton[8][16];
@@ -37,6 +42,7 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	private Dimension buttonDimMiddle = new Dimension(65, 25);
 	private Dimension generatorAlgorithmChooserDimension = new Dimension(175, 25);
 
+	private Color instrHeaderColor = new Color(95, 118, 164);
 	private Color noteOnColor = Color.BLUE;
 	private Color noteOffColor = Color.GRAY;
 
@@ -54,20 +60,31 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 		for (int i = 0; i < 8; i++) {
 			instrumentHeaders[i] = new JPanel();
 			instrumentHeaders[i].setLayout(new GridBagLayout());
-			instrumentHeaders[i].setBackground(enabledStepColor);
-			instrumentTitles[i] = new JLabel("Instrument" + " " + (i + 1));
+			instrumentHeaders[i].setBackground(instrHeaderColor);
+			instrumentTitles[i] = new JLabel("Instr" + " " + (i + 1));
 			instrumentTitles[i].setHorizontalAlignment(SwingConstants.RIGHT);
+
+			noteModel[i] = new SpinnerListModel(notes);
+			noteChooser[i] = new JSpinner(noteModel[i]);
+			noteChooser[i].setEditor(new JSpinner.DefaultEditor(noteChooser[i]));
+			noteChooser[i].setPreferredSize(noteChooserDim);
+
 			muteButtons[i] = new JButton("MUTE");
 			muteButtons[i].setPreferredSize(buttonDimMiddle);
 			soloButtons[i] = new JButton("SOLO");
 			soloButtons[i].setPreferredSize(buttonDimMiddle);
+
 			GridBagConstraints instrHeadGbc = new GridBagConstraints();
 			instrHeadGbc.insets = new Insets(2, 0, 2, 0);
 			instrHeadGbc.gridx = 0;
 			instrHeadGbc.gridy = 0;
-			instrHeadGbc.gridwidth = 2;
+			// instrHeadGbc.gridwidth = 2;
 			instrumentHeaders[i].add(instrumentTitles[i], instrHeadGbc);
-			instrHeadGbc.gridwidth = 1;
+			instrHeadGbc.gridx = 1;
+			instrHeadGbc.gridy = 0;
+			instrumentHeaders[i].add(noteChooser[i], instrHeadGbc);
+			// instrHeadGbc.gridwidth = 1;
+			instrHeadGbc.gridx = 0;
 			instrHeadGbc.gridy = 1;
 			instrumentHeaders[i].add(muteButtons[i], instrHeadGbc);
 			instrHeadGbc.gridx = 1;
@@ -132,10 +149,10 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 			stepPanel.add(stepStrips[i], stepPanelGbc);
 			stepPanelGbc.gridy++;
 		}
-		
+
 		// Configure and add stuff to PatternSettingsPanel
 		partNotesChooser.setValue("1/16");
-		
+
 		copyPaste[0] = new JButton("Copy");
 		copyPaste[1] = new JButton("Paste");
 		for (int i = 0; i < copyPaste.length; i++) {
@@ -169,7 +186,7 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 		frameGbc.gridx = 0;
 		frameGbc.gridy = 3;
 		frame.add(patternPanel, frameGbc);
-		
+
 		frameGbc.gridx = 2;
 		frameGbc.gridy = 3;
 		frame.add(patternSettingsPanel, frameGbc);
@@ -181,8 +198,45 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	}
 
 	@Override
-	public void repaintSequencer(StandardPattern pattern) {
-		// TODO Auto-generated method stub
+	public void repaintSequencer(PatternBase pattern) {
+		// Configure headers i.e. set value for noteChoosers
+		for (int i = 0; i < 8; i++) {
+			noteChooser[i].setValue(((DrumPattern) pattern).getSingleStep(i, 0).getNote());
+		}
+
+		// Enable steps wich is included in sequence
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < ((DrumPattern) pattern).getPattern()[1].length; j++) {
+				velocityChooser[i][j].setEnabled(true);
+				noteOnButtons[i][j].setEnabled(true);
+				singleSteps[i][j].setBackground(enabledStepColor);
+			}
+		}
+
+		// set NoteOn and velocity on steps
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < ((DrumPattern) pattern).getPattern()[1].length; j++) {
+				velocityChooser[i][j].setValue(((DrumPattern) pattern).getSingleStep(i, j).getVelo());
+				switch (((DrumPattern) pattern).getSingleStep(i, j).getNoteOn()) {
+				case ON:
+					noteOnButtons[i][j].setText("On");
+					break;
+				case OFF:
+					noteOnButtons[i][j].setText("Off");
+					break;
+				}
+			}
+		}
+
+		// Disable steps wich is not included in sequence
+		for (int i = 0; i < 8; i++) {
+			for (int j = ((DrumPattern) pattern).getPattern()[1].length; j < 16; j++) {
+				velocityChooser[i][j].setEnabled(false);
+				noteOnButtons[i][j].setEnabled(false);
+				noteOnButtons[i][j].setText("Off");
+				singleSteps[i][j].setBackground(disabledStepColor);
+			}
+		}
 
 	}
 
@@ -220,6 +274,16 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	public void enableStep(int stepIndex) {
 		// TODO Auto-generated method stub
 
+	}
+
+	// The rest is simple getters and setters
+
+	public JSpinner[] getNoteChooserArray() {
+		return noteChooser;
+	}
+
+	public JSpinner getNoteChooser(int i) {
+		return noteChooser[i];
 	}
 
 }

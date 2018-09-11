@@ -56,7 +56,7 @@ public class StandardPattern extends PatternBase implements SubPattern {
 	}
 
 	/**
-	 * Constructor nr 2. Creates a new instance of Pattern containing a pattern with
+	 * Constructor nr 3. Creates a new instance of Pattern containing a pattern with
 	 * a given number of standard notes(C3, velo 100) and a given setting for the
 	 * partNotes-Option
 	 * 
@@ -126,7 +126,6 @@ public class StandardPattern extends PatternBase implements SubPattern {
 			}
 		}
 		pattern = tempPattern;
-
 	}
 
 	/**

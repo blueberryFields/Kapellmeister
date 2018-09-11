@@ -63,7 +63,7 @@ public class DrumSequencerModel extends SequencerModelBase implements SubSequenc
 
 	@Override
 	public void changeNrOfSteps(int nrOfSteps, int activePattern) {
-		// TODO Auto-generated method stub
+		((DrumPattern) patterns[activePattern]).changeNrOfSteps(nrOfSteps);
 		
 	}
 
@@ -80,6 +80,15 @@ public class DrumSequencerModel extends SequencerModelBase implements SubSequenc
 	@Override
 	public DrumPattern[] getPatterns() {
 		return (DrumPattern[]) patterns;
+	}
+	
+	public DrumPattern getPattern(int activePattern) {
+		return (pattern.DrumPattern) patterns[activePattern];
+	}
+
+	public void setPartNotes(String partNotes, int activePattern) {
+		((DrumPattern) patterns[activePattern]).setpartNotesChoise(partNotes);
+		
 	}
 
 }

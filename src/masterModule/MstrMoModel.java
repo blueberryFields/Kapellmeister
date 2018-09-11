@@ -166,6 +166,9 @@ public class MstrMoModel {
 		if (sequencerArray[index] instanceof StandardSequencerController) {
 			standardClipBoard = ((StandardSequencerController) sequencerArray[index]).copyPattern();
 		}
+		if (sequencerArray[index] instanceof DrumSequencerController) {
+			drumClipBoard = ((DrumSequencerController) sequencerArray[index]).copyPattern();
+		}
 	}
 
 	/**

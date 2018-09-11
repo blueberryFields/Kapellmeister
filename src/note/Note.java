@@ -48,7 +48,6 @@ public class Note {
 		setVelo(100);
 		setNote("C3");
 		setNoteOn(NoteOn.ON);
-
 	}
 
 	/**
@@ -82,6 +81,16 @@ public class Note {
 		setVelo(velo);
 		setNote(note);
 		setMidiNote(noteToMidiConverter.get(note));
+		setNoteOn(value);
+	}
+	
+	/**
+	 * Constructor 4. Creates a standard note(C3, velo 100) but with NoteOnValue set to a choosen value.
+	 */
+	public Note(NoteOn value) {
+		setMidiNote(48);
+		setVelo(100);
+		setNote("C3");
 		setNoteOn(value);
 	}
 

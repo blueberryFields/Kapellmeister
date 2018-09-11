@@ -1,6 +1,6 @@
 package sequencerBase;
 
-import note.NoteGenerator;
+import pattern.PatternBase;
 import pattern.StandardPattern;
 
 public interface SubSequencerController {
@@ -9,9 +9,9 @@ public interface SubSequencerController {
 	
 	public void choosePattern(int pattern);
 	
-	public StandardPattern copyPattern();
+	public PatternBase copyPattern();
 	
-	public void pastePattern(StandardPattern pattern);
+	public void pastePattern(PatternBase pattern);
 	
 	public void tick();
 	

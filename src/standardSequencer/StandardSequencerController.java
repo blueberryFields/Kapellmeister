@@ -6,6 +6,7 @@ import javax.swing.event.ChangeListener;
 import note.Note;
 import note.NoteGenerator;
 import note.NoteOn;
+import pattern.PatternBase;
 import pattern.StandardPattern;
 import pattern.SubPattern;
 import sequencerBase.SequencerControllerBase;
@@ -53,10 +54,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 
 		// Add ActionListeners to Jspinners
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
-		((StandardSequencerGui) gui).getPartNotesChooser()
-				.addChangeListener(e -> changePartNotes(((StandardSequencerGui) gui).getPartnotes()));
-		((StandardSequencerGui) gui).getNrOfStepsChooser()
-				.addChangeListener(e -> changeNrOfSteps(((StandardSequencerGui) gui).getNrOfSteps()));
+		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
+		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
 		((StandardSequencerGui) gui).getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
 		((StandardSequencerGui) gui).getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
@@ -194,7 +193,7 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 			break;
 		}
 	}
-	
+
 	/**
 	 * Sends a stopMessage adressed to the currently playing note in the choosen
 	 * pattern
@@ -413,8 +412,8 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	 * @param the
 	 *            sequence to be pasted into the sequencer
 	 */
-	public void pastePattern(StandardPattern pattern) {
-		((StandardSequencerModel) seq).pastePattern(activePattern, pattern);
+	public void pastePattern(PatternBase pattern) {
+		((StandardSequencerModel) seq).pastePattern(activePattern, (StandardPattern) pattern);
 		((StandardSequencerGui) gui).repaintSequencer(((StandardSequencerModel) seq).getPattern(activePattern));
 		((StandardSequencerGui) gui).getPartNotesChooser()
 				.setValue(((StandardSequencerModel) seq).getPartNotesChoice(activePattern));

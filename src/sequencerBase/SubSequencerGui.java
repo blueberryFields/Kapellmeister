@@ -1,10 +1,11 @@
 package sequencerBase;
 
+import pattern.PatternBase;
 import pattern.StandardPattern;
 
 public interface SubSequencerGui {
 
-	public void repaintSequencer(StandardPattern pattern);
+	public void repaintSequencer(PatternBase pattern);
 	
 	public void markActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern);
 

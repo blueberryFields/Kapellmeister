@@ -14,6 +14,11 @@ public class PatternBase {
 	protected String title;
 
 	/**
+	 * A String were the choise of playbackspeed/partnotes will be stored
+	 */
+	protected String partNotes;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param title
@@ -31,5 +36,13 @@ public class PatternBase {
 
 	public void setName(String name) {
 		this.title = name;
+	}
+	
+	public String getPartNotesChoise() {
+		return partNotes;
+	}
+
+	public void setpartNotesChoise(String partNotes) {
+		this.partNotes = partNotes;
 	}
 }

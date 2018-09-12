@@ -193,6 +193,8 @@ public class MstrMoModel {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
 			if (sequencerArray[i] instanceof StandardSequencerController) {
 				((StandardSequencerController) sequencerArray[i]).tick();
+			} if (sequencerArray[i] instanceof DrumSequencerController) {
+				((DrumSequencerController) sequencerArray[i]).tick();
 			}
 		}
 	}

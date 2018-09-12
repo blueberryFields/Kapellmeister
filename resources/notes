@@ -1,0 +1,3 @@
+kapellmeister notes
+
+KillLastNote() is missing in DrumSequencer i think, probably should be added to interface for sequencerModel 

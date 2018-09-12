@@ -53,14 +53,15 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 		addActionListenersToPatternChoosers();
 
 		// Add ActionListeners to Jspinners
-		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 		gui.getPartNotesChooser().addChangeListener(e -> changePartNotes(gui.getPartnotes()));
 		gui.getNrOfStepsChooser().addChangeListener(e -> changeNrOfSteps(gui.getNrOfSteps()));
 		((StandardSequencerGui) gui).getOctaveLowChooser().addChangeListener(e -> changeOctaveLow());
 		((StandardSequencerGui) gui).getOctaveHighChooser().addChangeListener(e -> changeOctaveHigh());
 		gui.getVeloLowChooser().addChangeListener(e -> changeVeloLow());
 		gui.getVeloHighChooser().addChangeListener(e -> changeVeloHigh());
+		
 		addActionListenerToDeviceChooser();
+		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 
 		// Add ActionListeners to singleSteps
 		addActionListenersToNoteChooser();
@@ -79,7 +80,6 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 			int index = i;
 			gui.getPatternChoosers()[i].addActionListener(e -> choosePattern(index));
 		}
-
 	}
 
 	@SuppressWarnings("unused")
@@ -430,7 +430,6 @@ public class StandardSequencerController extends SequencerControllerBase impleme
 	public void tick() {
 		tickCounter++;
 		if (tickCounter == 1) {
-
 			playStep();
 		}
 		if (tickCounter == partNotesThreshhold) {

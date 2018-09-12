@@ -11,11 +11,6 @@ public class DrumPattern extends PatternBase implements SubPattern {
 	private Note[][] pattern;
 
 	/**
-	 * A String were the choise of playbackspeed/partnotes will be stored
-	 */
-	private String partNotes = "1/16";
-
-	/**
 	 * Constructor nr 1. Creates a new instance of Pattern containing a pattern with
 	 * 8 standard notes(C3, velo 100) and the standard setting for partNotes(1/16)
 	 * 
@@ -24,6 +19,7 @@ public class DrumPattern extends PatternBase implements SubPattern {
 	 */
 	public DrumPattern(String title) {
 		super(title);
+		partNotes = "1/16";
 		pattern = new Note[8][8];
 		for (int i = 0; i < pattern[0].length; i++) {
 			for (int j = 0; j < pattern[1].length; j++)
@@ -43,6 +39,7 @@ public class DrumPattern extends PatternBase implements SubPattern {
 	 */
 	public DrumPattern(String title, int nrOfSteps) {
 		super(title);
+		partNotes = "1/16";
 		pattern = new Note[8][nrOfSteps];
 		for (int i = 0; i < pattern[0].length; i++) {
 			for (int j = 0; j < pattern[1].length; j++)
@@ -65,6 +62,7 @@ public class DrumPattern extends PatternBase implements SubPattern {
 	 */
 	public DrumPattern(String title, int nrOfSteps, String partNotes) {
 		super(title);
+		partNotes = "1/16";
 		this.partNotes = partNotes;
 		pattern = new Note[8][nrOfSteps];
 		for (int i = 0; i < pattern[0].length; i++) {
@@ -78,7 +76,7 @@ public class DrumPattern extends PatternBase implements SubPattern {
 		Note[][] tempPattern = new Note[8][nrOfSteps];
 
 		if (nrOfSteps > pattern[1].length) {
-			for (int i = 0; i < pattern[0].length; i++) {
+			for (int i = 0; i < 8; i++) {
 				for (int j = 0; j < pattern[1].length; j++) {
 					tempPattern[i][j] = pattern[i][j];
 				}
@@ -87,7 +85,7 @@ public class DrumPattern extends PatternBase implements SubPattern {
 				}
 			}
 		} else {
-			for (int i = 0; i < pattern[0].length; i++) {
+			for (int i = 0; i < 8; i++) {
 				for (int j = 0; j < nrOfSteps; j++) {
 					tempPattern[i][j] = pattern[i][j];
 				}
@@ -121,14 +119,6 @@ public class DrumPattern extends PatternBase implements SubPattern {
 	}
 	
 	// The rest is simple getters and setters
-	
-	public String getPartNotesChoise() {
-		return partNotes;
-	}
-
-	public void setpartNotesChoise(String partNotes) {
-		this.partNotes = partNotes;
-	}
 	
 	public Note[][] getPattern() {
 		return pattern;

@@ -249,15 +249,15 @@ public class StandardSequencerGui extends SequencerGuiBase implements SubSequenc
 	 * @param pattern
 	 *            the pattern playing
 	 */
-	public void markActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern) {
+	public void markActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern) {
 		if (isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			disableStep(currentStep);
 		} else if (currentStep == 0 && !isFirstNote) {
 			singleSteps[currentStep].setBackground(activeStepColor);
-			singleSteps[pattern.getPattern().length - 1].setBackground(enabledStepColor);
+			singleSteps[((StandardPattern) pattern).getPattern().length - 1].setBackground(enabledStepColor);
 			disableStep(currentStep);
-			enableStep(pattern.getPattern().length - 1);
+			enableStep(((StandardPattern) pattern).getPattern().length - 1);
 		} else {
 			singleSteps[currentStep].setBackground(activeStepColor);
 			singleSteps[currentStep - 1].setBackground(enabledStepColor);
@@ -281,13 +281,13 @@ public class StandardSequencerGui extends SequencerGuiBase implements SubSequenc
 	 * @param pattern
 	 *            the pattern currently being played
 	 */
-	public void unmarkActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern) {
+	public void unmarkActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern) {
 		if (isFirstNote) {
 			singleSteps[currentStep].setBackground(enabledStepColor);
 			enableStep(currentStep);
 		} else if (currentStep == 0 && !isFirstNote) {
-			singleSteps[pattern.getPattern().length - 1].setBackground(enabledStepColor);
-			enableStep(pattern.getPattern().length - 1);
+			singleSteps[((StandardPattern) pattern).getPattern().length - 1].setBackground(enabledStepColor);
+			enableStep(((StandardPattern) pattern).getPattern().length - 1);
 		} else {
 			singleSteps[currentStep - 1].setBackground(enabledStepColor);
 			enableStep(currentStep - 1);

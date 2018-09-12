@@ -7,9 +7,9 @@ public interface SubSequencerGui {
 
 	public void repaintSequencer(PatternBase pattern);
 	
-	public void markActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern);
+	public void markActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern);
 
-	public void unmarkActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern);
+	public void unmarkActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern);
 	
 	public void disableGui();
 	

@@ -26,4 +26,6 @@ public interface SubSequencerModel {
 	//public String[] getPatternNames();
 	
 	public PatternBase[] getPatterns();
+	
+	public int getPatternLength(int activePattern);
 }

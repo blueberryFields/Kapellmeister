@@ -17,10 +17,6 @@ public class StandardPattern extends PatternBase implements SubPattern {
 	 * The array that contains the notes in the pattern
 	 */
 	private Note[] pattern;
-	/**
-	 * A String were the choise of playbackspeed/partnotes will be stored
-	 */
-	private String partNotes = "1/8";
 
 	/**
 	 * Constructor nr 1. Creates a new instance of Pattern containing a pattern with
@@ -31,6 +27,7 @@ public class StandardPattern extends PatternBase implements SubPattern {
 	 */
 	public StandardPattern(String title) {
 		super(title);
+		partNotes = "1/8";
 		pattern = new Note[8];
 		for (int i = 0; i < pattern.length; i++) {
 			pattern[i] = new Note();
@@ -49,6 +46,7 @@ public class StandardPattern extends PatternBase implements SubPattern {
 	 */
 	public StandardPattern(String title, int nrOfSteps) {
 		super(title);
+		partNotes = "1/8";
 		pattern = new Note[nrOfSteps];
 		for (int i = 0; i < pattern.length; i++) {
 			pattern[i] = new Note();
@@ -70,6 +68,7 @@ public class StandardPattern extends PatternBase implements SubPattern {
 	 */
 	public StandardPattern(String title, int nrOfSteps, String partNotes) {
 		super(title);
+		partNotes = "1/8";
 		this.partNotes = partNotes;
 		pattern = new Note[nrOfSteps];
 		for (int i = 0; i < pattern.length; i++) {
@@ -171,14 +170,6 @@ public class StandardPattern extends PatternBase implements SubPattern {
 
 	// The rest is simple getters and setters
 
-	public String getPartNotesChoise() {
-		return partNotes;
-	}
-
-	public void setpartNotesChoise(String partNotes) {
-		this.partNotes = partNotes;
-	}
-	
 	public Note[] getPattern() {
 		return pattern;
 	}

@@ -7,6 +7,7 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
+import pattern.DrumPattern;
 import pattern.PatternBase;
 
 /**
@@ -53,6 +54,14 @@ public class SequencerModelBase {
 	 * the midichannel on which the sequencer will send its notes on
 	 */
 	protected int midiChannel = 0;
+	
+	/**
+	 * Indicates if the current note is the first note of the first repetition of
+	 * the played pattern. Needed for the playNote method. Hopefully will be
+	 * outdated whit future updates of playNote
+	 */
+	protected boolean firstNote;
+	
 	/**
 	 * Indicates if the sequencer is currently running/playing
 	 */
@@ -219,4 +228,21 @@ public class SequencerModelBase {
 		}
 		return patternNames;
 	}
+
+	public String getPartNotesChoice(int index) {
+		return patterns[index].getPartNotesChoise();
+	}
+	
+	public void setCurrentStep(int step) {
+		currentStep = step;
+	}
+
+	public int getCurrentStep() {
+		return currentStep;
+	}
+	
+	public boolean isFirstNote() {
+		return firstNote;
+	}
+
 }

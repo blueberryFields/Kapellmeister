@@ -19,12 +19,6 @@ import sequencerBase.SubSequencerModel;
 public class StandardSequencerModel extends SequencerModelBase implements SubSequencerModel {
 
 	/**
-	 * Indicates if the current note is the first note of the first repetition of
-	 * the played pattern. Needed for the playNote method. Hopefully will be
-	 * outdated whit future updates of playNote
-	 */
-	private boolean firstNote;
-	/**
 	 * This will be used to generate notes. Can be set to different musical keys
 	 */
 	private NoteGenerator key;
@@ -307,7 +301,6 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 
 	// The rest is simple getters and setters
 
-
 	public StandardPattern getPattern(int activePattern) {
 		return (StandardPattern) patterns[activePattern];
 	}
@@ -332,24 +325,8 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 		((StandardPattern) patterns[activePattern]).setpartNotesChoise(partNotes);
 	}
 	
-	public String getPartNotesChoice(int index) {
-		return ((StandardPattern) patterns[index]).getPartNotesChoise();
-	}
-	
 	public Note getSingleStep(int activePattern, int index) {
 		return ((StandardPattern) patterns[activePattern]).getSingleStep(index);
-	}
-
-	public void setCurrentStep(int step) {
-		currentStep = step;
-	}
-
-	public int getCurrentStep() {
-		return currentStep;
-	}
-
-	public boolean isFirstNote() {
-		return firstNote;
 	}
 
 	public NoteGenerator getKey() {

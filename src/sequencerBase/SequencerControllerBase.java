@@ -208,7 +208,7 @@ public class SequencerControllerBase {
 	 * Sets the partNoteThreshhold
 	 */
 	public void setPartNotes() {
-		switch (((StandardSequencerModel) seq).getPartNotes(activePattern)) {
+		switch (seq.getPartNotesChoice(activePattern)) {
 		case "1 bar":
 			partNotesThreshhold = 64;
 			break;

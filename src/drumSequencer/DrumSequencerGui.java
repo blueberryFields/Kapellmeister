@@ -42,9 +42,8 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	private Dimension buttonDimMiddle = new Dimension(65, 25);
 	private Dimension generatorAlgorithmChooserDimension = new Dimension(175, 25);
 
-	private Color instrHeaderColor = new Color(95, 118, 164);
-	private Color noteOnColor = Color.BLUE;
-	private Color noteOffColor = Color.GRAY;
+	private Color instrHeaderColor = new Color(117, 134, 167);
+	private Color noteOnColor = new Color(62, 105, 191);
 
 	public DrumSequencerGui(Info[] infos, String title) {
 		super(infos, title);
@@ -224,6 +223,8 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 				case OFF:
 					noteOnButtons[i][j].setText("Off");
 					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -241,13 +242,13 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	}
 
 	@Override
-	public void markActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern) {
+	public void markActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void unmarkActiveStep(int currentStep, boolean isFirstNote, StandardPattern pattern) {
+	public void unmarkActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern) {
 		// TODO Auto-generated method stub
 
 	}
@@ -285,5 +286,26 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	public JSpinner getNoteChooser(int i) {
 		return noteChooser[i];
 	}
+	
+	public JButton[][] getNoteOnButtons(){
+		return noteOnButtons;
+	}
+	
+	public JButton getNoteOnButton(int indexRow, int indexCol) {
+		return noteOnButtons[indexRow][indexCol];
+	}
+	
+	public String getNoteOnButtonText(int indexRow, int indexCol) {
+		return noteOnButtons[indexRow][indexCol].getText();
+	}
 
+	public void setNoteOnButton(int indexRow, int indexCol, String text) {
+		noteOnButtons[indexRow][indexCol].setText(text);
+		if(text.equals("On")) {
+			singleSteps[indexRow][indexCol].setBackground(noteOnColor);
+		} if(text.equals("Off")) {
+			singleSteps[indexRow][indexCol].setBackground(enabledStepColor);
+		}
+	}
+	
 }

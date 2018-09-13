@@ -12,7 +12,8 @@ public class DrumPattern extends PatternBase implements SubPattern {
 
 	/**
 	 * Constructor nr 1. Creates a new instance of Pattern containing a pattern with
-	 * 8 standard notes(C3, velo 100) and the standard setting for partNotes(1/16)
+	 * 8 standard notes(C3, velo 100) and the standard setting for partNotes(1/16),
+	 * set to NoteOn.OFF
 	 * 
 	 * @param title
 	 *            a String containing the title of the pattern
@@ -24,6 +25,58 @@ public class DrumPattern extends PatternBase implements SubPattern {
 		for (int i = 0; i < pattern[0].length; i++) {
 			for (int j = 0; j < pattern[1].length; j++)
 				pattern[i][j] = new Note(NoteOn.OFF);
+		}
+	}
+
+	/**
+	 * Constructor nr 2. Creates a new instance of Pattern containing a pattern with
+	 * 8 standard notes(C3, velo 100) and the standard setting for partNotes(1/16),
+	 * set to NoteOn.OFF
+	 * 
+	 * @param title
+	 *            a String containing the title of the pattern
+	 */
+	public DrumPattern(String title, String preset) {
+		super(title);
+		partNotes = "1/16";
+		pattern = new Note[8][8];
+		switch (preset) {
+		case "Init":
+			for (int i = 0; i < pattern[0].length; i++) {
+				for (int j = 0; j < pattern[1].length; j++)
+					pattern[i][j] = new Note(NoteOn.OFF);
+			}
+			break;
+			
+		case "Volca Beats":
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[0][i] = new Note("C2", NoteOn.OFF);
+			}
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[1][i] = new Note("D2", NoteOn.OFF);
+			}
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[2][i] = new Note("G2", NoteOn.OFF);
+			}
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[3][i] = new Note("D3", NoteOn.OFF);
+			}
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[4][i] = new Note("F#2", NoteOn.OFF);
+			}
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[5][i] = new Note("A#2", NoteOn.OFF);
+			}
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[6][i] = new Note("D#2", NoteOn.OFF);
+			}
+			for (int i = 0; i < pattern[1].length; i++) {
+				pattern[7][i] = new Note("D#5", NoteOn.OFF);
+			}
+			break;
+			
+		default:
+			break;
 		}
 	}
 
@@ -93,7 +146,7 @@ public class DrumPattern extends PatternBase implements SubPattern {
 		}
 		pattern = tempPattern;
 	}
-	
+
 	public void changeNote(String note, int instrument) {
 		for (int i = 0; i < pattern[1].length; i++) {
 			pattern[instrument][i].changeNote(note);
@@ -117,9 +170,9 @@ public class DrumPattern extends PatternBase implements SubPattern {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	// The rest is simple getters and setters
-	
+
 	public Note[][] getPattern() {
 		return pattern;
 	}

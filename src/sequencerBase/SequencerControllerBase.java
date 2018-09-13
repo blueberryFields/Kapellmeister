@@ -3,8 +3,10 @@ package sequencerBase;
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
 
+import drumSequencer.DrumSequencerModel;
 import note.Note;
 import pattern.StandardPattern;
+import standardSequencer.StandardSequencerController;
 import standardSequencer.StandardSequencerGui;
 import standardSequencer.StandardSequencerModel;
 
@@ -61,7 +63,6 @@ public class SequencerControllerBase {
 	// The following methods just add ActionListeners to different buttons n stuff
 	// as their titles says
 
-
 	protected void addActionListenerToDeviceChooser() {
 		gui.getDeviceChooser().addActionListener(e -> chooseMidiDevice());
 	}
@@ -90,9 +91,8 @@ public class SequencerControllerBase {
 	 * @return an array of Strings containing the names of the different patterns
 	 */
 	public String[] getPatternNames() {
-		return  seq.getPatternNames();
+		return seq.getPatternNames();
 	}
-
 
 	/**
 	 * Shows the sequencer GUI if it doesnt already show
@@ -136,7 +136,12 @@ public class SequencerControllerBase {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				((StandardSequencerModel) seq).killLastNote(activePattern);
+				if (seq instanceof StandardSequencerModel) {
+					((StandardSequencerModel) seq).killLastNote(activePattern);
+				} 
+				if (seq instanceof DrumSequencerModel) {
+					((DrumSequencerModel) seq).killLastNote(activePattern);
+				}
 			}
 			gui.setSoloMuteBar(seq.getSoloMute());
 		}
@@ -150,7 +155,12 @@ public class SequencerControllerBase {
 		if (seq.getSoloMute() != SoloMute.MUTE) {
 			seq.mute();
 			if (seq.getRunning()) {
-				((StandardSequencerModel) seq).killLastNote(activePattern);
+				if (seq instanceof StandardSequencerModel) {
+					((StandardSequencerModel) seq).killLastNote(activePattern);
+				} 
+				if (seq instanceof DrumSequencerModel) {
+					((DrumSequencerModel) seq).killLastNote(activePattern);
+				}
 			}
 		} else {
 			seq.unSoloMute();
@@ -188,7 +198,6 @@ public class SequencerControllerBase {
 			gui.setVeloLowChooserValue(gui.getVeloHighChooserValue());
 		}
 	}
-
 
 	/**
 	 * Sets which of the available mididevices to send notes to

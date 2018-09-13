@@ -22,6 +22,14 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 * This will be used to generate notes. Can be set to different musical keys
 	 */
 	private NoteGenerator key;
+	/**
+	 * This will contain all the noteOn messages
+	 */
+	protected ShortMessage noteOn = new ShortMessage();
+	/**
+	 * This will contain all the noteOff messages
+	 */
+	protected ShortMessage noteOff = new ShortMessage();
 
 	/**
 	 * Constructor
@@ -84,20 +92,24 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 		patterns[activePattern] = new StandardPattern(tempName, nrOfSteps, tempPartNotes);
 		switch (generatorAlgorithm) {
 		case "Rnd notes":
-			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSequence(((StandardPattern) patterns[activePattern]).getPattern(),
-					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
+			((StandardPattern) patterns[activePattern])
+					.setPattern(key.getRndSequence(((StandardPattern) patterns[activePattern]).getPattern(),
+							rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row":
-			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSeqNoDuplInRow(((StandardPattern) patterns[activePattern]).getPattern(),
-					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
+			((StandardPattern) patterns[activePattern])
+					.setPattern(key.getRndSeqNoDuplInRow(((StandardPattern) patterns[activePattern]).getPattern(),
+							rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes and On/Hold/Off":
-			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSequenceOnHoldOff(((StandardPattern) patterns[activePattern]).getPattern(),
-					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
+			((StandardPattern) patterns[activePattern])
+					.setPattern(key.getRndSequenceOnHoldOff(((StandardPattern) patterns[activePattern]).getPattern(),
+							rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		case "Rnd notes, no dupl in row, On/Hold/Off":
-			((StandardPattern) patterns[activePattern]).setPattern(key.getRndSeqNoDuplInRowOnHoldOff(((StandardPattern) patterns[activePattern]).getPattern(),
-					rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
+			((StandardPattern) patterns[activePattern]).setPattern(
+					key.getRndSeqNoDuplInRowOnHoldOff(((StandardPattern) patterns[activePattern]).getPattern(),
+							rndVeloIsChecked, veloLow, veloHigh, octaveLow, octaveHigh));
 			break;
 		}
 	}
@@ -162,8 +174,8 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 				if (((StandardPattern) patterns[activePattern]).getSingleStep(getPatternLength(activePattern) - 1)
 						.getNoteOn() != NoteOn.HOLD) {
 					try {
-						noteOff.setMessage(
-								ShortMessage.NOTE_OFF, midiChannel, ((StandardPattern) patterns[activePattern])
+						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
+								((StandardPattern) patterns[activePattern])
 										.getSingleStep(getPatternLength(activePattern) - 1).getMidiNote(),
 								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
@@ -178,10 +190,12 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 					}
 				}
 			} else if (currentStep != 0) {
-				if (((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getNoteOn() != NoteOn.HOLD) {
+				if (((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1)
+						.getNoteOn() != NoteOn.HOLD) {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getMidiNote(),
+								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1)
+										.getMidiNote(),
 								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
@@ -189,7 +203,8 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 				} else {
 					try {
 						noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1).getHoldNote(),
+								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep - 1)
+										.getHoldNote(),
 								((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 					} catch (InvalidMidiDataException e1) {
 						e1.printStackTrace();
@@ -253,12 +268,14 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	 */
 	public void killLastNote(int activePattern) {
 		if (currentStep == 0 && !firstNote) {
-			if (((StandardPattern) patterns[activePattern]).getSingleStep(((StandardPattern) patterns[activePattern]).getPattern().length - 1)
+			if (((StandardPattern) patterns[activePattern])
+					.getSingleStep(((StandardPattern) patterns[activePattern]).getPattern().length - 1)
 					.getNoteOn() != NoteOn.HOLD) {
 				try {
-					noteOff.setMessage(
-							ShortMessage.NOTE_OFF, midiChannel, ((StandardPattern) patterns[activePattern])
-									.getSingleStep(((StandardPattern) patterns[activePattern]).getPattern().length - 1).getMidiNote(),
+					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
+							((StandardPattern) patterns[activePattern])
+									.getSingleStep(((StandardPattern) patterns[activePattern]).getPattern().length - 1)
+									.getMidiNote(),
 							((StandardPattern) patterns[activePattern]).getSingleStep(currentStep).getVelo());
 				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
@@ -304,15 +321,15 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	public StandardPattern getPattern(int activePattern) {
 		return (StandardPattern) patterns[activePattern];
 	}
-	
+
 	public int getPatternLength(int activePattern) {
-		return  ((StandardPattern) patterns[activePattern]).length();
+		return ((StandardPattern) patterns[activePattern]).length();
 	}
 
 	public StandardPattern[] getPatterns() {
 		return (StandardPattern[]) patterns;
 	}
-	
+
 	public void setPattern(Note[] pattern, int activePattern) {
 		((StandardPattern) patterns[activePattern]).setPattern(pattern);
 	}
@@ -320,11 +337,11 @@ public class StandardSequencerModel extends SequencerModelBase implements SubSeq
 	public int getNrOfSteps(int index) {
 		return ((StandardPattern) patterns[index]).getNrOfSteps();
 	}
-	
+
 	public void setPartNotes(String partNotes, int activePattern) {
 		((StandardPattern) patterns[activePattern]).setpartNotesChoise(partNotes);
 	}
-	
+
 	public Note getSingleStep(int activePattern, int index) {
 		return ((StandardPattern) patterns[activePattern]).getSingleStep(index);
 	}

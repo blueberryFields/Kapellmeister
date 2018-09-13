@@ -26,7 +26,7 @@ public class DrumSequencerController extends SequencerControllerBase implements 
 		addChangeListenersToNoteChoosers();
 		addActionListenersToNoteOnButtons();
 		addActionListenersToPatternChoosers();
-		
+
 		addActionListenerToDeviceChooser();
 		gui.getMidiChannelChooser().addActionListener(e -> chooseMidiChannel());
 
@@ -106,7 +106,7 @@ public class DrumSequencerController extends SequencerControllerBase implements 
 	private void changePartNotes(String partNotes) {
 		((DrumSequencerModel) seq).setPartNotes(partNotes, activePattern);
 	}
-	
+
 	/**
 	 * Change active pattern
 	 * 
@@ -125,10 +125,8 @@ public class DrumSequencerController extends SequencerControllerBase implements 
 		this.activePattern = pattern;
 		setPartNotes();
 		((DrumSequencerModel) seq).initPlayVariables();
-		((DrumSequencerGui) gui).getPartNotesChooser()
-				.setValue(((DrumSequencerModel) seq).getPartNotesChoice(pattern));
-		((DrumSequencerGui) gui).getNrOfStepsChooser()
-				.setValue(((DrumSequencerModel) seq).getNrOfSteps(pattern));
+		((DrumSequencerGui) gui).getPartNotesChooser().setValue(((DrumSequencerModel) seq).getPartNotesChoice(pattern));
+		((DrumSequencerGui) gui).getNrOfStepsChooser().setValue(((DrumSequencerModel) seq).getNrOfSteps(pattern));
 		((DrumSequencerGui) gui).repaintSequencer(((DrumSequencerModel) seq).getPattern(pattern));
 		gui.repaint();
 	}
@@ -150,37 +148,60 @@ public class DrumSequencerController extends SequencerControllerBase implements 
 		tickCounter++;
 		if (tickCounter == 1) {
 			playStep();
+			markActiveStep();
 		}
-		if(tickCounter == 4) {
-			((DrumSequencerModel) seq).killStep(activePattern);
+		if (tickCounter == 2) {
+			killStep();
 		}
 		if (tickCounter == partNotesThreshhold) {
 			tickCounter = 0;
+			unmarkActiveStep();
+			stepForward();
 		}
 	}
 
 	@Override
 	public void playStep() {
 		((DrumSequencerModel) seq).playStep(activePattern);
+	}
+
+	public void killStep() {
+		((DrumSequencerModel) seq).killStep(activePattern);
+	}
+
+	public void markActiveStep() {
 		((DrumSequencerGui) gui).markActiveStep(((DrumSequencerModel) seq).getCurrentStep(),
 				((DrumSequencerModel) seq).isFirstNote(), ((DrumSequencerModel) seq).getPattern(activePattern));
+	}
+
+	public void unmarkActiveStep() {
+		((DrumSequencerGui) gui).unmarkActiveStep(((DrumSequencerModel) seq).getCurrentStep(),
+				((DrumSequencerModel) seq).isFirstNote(), ((DrumSequencerModel) seq).getPattern(activePattern));
+	}
+
+	public void stepForward() {
 		int tempStep = ((DrumSequencerModel) seq).getCurrentStep();
 		tempStep++;
 		if (tempStep == ((DrumSequencerModel) seq).getPatternLength(activePattern)) {
 			tempStep = 0;
 		}
-		((DrumSequencerModel) seq).setCurrentStep(tempStep++);
+		((DrumSequencerModel) seq).setCurrentStep(tempStep);
 	}
 
 	@Override
 	public void playMode() {
-		// TODO Auto-generated method stub
-
+		setPartNotes();
+		((DrumSequencerModel) seq).initPlayVariables();
+		((DrumSequencerGui) gui).disableGui();
 	}
 
 	@Override
 	public void stopMode() {
-		// TODO Auto-generated method stub
+		((DrumSequencerModel) seq).stopPlayback(activePattern);
+		((DrumSequencerGui) gui).enableGui();
+		tickCounter = 0;
+		((DrumSequencerGui) gui).unmarkActiveStep(((DrumSequencerModel) seq).getCurrentStep(),
+				((DrumSequencerModel) seq).isFirstNote(), ((DrumSequencerModel) seq).getPattern(activePattern));
 
 	}
 

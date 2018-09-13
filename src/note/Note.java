@@ -83,14 +83,26 @@ public class Note {
 		setMidiNote(noteToMidiConverter.get(note));
 		setNoteOn(value);
 	}
-	
+
 	/**
-	 * Constructor 4. Creates a standard note(C3, velo 100) but with NoteOnValue set to a choosen value.
+	 * Constructor 4. Creates a standard note(C3, velo 100) but with NoteOnValue set
+	 * to a choosen value.
 	 */
 	public Note(NoteOn value) {
 		setMidiNote(48);
 		setVelo(100);
 		setNote("C3");
+		setNoteOn(value);
+	}
+
+	/**
+	 * Constructor 5. Creates a standard note of our choice with NoteOnValue set
+	 * to the passed value.
+	 */
+	public Note(String note, NoteOn value) {
+		setNote(note);
+		setMidiNote(noteToMidiConverter.get(note));
+		setVelo(100);
 		setNoteOn(value);
 	}
 

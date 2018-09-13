@@ -13,19 +13,26 @@ import sequencerBase.SubSequencerModel;
 
 public class DrumSequencerModel extends SequencerModelBase implements SubSequencerModel {
 
+	/**
+	 * This will contain all the noteOn messages
+	 */
 	private ShortMessage[] noteOnArray = new ShortMessage[8];
+	/**
+	 * This will contain all the noteOff messages
+	 */
 	private ShortMessage[] noteOffArray = new ShortMessage[8];
-	
+
 	/**
 	 * Constructor
 	 */
 	public DrumSequencerModel() {
 		super();
-		for( int i = 0; i < noteOnArray.length; i++) {
+
+		for (int i = 0; i < noteOnArray.length; i++) {
 			noteOnArray[i] = new ShortMessage();
 			noteOffArray[i] = new ShortMessage();
 		}
-		
+
 		initSeq();
 	}
 
@@ -34,7 +41,7 @@ public class DrumSequencerModel extends SequencerModelBase implements SubSequenc
 		patterns = new DrumPattern[8];
 		soloMute = SoloMute.AUDIBLE;
 		for (int i = 0; i < patterns.length; i++) {
-			patterns[i] = new DrumPattern("pat " + (i + 1));
+			patterns[i] = new DrumPattern("pat " + (i + 1), "Volca Beats");
 		}
 	}
 
@@ -52,8 +59,9 @@ public class DrumSequencerModel extends SequencerModelBase implements SubSequenc
 
 	@Override
 	public void initPlayVariables() {
-		// TODO Auto-generated method stub
-
+		currentStep = 0;
+		firstNote = true;
+		running = true;
 	}
 
 	@Override
@@ -62,69 +70,60 @@ public class DrumSequencerModel extends SequencerModelBase implements SubSequenc
 
 	}
 
-	//Doesnt work yet!!!!
 	@Override
 	public void playStep(int activePattern) {
-		for (int i = 0; i < ((DrumPattern) patterns[activePattern]).length(); i++) {
-			if (((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep).getNoteOn() != NoteOn.OFF) {
-				// make and send note on
-				try {
-					noteOn.setMessage(ShortMessage.NOTE_ON, midiChannel,
-							((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep).getMidiNote(),
-							((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep).getVelo());
-				} catch (InvalidMidiDataException e1) {
-					e1.printStackTrace();
-				}
-				
-				// send noteOn
-				try {
-					rcvr.send(noteOn, timeStamp);
-				} catch (Exception e) {
-					e.printStackTrace();
+		if (soloMute != SoloMute.MUTE) {
+			for (int i = 0; i < 8; i++) {
+				if (((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep).getNoteOn() == NoteOn.ON) {
+					// make note on
+					try {
+						noteOnArray[i].setMessage(ShortMessage.NOTE_ON, midiChannel,
+								((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep).getMidiNote(),
+								((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep).getVelo());
+					} catch (InvalidMidiDataException e1) {
+						e1.printStackTrace();
+					}
+
+					// send noteOn
+					try {
+						rcvr.send(noteOnArray[i], timeStamp);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
+		if (firstNote == true) {
+			firstNote = false;
+		}
 	}
-	
+
 	public void killStep(int activePattern) {
-		for (int i = 0; i < ((DrumPattern) patterns[activePattern]).length(); i++) {
-			try {
-				noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-						noteOnArray[i].getData1(),
-						noteOnArray[i].getData2());
-			} catch (InvalidMidiDataException e1) {
-				e1.printStackTrace();
-			}
-			
-			// send noteOn
-			try {
-				rcvr.send(noteOff, timeStamp);
-			} catch (Exception e) {
-				e.printStackTrace();
+		if (soloMute != SoloMute.MUTE) {
+			for (int i = 0; i < 8; i++) {
+				if (((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep).getNoteOn() == NoteOn.ON) {
+					// make noteOff
+					try {
+						noteOffArray[i].setMessage(ShortMessage.NOTE_OFF, midiChannel, noteOnArray[i].getData1(),
+								noteOnArray[i].getData2());
+					} catch (InvalidMidiDataException e1) {
+						e1.printStackTrace();
+					}
+
+					// send noteOff
+					try {
+						rcvr.send(noteOffArray[i], timeStamp);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
 
-	
-	//Doesnt work yet!!!!
 	@Override
 	public void killLastNote(int activePattern) {
-		for (int i = 0; i < ((DrumPattern) patterns[activePattern]).length(); i++) {
-			if (((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep - 1).getNoteOn() != NoteOn.OFF) {
-				try {
-					noteOff.setMessage(ShortMessage.NOTE_OFF, midiChannel,
-							((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep -1).getMidiNote(),
-							((DrumPattern) patterns[activePattern]).getSingleStep(i, currentStep -1).getVelo());
-				} catch (InvalidMidiDataException e1) {
-					e1.printStackTrace();
-				}
-				try {
-					rcvr.send(noteOff, timeStamp);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		killStep(activePattern);
 	}
 
 	@Override

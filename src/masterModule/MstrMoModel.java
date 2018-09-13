@@ -150,7 +150,7 @@ public class MstrMoModel {
 	public void createStandardSequencer(NoteGenerator key, int index, String title) {
 		sequencerArray[index] = new StandardSequencerController(key, title);
 	}
-	
+
 	public void createDrumSequencer(int index, String title) {
 		sequencerArray[index] = new DrumSequencerController(title);
 	}
@@ -193,7 +193,8 @@ public class MstrMoModel {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
 			if (sequencerArray[i] instanceof StandardSequencerController) {
 				((StandardSequencerController) sequencerArray[i]).tick();
-			} if (sequencerArray[i] instanceof DrumSequencerController) {
+			}
+			if (sequencerArray[i] instanceof DrumSequencerController) {
 				((DrumSequencerController) sequencerArray[i]).tick();
 			}
 		}
@@ -207,6 +208,9 @@ public class MstrMoModel {
 			if (sequencerArray[i] instanceof StandardSequencerController) {
 				((StandardSequencerController) sequencerArray[i]).playMode();
 			}
+			if (sequencerArray[i] instanceof DrumSequencerController) {
+				((DrumSequencerController) sequencerArray[i]).playMode();
+			}
 		}
 	}
 
@@ -216,7 +220,10 @@ public class MstrMoModel {
 	public void stop() {
 		for (int i = 0; i <= lastUsedIndex(); i++) {
 			if (sequencerArray[i] instanceof StandardSequencerController) {
-			((StandardSequencerController) sequencerArray[i]).stopMode();
+				((StandardSequencerController) sequencerArray[i]).stopMode();
+			}
+			if (sequencerArray[i] instanceof DrumSequencerController) {
+				((DrumSequencerController) sequencerArray[i]).stopMode();
 			}
 		}
 	}
@@ -231,7 +238,7 @@ public class MstrMoModel {
 	public void changeKey(NoteGenerator key) {
 		for (int i = 0; i < sequencerArray.length; i++) {
 			if (sequencerArray[i] instanceof StandardSequencerController) {
-			((StandardSequencerController) sequencerArray[i]).setKey(key);
+				((StandardSequencerController) sequencerArray[i]).setKey(key);
 			}
 		}
 	}

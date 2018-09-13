@@ -18,6 +18,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import note.NoteOn;
 import pattern.DrumPattern;
 import pattern.PatternBase;
 import pattern.StandardPattern;
@@ -219,9 +220,11 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 				switch (((DrumPattern) pattern).getSingleStep(i, j).getNoteOn()) {
 				case ON:
 					noteOnButtons[i][j].setText("On");
+					singleSteps[i][j].setBackground(noteOnColor);
 					break;
 				case OFF:
 					noteOnButtons[i][j].setText("Off");
+					singleSteps[i][j].setBackground(enabledStepColor);
 					break;
 				default:
 					break;
@@ -243,37 +246,77 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 
 	@Override
 	public void markActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern) {
-		// TODO Auto-generated method stub
-
+		for (int i = 0; i < 8; i++) {
+			singleSteps[i][currentStep].setBackground(activeStepColor);
+			disableStep(i, currentStep);
+		}
 	}
 
 	@Override
 	public void unmarkActiveStep(int currentStep, boolean isFirstNote, PatternBase pattern) {
-		// TODO Auto-generated method stub
-
+		for (int i = 0; i < 8; i++) {
+			if (((DrumPattern) pattern).getSingleStep(i, currentStep).getNoteOn() == NoteOn.OFF) {
+				singleSteps[i][currentStep].setBackground(enabledStepColor);
+			} else {
+				singleSteps[i][currentStep].setBackground(noteOnColor);
+			}
+			enableStep(i, currentStep);
+		}
 	}
 
 	@Override
 	public void disableGui() {
-		// TODO Auto-generated method stub
-
+		deviceChooser.setEnabled(false);
+		midiChannelChooser.setEnabled(false);
+		generateButton.setEnabled(false);
+		rndVeloCheckBox.setEnabled(false);
+		veloLowChooser.setEnabled(false);
+		veloHighChooser.setEnabled(false);
+		generatorAlgorithmChooser.setEnabled(false);
+		refreshButton.setEnabled(false);
+		for (int i = 0; i < patternChoosers.length; i++) {
+			patternChoosers[i].setEnabled(false);
+		}
+		partNotesChooser.setEnabled(false);
+		nrOfStepsChooser.setEnabled(false);
+		copyPaste[0].setEnabled(false);
+		copyPaste[1].setEnabled(false);
+		for (int i = 0; i < noteChooser.length; i++) {
+			noteChooser[i].setEnabled(false);
+		}
 	}
 
 	@Override
 	public void enableGui() {
-		// TODO Auto-generated method stub
+		deviceChooser.setEnabled(true);
+		midiChannelChooser.setEnabled(true);
+		generateButton.setEnabled(true);
+		rndVeloCheckBox.setEnabled(true);
+		veloLowChooser.setEnabled(true);
+		veloHighChooser.setEnabled(true);
+		generatorAlgorithmChooser.setEnabled(true);
+		refreshButton.setEnabled(false);
+		for (int i = 0; i < patternChoosers.length; i++) {
+			patternChoosers[i].setEnabled(true);
+		}
+		partNotesChooser.setEnabled(true);
+		nrOfStepsChooser.setEnabled(true);
+		copyPaste[0].setEnabled(true);
+		copyPaste[1].setEnabled(true);
+		for (int i = 0; i < noteChooser.length; i++) {
+			noteChooser[i].setEnabled(true);
+		}
+	}
+
+	public void disableStep(int indexRow, int indexCol) {
+		velocityChooser[indexRow][indexCol].setEnabled(false);
+		noteOnButtons[indexRow][indexCol].setEnabled(false);
 
 	}
 
-	@Override
-	public void disableStep(int stepIndex) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void enableStep(int stepIndex) {
-		// TODO Auto-generated method stub
+	public void enableStep(int indexRow, int indexCol) {
+		velocityChooser[indexRow][indexCol].setEnabled(true);
+		noteOnButtons[indexRow][indexCol].setEnabled(true);
 
 	}
 
@@ -286,26 +329,27 @@ public class DrumSequencerGui extends SequencerGuiBase implements SubSequencerGu
 	public JSpinner getNoteChooser(int i) {
 		return noteChooser[i];
 	}
-	
-	public JButton[][] getNoteOnButtons(){
+
+	public JButton[][] getNoteOnButtons() {
 		return noteOnButtons;
 	}
-	
+
 	public JButton getNoteOnButton(int indexRow, int indexCol) {
 		return noteOnButtons[indexRow][indexCol];
 	}
-	
+
 	public String getNoteOnButtonText(int indexRow, int indexCol) {
 		return noteOnButtons[indexRow][indexCol].getText();
 	}
 
 	public void setNoteOnButton(int indexRow, int indexCol, String text) {
 		noteOnButtons[indexRow][indexCol].setText(text);
-		if(text.equals("On")) {
+		if (text.equals("On")) {
 			singleSteps[indexRow][indexCol].setBackground(noteOnColor);
-		} if(text.equals("Off")) {
+		}
+		if (text.equals("Off")) {
 			singleSteps[indexRow][indexCol].setBackground(enabledStepColor);
 		}
 	}
-	
+
 }

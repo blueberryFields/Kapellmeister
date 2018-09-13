@@ -37,14 +37,7 @@ public class SequencerModelBase {
 	 * An array of the patterns the sequencer know and can play back
 	 */
 	protected PatternBase[] patterns;
-	/**
-	 * This will contain all the noteOn messages
-	 */
-	protected ShortMessage noteOn = new ShortMessage();
-	/**
-	 * This will contain all the noteOff messages
-	 */
-	protected ShortMessage noteOff = new ShortMessage();
+	
 	/**
 	 * Enumeration of hte diferrent states this sequencer can be in, SOLO, MUTE,
 	 * AUDIBLE

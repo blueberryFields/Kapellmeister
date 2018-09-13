@@ -15,7 +15,7 @@ public interface SubSequencerGui {
 	
 	public void enableGui();
 		
-	public void disableStep(int stepIndex);
-	
-	public void enableStep(int stepIndex);
+//	public void disableStep(int indexRow, int indexCol);
+//	
+//	public void enableStep(int indexRow, int indexCol);
 }

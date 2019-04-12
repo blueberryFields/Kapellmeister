@@ -6,16 +6,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.LinkedList;
-import java.util.List;
+import java.awt.Toolkit;
 
 import javax.swing.JButton;
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
@@ -25,7 +24,6 @@ import javax.swing.SpinnerModel;
 import javax.swing.SwingConstants;
 
 import sequencerBase.SoloMute;
-import standardSequencer.StandardSequencerController;
 
 /**
  * The graphic user interface for the master module
@@ -35,6 +33,7 @@ public class MstrMoGui extends JFrame {
 
 	// Create colorscheme
 	private Color backGroundColor = new Color(142, 175, 206);
+	private Color desktopColor = new Color(104, 129, 153);
 	private Color muteColor = Color.BLUE;
 	private Color soloColor = Color.YELLOW;
 	private Color sepColor = new Color(95, 125, 153);
@@ -42,6 +41,7 @@ public class MstrMoGui extends JFrame {
 	private GridBagConstraints gbc = new GridBagConstraints();
 
 	// Create components for masterpanel
+	private JPanel masterContainer = new JPanel();
 	private JPanel masterPanel = new JPanel();
 	private JButton[] playStopButtons = new JButton[] { new JButton("Play"), new JButton("Stop") };
 	private JLabel bpmText = new JLabel("Bpm:");
@@ -80,12 +80,16 @@ public class MstrMoGui extends JFrame {
 	private JMenuItem standardSequencer = new JMenuItem("Standard Sequencer");
 	private JMenuItem drumSequencer = new JMenuItem("Drum Sequencer");
 
-	// Size for masterPanel and seqStrips and more
+	// Size for masterPanel and seqStrips and windows
 	private Dimension stripDim = new Dimension(600, 35);
 	private Dimension soloMuteBarColor = new Dimension(55, 20);
+	private Dimension screenSize;
+	private int inset = 50;
 
 	// Create font for menus
 	private Font menuFont = playStopButtons[0].getFont();
+
+	private JDesktopPane desktop = new JDesktopPane(); // a specialized layered pane
 
 	/**
 	 * Constructor
@@ -93,8 +97,13 @@ public class MstrMoGui extends JFrame {
 	public MstrMoGui() {
 		super("Master Module");
 
+		// Set size of frame
+		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		stripDim = new Dimension(screenSize.width -40, 35);
+
 		// Set colors and fonts
 		getContentPane().setBackground(backGroundColor);
+		masterContainer.setBackground(backGroundColor);
 		masterPanel.setBackground(backGroundColor);
 		createPanel.setBackground(backGroundColor);
 		stripPanel.setBackground(backGroundColor);
@@ -152,24 +161,36 @@ public class MstrMoGui extends JFrame {
 		// Configure stripPanel
 		stripPanel.setLayout(new GridBagLayout());
 
-		setLayout(new GridBagLayout());
+		// Configure Desktop
+		desktop.setSize(screenSize.width - 50, screenSize.height - 250);
+		desktop.setBackground(desktopColor);
+
+		//Configure and add stuff to masterContainer
+		masterContainer.setLayout(new GridBagLayout());
 		GridBagConstraints masterPanelGbc = new GridBagConstraints();
 
 		masterPanelGbc.gridx = 0;
 		masterPanelGbc.gridy = 0;
-		add(masterPanel, gbc);
+		masterContainer.add(masterPanel, gbc);
 		masterPanelGbc.gridy = 1;
 		masterPanelGbc.fill = GridBagConstraints.HORIZONTAL;
-		add(sep, masterPanelGbc);
+		masterContainer.add(sep, masterPanelGbc);
 		masterPanelGbc.fill = GridBagConstraints.NONE;
 		masterPanelGbc.gridy = 2;
-		add(stripPanel, masterPanelGbc);
+		masterContainer.add(stripPanel, masterPanelGbc);
 		masterPanelGbc.gridy = 3;
-		add(createPanel, masterPanelGbc);
+		masterContainer.add(createPanel, masterPanelGbc);
+		masterPanelGbc.gridy = 4;
+ 
+		//Configure and add stuff to Frame
+		add(masterContainer, BorderLayout.PAGE_START);
+		add(desktop, BorderLayout.CENTER);
 
-		setResizable(false);
+		setResizable(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		pack();
+		setBounds(inset, inset, screenSize.width, screenSize.height);
+
+		// pack();
 		setVisible(true);
 	}
 
@@ -351,7 +372,7 @@ public class MstrMoGui extends JFrame {
 	public JMenuItem getDrumSequencer() {
 		return drumSequencer;
 	}
-	
+
 	public JMenuItem getSave() {
 		return save;
 	}

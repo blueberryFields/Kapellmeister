@@ -1,6 +1,7 @@
 package masterModule;
 
 import javax.swing.JButton;
+import javax.swing.JInternalFrame;
 
 import arrangement.Scene;
 import drumSequencer.DrumSequencerController;
@@ -376,9 +377,7 @@ public class MstrMoModel {
 		scenes[sceneNr].setName(newName);
 	}
 
-	/**
-	 * Not really sure whats the intention with this method
-	 */
+	
 	// public void killLastNote(int lastScene) {
 	// for (int i = 0; i <= lastUsedIndex(); i++) {
 	// sequencerArray[i].killLastNote(scenes[lastScene].getPatternChoice(i));
@@ -386,6 +385,11 @@ public class MstrMoModel {
 	// }
 
 	// The rest here is simple getters and setters
+
+	// Returns the frame, intended for later adding to desktop
+	public JInternalFrame getFrame(int index) {
+		return sequencerArray[index].getFrame();
+	}
 
 	public Scene[] getScenes() {
 		return scenes;

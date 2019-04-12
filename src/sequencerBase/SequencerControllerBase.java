@@ -2,6 +2,7 @@ package sequencerBase;
 
 import javax.sound.midi.MidiDevice.Info;
 import javax.swing.JButton;
+import javax.swing.JInternalFrame;
 
 import drumSequencer.DrumSequencerModel;
 import note.Note;
@@ -236,6 +237,13 @@ public class SequencerControllerBase {
 		}
 	}
 
+	// Getters and setters
+	
+	// // Returns the frame, intended for later adding to desktop
+	public JInternalFrame getFrame() {
+		return gui.getFrame();
+	}
+	
 	public JButton getCopyButton() {
 		return gui.getCopyButton();
 	}

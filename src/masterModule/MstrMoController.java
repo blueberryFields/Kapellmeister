@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -315,6 +316,7 @@ public class MstrMoController implements ActionListener {
 			arrangeWindow.addSequencer(nextIndex, mstrMoModel.getTitle(nextIndex),
 					mstrMoModel.getPatternNames(nextIndex));
 			addActionListenersToArrWinInstr(nextIndex);
+			mstrMoGui.addToDesktop(mstrMoModel.getFrame(nextIndex));
 			setNextIndex();
 		}
 	}
@@ -499,6 +501,11 @@ public class MstrMoController implements ActionListener {
 	}
 
 	// Simple getters and setters
+	
+	// Returns the frame, intended for later adding to desktop
+		public JInternalFrame getFrame(int index) {
+			return mstrMoModel.getFrame(index);
+		}
 
 	private int getBpm() {
 		return mstrMoGui.getBpm();

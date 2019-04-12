@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -89,7 +90,8 @@ public class MstrMoGui extends JFrame {
 	// Create font for menus
 	private Font menuFont = playStopButtons[0].getFont();
 
-	private JDesktopPane desktop = new JDesktopPane(); // a specialized layered pane
+	//Create desktop, inhabitable by sequencers
+	private JDesktopPane desktop = new JDesktopPane();
 
 	/**
 	 * Constructor
@@ -164,6 +166,7 @@ public class MstrMoGui extends JFrame {
 		// Configure Desktop
 		desktop.setSize(screenSize.width - 50, screenSize.height - 250);
 		desktop.setBackground(desktopColor);
+		desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		//Configure and add stuff to masterContainer
 		masterContainer.setLayout(new GridBagLayout());
@@ -192,6 +195,11 @@ public class MstrMoGui extends JFrame {
 
 		// pack();
 		setVisible(true);
+	}
+	
+	// Add a sequencers frame to the desktop
+	public void addToDesktop(JInternalFrame frame) {
+		desktop.add(frame);
 	}
 
 	/**

@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -48,7 +49,7 @@ public class SequencerGuiBase {
 	protected Dimension patternChooserDim = new Dimension(110, 25);
 
 	// Create JFrame
-	protected JFrame frame;
+	protected JInternalFrame frame;
 
 	// Create notes
 	protected String[] notes = new String[] { "C-1", "C#-1", "D-1", "D#-1", "E-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1",
@@ -125,7 +126,7 @@ public class SequencerGuiBase {
 	 *            of the frame
 	 */
 	public SequencerGuiBase(Info[] infos, String title) {
-		frame = new JFrame(title);
+		frame = new JInternalFrame(title);
 
 		// Set colors for panels n the like
 		rndVeloCheckPanel.setBackground(backGroundColor);
@@ -313,8 +314,13 @@ public class SequencerGuiBase {
 		frame.setVisible(true);
 	}
 
-	// The rest here is mostly basic getters and setters
-
+	// Returns the frame, intended for later adding to desktop
+	public JInternalFrame getFrame() {
+		return frame;
+	}
+	
+	// The rest here is mostly basic getters and setters	
+	
 	public JButton[] getPatternChoosers() {
 		return patternChoosers;
 	}

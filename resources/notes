@@ -1,0 +1,16 @@
+kapellmeister notes
+
+KillLastNote() is missing in DrumSequencer i think, probably should be added to interface for sequencerModel ✓
+
+midinotes for each instrument in volca beats:
+
+kick - C2
+snare - D2
+Lo Tom -G2
+Hi Tom - D3
+Cl hat - F#2
+Op hat - A#2
+Clap - D#2
+claves - D#5
+agogo - G4
+crash - C#3

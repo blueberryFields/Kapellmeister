@@ -9,8 +9,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import arrangement.ArrangementWindow;
-import arrangement.Pattern;
 import note.KeyConverter;
+import pattern.StandardPattern;
 
 /**
  * Controller for the Master Module. Contains logic for managing the different
@@ -77,6 +77,7 @@ public class MstrMoController implements ActionListener {
 
 		// Add actionListeners to masterModuleGui
 		mstrMoGui.getStandardSequencer().addActionListener(e -> createStandardSequencer());
+		mstrMoGui.getDrumSequencer().addActionListener(e -> createDrumSequencer());
 		mstrMoGui.getPlayStopButtons()[0].addActionListener(e -> start());
 		mstrMoGui.getPlayStopButtons()[1].addActionListener(e -> stop());
 		mstrMoGui.getKeyChooser().addChangeListener(e -> changeKey());
@@ -318,6 +319,21 @@ public class MstrMoController implements ActionListener {
 		}
 	}
 
+	private void createDrumSequencer() {
+		if(nextIndex < 8) {
+			mstrMoModel.createDrumSequencer(nextIndex, "Drum Sequencer");
+			int index = nextIndex;
+			mstrMoModel.getCopyButton(index).addActionListener(e -> copy(index));
+			mstrMoModel.getPasteButton(index).addActionListener(e -> paste(index));
+			mstrMoGui.addNewSeqStrip("Drum Sequencer", nextIndex);
+			addActionListenersToSeqStrip(nextIndex);
+			arrangeWindow.addSequencer(nextIndex, mstrMoModel.getTitle(nextIndex),
+					mstrMoModel.getPatternNames(nextIndex));
+			addActionListenersToArrWinInstr(nextIndex);
+			setNextIndex();
+		}
+	}
+	
 	/**
 	 * makes a individual copy of a pattern and stores it in the clipboard in
 	 * mstrMoModel.

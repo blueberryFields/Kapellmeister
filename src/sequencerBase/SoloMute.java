@@ -1,4 +1,4 @@
-package sequecerBase;
+package sequencerBase;
 
 /**
  * Enumeration of different states a sequencer can be in. Mute means it wont do

@@ -1,0 +1,17 @@
+SEQUENCER GUI INTERFACE
+
+Methods to include
+
+disableStep()
+
+enableStep()
+
+unMarkActiveStep()
+
+markActiveStep()?
+
+repaintSequencer()
+
+disableGui()?
+
+enableGui()?

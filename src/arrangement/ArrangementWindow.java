@@ -125,7 +125,7 @@ public class ArrangementWindow extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		pack();
-		setVisible(true);
+		//setVisible(true);
 	}
 
 	/**
